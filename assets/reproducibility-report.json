@@ -1,0 +1,17 @@
+{
+  "asset": "awushi.glb",
+  "beforeSha256": "3157f06faeec8bd5c11339b9eb959f09b7fade02c8a49d9f9bd3fc8312581fa1",
+  "afterSha256": "88db2c52e67e772d3f80ad5c568787a7a00da8cdb4f7cb1eb9b3bd523c0b7d22",
+  "bytes": 2026776,
+  "byteIdentical": false,
+  "jsonIdentical": true,
+  "positionsExact": true,
+  "orientedTriangleSetsExact": true,
+  "skinAndAnimationAccessorsExact": true,
+  "embeddedImagesExact": true,
+  "reorderedIndexAccessors": 6,
+  "normalComponentsChanged": 10,
+  "maxNormalDelta": 0.00008502602577209473,
+  "normalTolerance": 0.0002,
+  "result": "Geometry, materials, textures, skinning, and animation reproduced; binary ordering and tiny normal differences are permitted."
+}

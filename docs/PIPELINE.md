@@ -57,8 +57,10 @@ On macOS in the Codex execution sandbox, Blender 5.1.1 can crash during Metal de
 | `public/assets/awushi.glb` | Self-contained game asset with embedded image, PBR materials, skin, and clips |
 | `scripts/validate-assets.mjs` | Native binary checks and the Khronos glTF Validator |
 | `assets/validation-report.json` | Actual export sizes, triangle counts, bounds, clips, material extensions, SHA-256 checksums, and validator messages |
+| `scripts/compare-glb.mjs` | Compares repeated GLBs, distinguishing triangle order from changed geometry or animation |
+| `assets/reproducibility-report.json` | Recorded before/after hashes and exact geometry/animation comparison results |
 
-Generated `.blend`, `.glb`, preview images, and manifests are intended to be tracked along with their scripts and the reference. Temporary renders, Blender backups, dependency folders, build outputs, and Python caches are not source assets. Reproducibility means the same authored geometry and animation for the same code, seed, and Blender version; `.blend` serialization and rendered pixels are not guaranteed byte-identical across Blender versions, rendering backends, or machines.
+Generated `.blend`, `.glb`, preview images, and manifests are intended to be tracked along with their scripts and the reference. Temporary renders, Blender backups, dependency folders, build outputs, and Python caches are not source assets. Reproducibility means the same authored geometry and animation for the same code, seed, and Blender version. Actual repeated-generation comparison found identical positions, oriented triangle sets, UVs, skinning, animations, materials, and texture bytes, but different triangle serialization order and tiny normal differences. GLB and `.blend` bytes and rendered pixels are not promised identical across runs, Blender versions, rendering backends, or machines. See `VALIDATION.md` for the measured audit.
 
 ## Character construction and customization
 
@@ -106,6 +108,8 @@ The character uses one weighted armature. The crown has its own deformation infl
 | `Run` | Loop the faster, more playful gait |
 | `Interact` | Play a curious head tilt and arm gesture |
 | `Celebrate` | Play the happy jump and small splash |
+
+The combined mesh and armature are separate exported scene roots. Blender 5.1 may print an armature-parent advisory because it resolves the selected rig by name in this arrangement; there is exactly one rig, and the exported skin is checked by both Khronos validation and actual Three.js deformation tests. This avoids the non-root skinned-mesh warnings in the earlier export.
 
 Load `/assets/awushi.glb` using `useGLTF`, clone it with `SkeletonUtils.clone` if creating multiple independent characters, and drive its clips with `useAnimations` or `THREE.AnimationMixer`. Crossfade between locomotion states. Play interaction and celebration once, then return to the current locomotion state. Do not apply a second `−π/2` rotation: the GLB already has the correct game coordinate system.
 

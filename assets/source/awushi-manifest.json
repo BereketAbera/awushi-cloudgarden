@@ -12,5 +12,9 @@
     "Celebrate": 66
   },
   "glb_bytes": 2026776,
-  "reference": "assets/reference/awushi.png"
+  "reference": "assets/reference/awushi.png",
+  "render_settings": {
+    "resolution": 900,
+    "cycles_samples": 64
+  }
 }

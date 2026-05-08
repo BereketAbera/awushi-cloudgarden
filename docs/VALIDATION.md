@@ -35,7 +35,22 @@ The following changes were then made and regenerated:
 - Increased the torso and leg volume, and placed the larger bubble accents against the actual skin surface with ray casts.
 - Added a dense cyan interior to approximate scattering and block the opposite-side face from showing through the translucent shell; the final export has six materials.
 
-The latest inspected front render has stronger cyan color, larger amber eyes with yellow lower halves, clearer crown separation, a rounder body, and visible bubbles. Visual review is still in progress. The source image's intricate flowing internal highlights and finely detailed bubble distribution are simplified for real-time geometry. Inspect all four final views before accepting the character milestone.
+The final front, three-quarter, side, and back studio renders and the actual GLB in the game were inspected. The character milestone is accepted as a faithful stylized reconstruction: stronger cyan color, large amber eyes with yellow lower halves, separated swept crown lobes, a rounded body, and visible bubbles. The back no longer shows ghost eyes or a smile. The source image's intricate flowing internal highlights and finely detailed bubble distribution are simplified for real-time geometry.
+
+## Repeated-generation audit
+
+`npm run assets:generate -- --character` was executed successfully twice from the actual Node wrapper, using fresh factory-startup Blender processes. The final generator defaults are 900 × 900 and 64 Cycles samples, recorded in the source manifest. This audit did not rerender the images; it regenerated the GLB and source `.blend`.
+
+The repeated GLB is **not byte-identical**. Before/after hashes and the detailed comparison are saved in `assets/reproducibility-report.json`. GLB JSON, vertex positions, UVs, joint/weight data, every animation accessor, and embedded texture bytes are exact matches. The six materials' oriented triangle sets are also exact matches; their triangle serialization order varies. Ten normal components differ by at most 0.0000851. This is geometric and animation reproducibility with harmless serialization and floating-point variation, not a byte-stable export claim.
+
+The comparison can be repeated locally:
+
+```sh
+cp public/assets/awushi.glb /tmp/awushi-before.glb
+npm run assets:generate -- --character
+node scripts/compare-glb.mjs /tmp/awushi-before.glb public/assets/awushi.glb assets/reproducibility-report.json
+npm run assets:validate
+```
 
 ## Reproducible checks
 
@@ -46,12 +61,12 @@ npm run test:runtime
 npm run build
 ```
 
-The pipeline suite currently has 11 tests covering command selection, Blender Python error propagation, binary boundaries, embedded-resource policy, finite vertex data, valid indices, interleaved accessors, budget limits, hierarchy cycles, vertical jump direction, horizontal drift, and idle blinking. All 11 passed after the volume helper was added. The Blender helper also passed Python compilation and an actual export smoke test.
+The pipeline suite currently has 13 tests covering command selection, Blender Python error propagation, binary boundaries, embedded-resource policy, finite vertex data, valid indices, interleaved accessors, budget limits, hierarchy cycles, vertical jump direction, horizontal drift, idle blinking, and reproducibility comparisons that distinguish harmless index rotation from changed shape or triangle winding. All 13 passed. The Blender helper also passed Python compilation and an actual export smoke test.
 
 Six Three.js runtime tests also passed. They load the actual GLB with `GLTFLoader`, verify physical transmission/volume parameters, then play each clip through `AnimationMixer` on a separately cloned skeleton. At five sampled times per clip they check finite world and bone matrices, actual sampled skinned-vertex motion, and restoration of the initial pose after stopping. This Node-only test replaces image decoding with a local one-pixel texture because it has no browser canvas; it does not change geometry, skin data, animation tracks, or PBR parameters. It verifies loader/mixer compatibility, not rendered appearance.
 
-## Review still required
+## Verification limits
 
-At the time this record was written, final rendered character acceptance and interactive browser verification were pending. In the local game, confirm all five clips play, one-shot actions return to locomotion, movement and camera controls work, the character stays grounded, and front/side/back views are coherent. Run the production build and record its result. Do not interpret the structural validator or headless mixer tests as proof of those interactive checks or as a measured frame-rate result.
+The first character milestone has passed rendered and browser inspection. Interactive state transitions also received a code review: a held movement key could previously leave the character moving in Idle after an interaction; one-shot actions now lock translation and resume the locomotion state indicated by the keys when the action completes. The environment and final production build are tracked separately. Do not interpret the structural validator or headless mixer tests as a measured frame-rate result.
 
 Only one character reference image is supplied. The unseen back, exact side profile, full material response, and motion are modeled interpretations, not independently verified reference matches. Cycles and the real-time glTF renderer also differ: the export carries portable PBR parameters, while Blender-only subsurface behavior and multi-bounce refraction do not transfer exactly. No perceptual similarity score, device performance benchmark, or cross-browser certification has been claimed.

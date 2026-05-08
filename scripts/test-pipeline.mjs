@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { parseOptions, blenderArguments, findBlender } from './generate.mjs';
 import { parseGLB, accessorValues, validateModel, REQUIRED_CLIPS } from './validate-assets.mjs';
+import { compareExports } from './compare-glb.mjs';
 
 function fixture() {
   const bin = Buffer.alloc(84);
@@ -129,4 +130,20 @@ test('catches bone-local-axis jump regression and unintended horizontal root mot
 
 test('rejects an idle clip with no blink even when other animation channels change', () => {
   assert.throws(() => validateModel(animatedCharacter({ blink: false }), { character: true }), /eye blink/);
+});
+
+test('reproducibility accepts rotated triangle indices while preserving oriented topology', () => {
+  const before = fixture(), after = fixture();
+  [1,2,0].forEach((v, i) => after.bin.writeUInt16LE(v, 72 + i * 2));
+  const result = compareExports(encodeGLB(before), encodeGLB(after));
+  assert.equal(result.byteIdentical, false);
+  assert.equal(result.orientedTriangleSetsExact, true);
+});
+
+test('reproducibility rejects a shape change or flipped triangle winding', () => {
+  const before = fixture(), shape = fixture(), winding = fixture();
+  shape.bin.writeFloatLE(0.001, 0);
+  [0,2,1].forEach((v, i) => winding.bin.writeUInt16LE(v, 72 + i * 2));
+  assert.throws(() => compareExports(encodeGLB(before), encodeGLB(shape)), /Vertex position changed/);
+  assert.throws(() => compareExports(encodeGLB(before), encodeGLB(winding)), /triangle topology changed/);
 });

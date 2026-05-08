@@ -7,7 +7,7 @@ from pathlib import Path
 from mathutils import Vector
 sys.path.insert(0,str(Path(__file__).parent))
 from common import *
-P=argparse.ArgumentParser(); P.add_argument('--root',default=str(Path(__file__).resolve().parents[2])); P.add_argument('--previews',action='store_true'); P.add_argument('--resolution',type=int,default=800); P.add_argument('--samples',type=int,default=48)
+P=argparse.ArgumentParser(); P.add_argument('--root',default=str(Path(__file__).resolve().parents[2])); P.add_argument('--previews',action='store_true'); P.add_argument('--resolution',type=int,default=900); P.add_argument('--samples',type=int,default=64)
 args=P.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else [])
 ROOT=Path(args.root); random.seed(24); reset()
 for folder in ['assets/source','assets/previews','public/assets']: (ROOT/folder).mkdir(parents=True,exist_ok=True)
@@ -263,5 +263,5 @@ if args.previews:
     views={'front':(0,-8,2.85),'three-quarter':(4.8,-7,3.2),'side':(8,0,2.85),'back':(0,8,2.85)}
     for name,loc in views.items():
         camera.location=loc;look_at(camera,(0,0,1.96));scene.render.filepath=str(ROOT/f'assets/previews/awushi-{name}.png');bpy.ops.render.render(write_still=True)
-report={'generator':'generate_awushi.py','blender':bpy.app.version_string,'seed':24,'height_m':round(max(v.co.z for v in skin.data.vertices),3),'skin_triangles':sum(len(p.vertices)-2 for p in skin.data.polygons),'clips':clips,'glb_bytes':(ROOT/'public/assets/awushi.glb').stat().st_size,'reference':'assets/reference/awushi.png'}
+report={'generator':'generate_awushi.py','blender':bpy.app.version_string,'seed':24,'height_m':round(max(v.co.z for v in skin.data.vertices),3),'skin_triangles':sum(len(p.vertices)-2 for p in skin.data.polygons),'clips':clips,'glb_bytes':(ROOT/'public/assets/awushi.glb').stat().st_size,'reference':'assets/reference/awushi.png','render_settings':{'resolution':args.resolution,'cycles_samples':args.samples}}
 (ROOT/'assets/source/awushi-manifest.json').write_text(json.dumps(report,indent=2)+'\n');print('AWUSHI_COMPLETE',json.dumps(report))
