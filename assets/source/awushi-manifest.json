@@ -1,0 +1,16 @@
+{
+  "generator": "generate_awushi.py",
+  "blender": "5.1.1",
+  "seed": 24,
+  "height_m": 3.921,
+  "skin_triangles": 56184,
+  "clips": {
+    "Idle": 120,
+    "Walk": 30,
+    "Run": 22,
+    "Interact": 90,
+    "Celebrate": 66
+  },
+  "glb_bytes": 2026776,
+  "reference": "assets/reference/awushi.png"
+}

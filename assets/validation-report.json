@@ -1,0 +1,197 @@
+{
+  "validator": "native structural checks + Khronos glTF Validator",
+  "assets": [
+    {
+      "file": "awushi.glb",
+      "bytes": 2026776,
+      "sha256": "3157f06faeec8bd5c11339b9eb959f09b7fade02c8a49d9f9bd3fc8312581fa1",
+      "meshes": 1,
+      "primitives": 6,
+      "vertices": 30882,
+      "triangles": 56184,
+      "materials": 6,
+      "skins": 1,
+      "nodes": 18,
+      "meshLocalBounds": {
+        "min": [
+          -1.2382259368896484,
+          -0.009999997913837433,
+          -0.6537413597106934
+        ],
+        "max": [
+          1.3799999952316284,
+          3.9213078022003174,
+          0.7407207489013672
+        ]
+      },
+      "sceneBounds": {
+        "min": [
+          -1.2382259368896484,
+          -0.009999997913837433,
+          -0.6537413597106934
+        ],
+        "max": [
+          1.3799999952316284,
+          3.9213078022003174,
+          0.7407207489013672
+        ]
+      },
+      "animations": [
+        {
+          "name": "Celebrate",
+          "duration": 2.2,
+          "channels": 48,
+          "varyingChannels": 18,
+          "rootTranslationBounds": {
+            "min": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0.6497821807861328,
+              0
+            ]
+          },
+          "blinkRange": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "Idle",
+          "duration": 4,
+          "channels": 48,
+          "varyingChannels": 5,
+          "rootTranslationBounds": {
+            "min": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          "blinkRange": [
+            0.12238094955682755,
+            1.0000001192092896
+          ]
+        },
+        {
+          "name": "Interact",
+          "duration": 3,
+          "channels": 48,
+          "varyingChannels": 5,
+          "rootTranslationBounds": {
+            "min": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          "blinkRange": [
+            0.09158730506896973,
+            1.0000001192092896
+          ]
+        },
+        {
+          "name": "Run",
+          "duration": 0.7333,
+          "channels": 48,
+          "varyingChannels": 8,
+          "rootTranslationBounds": {
+            "min": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0.11877857148647308,
+              0
+            ]
+          },
+          "blinkRange": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "Walk",
+          "duration": 1,
+          "channels": 48,
+          "varyingChannels": 8,
+          "rootTranslationBounds": {
+            "min": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0.06464392691850662,
+              0
+            ]
+          },
+          "blinkRange": [
+            1,
+            1
+          ]
+        }
+      ],
+      "extensions": [
+        "KHR_materials_clearcoat",
+        "KHR_materials_transmission",
+        "KHR_materials_volume",
+        "KHR_materials_ior"
+      ],
+      "khronos": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 5,
+        "truncated": false,
+        "messages": [
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/0/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/1/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/2/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/4/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/5/attributes/TEXCOORD_0"
+          }
+        ]
+      }
+    }
+  ]
+}
