@@ -18,6 +18,8 @@ npm run build
 npm run dev
 ```
 
+`npm run verify` runs both test suites, validates all exports, and builds the production game. `npm run assets:build` regenerates all assets and previews, then validates them. The latter includes the environment now that the character milestone has passed review.
+
 The default generator builds the first milestone: Awushi's GLB, editable `.blend`, manifest, and four rendered views. It starts from Blender factory settings and runs a fresh Blender process per generator. Explicit Python errors produce a nonzero process exit; the wrapper also fails on process crashes. A partial output left by a failed run is not proof of success.
 
 ```sh

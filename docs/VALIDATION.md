@@ -65,8 +65,32 @@ The pipeline suite currently has 13 tests covering command selection, Blender Py
 
 Six Three.js runtime tests also passed. They load the actual GLB with `GLTFLoader`, verify physical transmission/volume parameters, then play each clip through `AnimationMixer` on a separately cloned skeleton. At five sampled times per clip they check finite world and bone matrices, actual sampled skinned-vertex motion, and restoration of the initial pose after stopping. This Node-only test replaces image decoding with a local one-pixel texture because it has no browser canvas; it does not change geometry, skin data, animation tracks, or PBR parameters. It verifies loader/mixer compatibility, not rendered appearance.
 
+## Environment exports
+
+Environment generation began after the character milestone was accepted. All five static GLBs passed native binary checks and Khronos validation with zero errors and zero warnings:
+
+| Asset | Triangles | Bytes | Material primitives |
+| --- | ---: | ---: | ---: |
+| Floating island | 8,964 | 416,948 | 10 |
+| GitHub workshop | 13,060 | 497,688 | 7 |
+| CI factory | 17,312 | 788,672 | 8 |
+| Kubernetes cluster | 21,548 | 944,112 | 7 |
+| Supporting props | 18,588 | 600,332 | 8 |
+
+Each is a single static mesh. The island includes a ground surface near `y = 0` and a floating rock underside reaching `y = −4.15`. The workshop, factory, and cluster are authored around local ground zero; their measured maximum horizontal vertex radii are approximately 1.732, 1.679, and 1.570 meters, within the game's 1.75-meter station collision radius. Props already contain their island-relative placements.
+
+Five additional actual Three.js loader tests cover these files: nonempty static geometry, finite transforms/vertices/PBR values, game-scale bounds, grounded stations, station collision footprints, island dimensions, and scattered-prop containment. Browser inspection also caught inward-wound island rock faces, which hid the underside through backface culling even though structural glTF validation passed. A geometric-normal regression test rejected that original export with an area-weighted radial orientation score of −1718.907. The faces were reversed; all 11 runtime tests then passed, including the positive outward-orientation check. The final full verification command runs these checks together with the 13 pipeline tests.
+
 ## Verification limits
 
-The first character milestone has passed rendered and browser inspection. Interactive state transitions also received a code review: a held movement key could previously leave the character moving in Idle after an interaction; one-shot actions now lock translation and resume the locomotion state indicated by the keys when the action completes. The environment and final production build are tracked separately. Do not interpret the structural validator or headless mixer tests as a measured frame-rate result.
+The first character milestone has passed rendered and browser inspection. Interactive state transitions also received a code review: a held movement key could previously leave the character moving in Idle after an interaction; one-shot actions now lock translation and resume the locomotion state indicated by the keys when the action completes. World movement projects the avatar outside station collision circles and rejects a move if the island-edge clamp would reintroduce penetration. Nearby interaction range remains reachable outside those collision circles. The final integrated browser and production-build checks are recorded below. Do not interpret the structural validator or headless mixer tests as a measured frame-rate result.
 
 Only one character reference image is supplied. The unseen back, exact side profile, full material response, and motion are modeled interpretations, not independently verified reference matches. Cycles and the real-time glTF renderer also differ: the export carries portable PBR parameters, while Blender-only subsurface behavior and multi-bounce refraction do not transfer exactly. No perceptual similarity score, device performance benchmark, or cross-browser certification has been claimed.
+
+## Final integrated run
+
+On 6 November 2026, `npm run assets:build` completed from start to finish: it launched local Blender twice, regenerated the character and five environment GLBs, saved both source scenes and all five Blender preview images, and validated every binary. All six GLBs returned zero Khronos errors and zero warnings. `npm run verify` then passed all 24 tests, repeated asset validation, TypeScript compilation, and the Vite production build. Vite retains its non-fatal advisory for the approximately 1.04 MB uncompressed Three.js scene chunk (288 kB gzip); the UI loads separately. No measured cross-device frame-rate claim is made.
+
+Interactive browser verification covered all five clips, an airborne celebration pose, camera presets, orbit, pause/resume, real keyboard movement, and return from one-shot actions. The generated world was tested by walking to all three stations and pressing E, reaching 3/3 discovered with the correct notes. Holding movement against the cluster stopped at the collision boundary. At a 390 × 844 viewport, field notes stayed within the viewport and press-and-hold touch controls moved the avatar and updated proximity. Clean page loads produced no application console errors or warnings.
+
+Actual evidence images are in `assets/previews/`: the four character angles, `world-overview.png`, `game-character-studio.jpg`, `game-celebration.jpg`, `game-world.jpg`, `game-mobile.jpg`, `game-world-mobile.jpg`, and `game-field-notes-mobile.jpg`. A separate Blender overview defect was traced by ray casting to overlapping coplanar path strips; paths now begin at the plaza edge, and the final overview was inspected without the black intersection patch. The world source appends the authored character scene for scale review; the browser continues to load the validated GLB.

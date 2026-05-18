@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { Activity, ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Box, Check, ChevronRight, CircleHelp, Code2, Compass, Droplets, Expand, Eye, Footprints, Hand, Layers3, MoveUpRight, Pause, Play, RotateCcw, Sparkles, X, Zap } from 'lucide-react'
 import type { AssetInfo, Clip, Mode, View } from './Scene'
-import { WORLD_ASSETS_READY } from './worldConfig'
+import { WORLD_ASSETS_READY, WORLD_ZONES, type ZoneId } from './worldConfig'
 
 const Scene = lazy(() => import('./Scene'))
 
@@ -29,12 +29,24 @@ export default function App() {
   const [info, setInfo] = useState<AssetInfo | null>(null)
   const [help, setHelp] = useState(false)
   const [details, setDetails] = useState(false)
+  const [nearby, setNearby] = useState<ZoneId | null>(null)
+  const [selectedZone, setSelectedZone] = useState<ZoneId | null>(null)
+  const [visited, setVisited] = useState<Set<ZoneId>>(() => new Set())
   const input = useRef(new Set<string>())
   const container = useRef<HTMLDivElement>(null)
   const helpDialog = useRef<HTMLElement>(null)
   const onReady = useCallback((value: AssetInfo) => setInfo(value), [])
   const onClip = useCallback((value: Clip) => setClip(value), [])
-  const chooseClip = (value: Clip) => { setClip(value); setPlaying(true) }
+  const onNearby = useCallback((value: ZoneId | null) => setNearby(value), [])
+  const interact = useCallback(() => {
+    setPlaying(true); setClip('Interact')
+    if (mode === 'world' && nearby) {
+      setSelectedZone(nearby)
+      setVisited((previous) => new Set(previous).add(nearby))
+      setDetails(false)
+    }
+  }, [mode, nearby])
+  const chooseClip = (value: Clip) => { if (value === 'Interact') interact(); else { setClip(value); setPlaying(true) } }
 
   useEffect(() => {
     const down = (event: KeyboardEvent) => {
@@ -52,23 +64,25 @@ export default function App() {
       if (movementKeys.has(event.code)) { event.preventDefault(); input.current.add(event.code) }
       if (event.repeat) return
       if (event.code === 'Space' && !(event.target instanceof HTMLButtonElement)) { event.preventDefault(); setPlaying(true); setClip('Celebrate') }
-      if (event.code === 'KeyE') { setPlaying(true); setClip('Interact') }
+      if (event.code === 'KeyE') interact()
       if (event.code === 'KeyR') { setReset((value) => value + 1); setClip('Idle') }
-      if (event.code === 'Escape') { setHelp(false); setDetails(false) }
+      if (event.code === 'Escape') { setHelp(false); setDetails(false); setSelectedZone(null) }
     }
     const up = (event: KeyboardEvent) => input.current.delete(event.code)
     const blur = () => input.current.clear()
     window.addEventListener('keydown', down); window.addEventListener('keyup', up); window.addEventListener('blur', blur)
     return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up); window.removeEventListener('blur', blur) }
-  }, [help])
+  }, [help, interact])
 
   useEffect(() => { if (help) input.current.clear() }, [help])
 
   const resetCharacter = () => { input.current.clear(); setReset((value) => value + 1); setClip('Idle'); setPlaying(true) }
   const selectView = (value: View) => { setView(value); resetCharacter() }
-  const selectMode = (value: Mode) => { setMode(value); resetCharacter() }
+  const selectMode = (value: Mode) => { setMode(value); setSelectedZone(null); resetCharacter() }
   const fullscreen = () => { if (document.fullscreenElement) void document.exitFullscreen().catch(() => {}); else void container.current?.requestFullscreen().catch(() => {}) }
   const current = animations.find((animation) => animation.clip === clip)!
+  const station = WORLD_ZONES.find((zone) => zone.id === selectedZone)
+  const nearStation = WORLD_ZONES.find((zone) => zone.id === nearby)
 
   return <div className="app" ref={container}>
     <header className="topbar">
@@ -80,16 +94,18 @@ export default function App() {
       <div className="topbar-end"><span className="local-badge"><i />Local world</span><button className="icon-button" aria-label="Open controls and help" onClick={() => setHelp(true)}><CircleHelp size={19} /></button></div>
     </header>
 
-    <main className="workspace">
-      <div className="viewport" aria-label="Interactive 3D Awushi character"><Suspense fallback={<div className="canvas-loading"><span className="loader-orbit" /><span>Opening your little world…</span></div>}><Scene clip={clip} playing={playing} speed={speed} mode={mode} view={view} reset={reset} input={input} onClip={onClip} onReady={onReady} /></Suspense></div>
+    <main className={`workspace ${mode === 'world' && WORLD_ASSETS_READY ? 'world-workspace' : ''}`}>
+      <div className="viewport" aria-label="Interactive 3D Awushi character"><Suspense fallback={<div className="canvas-loading"><span className="loader-orbit" /><span>Opening your little world…</span></div>}><Scene clip={clip} playing={playing} speed={speed} mode={mode} view={view} reset={reset} input={input} onClip={onClip} onReady={onReady} onNearby={onNearby} /></Suspense></div>
       <div className="scene-grain" aria-hidden="true" />
 
       <section className="intro-panel">
         <div className="eyebrow"><span className="tiny-spark">✦</span>{mode === 'studio' ? 'MEET YOUR COMPANION' : 'A LITTLE CURIOSITY GOES A LONG WAY'}</div>
         <h1>{mode === 'studio' ? <>Small splash.<br /><em>Big personality.</em></> : <>Hello, world.<br /><em>Let’s explore.</em></>}</h1>
-        <p>{mode === 'studio' ? 'A curious little drop of possibility. Made of jelly, a little sunshine, and a lot of wonder.' : 'Every great adventure starts with a small step. Take Awushi for a wander and make a little splash.'}</p>
+        <p>{mode === 'studio' ? 'A curious little drop of possibility. Made of jelly, a little sunshine, and a lot of wonder.' : (WORLD_ASSETS_READY ? 'Follow your curiosity. Walk up to a workshop and press E to discover how this little world works.' : 'Every great adventure starts with a small step. Take Awushi for a wander and make a little splash.')}</p>
         <div className="character-tag"><span className="status-dot" />AWUSHI<span className="tag-divider" />{info ? 'Ready to play' : 'Getting ready'}</div>
-        <div className="personality-card"><div className="card-symbol"><Sparkles size={19} /></div><div><span>A small dose of happy</span><p>Try a celebration. You’ve earned it.</p></div><button onClick={() => chooseClip('Celebrate')} title="Celebrate" aria-label="Play celebration"><MoveUpRight size={17} /></button></div>
+        {mode === 'world' && WORLD_ASSETS_READY ? <div className="world-guide"><div className="world-guide-heading"><span>PLACES TO DISCOVER</span><span>{visited.size} / 3</span></div>{WORLD_ZONES.map((zone, index) => <button key={zone.id} className={nearby === zone.id ? 'nearby' : ''} onClick={() => { setSelectedZone(zone.id); setDetails(false) }}><span className="zone-index">{visited.has(zone.id) ? <Check size={12} /> : `0${index + 1}`}</span><span>{zone.name}</span><ChevronRight size={12} /></button>)}</div> : <>
+        <div className="personality-card"><div className="card-symbol"><Sparkles size={19} /></div><div><span>A small dose of happy</span><p>Try a celebration. You’ve earned it.</p></div><button onClick={() => chooseClip('Celebrate')} title="Celebrate" aria-label="Play celebration"><MoveUpRight size={17} /></button></div>        </>}
+
       </section>
 
       <div className="view-tools">
@@ -101,7 +117,13 @@ export default function App() {
       <div className="orbit-hint"><span className="mouse-icon" /><span>Drag to orbit<span className="hint-dot">·</span>Scroll to get closer</span></div>
       <div className="scene-label"><span className="scene-label-index">01</span><span>AWUSHI<br /><small>{mode === 'studio' ? 'CHARACTER STUDIO' : 'EXPLORATION MODE'}</small></span></div>
       <div className="live-caption"><span className="status-dot" /><span>{playing ? current.hint : 'A moment of stillness'}</span></div>
-      <button className={`asset-button ${details ? 'active' : ''}`} onClick={() => setDetails(!details)} aria-expanded={details}><Layers3 size={16} /><span>Under the surface</span><ChevronRight size={15} /></button>
+      <button className={`asset-button ${details ? 'active' : ''}`} onClick={() => { setDetails(!details); setSelectedZone(null) }} aria-expanded={details}><Layers3 size={16} /><span>Under the surface</span><ChevronRight size={15} /></button>
+
+      {mode === 'world' && WORLD_ASSETS_READY && <>
+        <button className={`proximity-prompt ${nearStation ? 'available' : ''}`} onClick={interact}><kbd>E</kbd><span>{nearStation ? `Discover the ${nearStation.name}` : 'Walk up to a workshop to explore'}</span>{nearStation && <ArrowRight size={14} />}</button>
+        <div className="touch-controls" aria-label="Movement controls">{[{ key: 'KeyW', label: 'Move forward', Icon: ArrowUp }, { key: 'KeyA', label: 'Move left', Icon: ArrowLeft }, { key: 'KeyS', label: 'Move backward', Icon: ArrowDown }, { key: 'KeyD', label: 'Move right', Icon: ArrowRight }].map(({ key, label, Icon }) => <button key={key} aria-label={label} onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); input.current.add(key); setPlaying(true) }} onPointerUp={() => input.current.delete(key)} onPointerCancel={() => input.current.delete(key)} onLostPointerCapture={() => input.current.delete(key)}><Icon size={17} /></button>)}</div>
+      </>}
+      {station && mode === 'world' && <aside className="zone-panel"><div className="panel-heading"><span>FIELD NOTES / {station.id.toUpperCase()}</span><button className="icon-button" onClick={() => setSelectedZone(null)} aria-label="Close field notes"><X size={16} /></button></div><h2>{station.name}</h2><p className="zone-subtitle">{station.subtitle}</p><p>{station.description}</p><ol>{station.steps.map((step) => <li key={step.label}><strong>{step.label}</strong><span>{step.detail}</span></li>)}</ol><div className="local-note">{visited.has(station.id) ? <><Check size={14} />Discovered with Awushi</> : <><Footprints size={14} />Walk closer, then press E to discover.</>}</div></aside>}
 
       {details && <aside className="details-panel"><div className="panel-heading"><span>CRAFTED LOCALLY</span><button className="icon-button" onClick={() => setDetails(false)} aria-label="Close asset details"><X size={16} /></button></div><h2>A little digital life.</h2><p>Organic geometry, amber eyes, and a translucent cyan shell. Every shape begins with a reproducible Blender script.</p><dl><div><dt>Source</dt><dd>Procedural Blender</dd></div><div><dt>Format</dt><dd>Animated GLB</dd></div><div><dt>Animations</dt><dd>{info?.clips.length ?? '…'} reusable clips</dd></div><div><dt>Triangles</dt><dd>{info ? info.triangles.toLocaleString() : '…'}</dd></div><div><dt>Runtime</dt><dd>React Three Fiber</dd></div></dl><div className="local-note"><Check size={14} />No cloud services. All yours.</div></aside>}
 

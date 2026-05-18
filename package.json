@@ -11,7 +11,9 @@
     "assets:generate": "node scripts/generate.mjs",
     "assets:validate": "node scripts/validate-assets.mjs",
     "test:pipeline": "node --test scripts/test-pipeline.mjs",
-    "test:runtime": "node --test scripts/test-runtime.mjs"
+    "test:runtime": "node --test scripts/test-runtime.mjs",
+    "assets:build": "node scripts/generate.mjs --all && node scripts/validate-assets.mjs",
+    "verify": "npm run test:pipeline && npm run test:runtime && npm run assets:validate && npm run build"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

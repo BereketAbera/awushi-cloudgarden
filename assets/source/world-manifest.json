@@ -1,0 +1,51 @@
+{
+  "generator": "generate_world.py",
+  "blender": "5.1.1",
+  "seed": 74,
+  "island_radius": 8.6,
+  "playable_y": 0,
+  "assets": {
+    "island": {
+      "triangles": 8964,
+      "bytes": 416948,
+      "materials": 10
+    },
+    "github-workshop": {
+      "triangles": 13060,
+      "bytes": 497688,
+      "materials": 7
+    },
+    "ci-factory": {
+      "triangles": 17312,
+      "bytes": 788672,
+      "materials": 8
+    },
+    "kubernetes-cluster": {
+      "triangles": 21548,
+      "bytes": 944112,
+      "materials": 7
+    },
+    "props": {
+      "triangles": 18588,
+      "bytes": 600332,
+      "materials": 8
+    }
+  },
+  "station_positions_gltf": {
+    "github-workshop": [
+      -4.5,
+      0,
+      -3
+    ],
+    "ci-factory": [
+      4.5,
+      0,
+      -3
+    ],
+    "kubernetes-cluster": [
+      0,
+      0,
+      -6
+    ]
+  }
+}

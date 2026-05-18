@@ -5,7 +5,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { AnimationMixer, DataTexture, LoopOnce, RGBAFormat, Vector3 } from 'three';
+import { AnimationMixer, Box3, DataTexture, LoopOnce, RGBAFormat, Vector3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone } from 'three/addons/utils/SkeletonUtils.js';
 import { REQUIRED_CLIPS } from './validate-assets.mjs';
@@ -86,4 +86,59 @@ for (const name of REQUIRED_CLIPS) test(`${name}: AnimationMixer changes real sk
   const restored = snapshot(scene);
   assert.ok(restored.every((v, i) => Math.abs(v - before[i]) < 1e-5), `${name} did not restore the initial pose after stopping`);
   mixer.uncacheRoot(scene);
+});
+
+const worldFiles = ['island', 'github-workshop', 'ci-factory', 'kubernetes-cluster', 'props'];
+for (const name of worldFiles) test(`${name}: actual static world GLB loads with finite transforms and correct world bounds`, async () => {
+  const bytes = readFileSync(new URL(`../public/assets/${name}.glb`, import.meta.url));
+  const model = await loader.parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), '');
+  assert.equal(model.animations.length, 0, 'World props must be static');
+  model.scene.updateMatrixWorld(true);
+  let meshes = 0, maxRadius = 0, bedrockOrientation = 0, bedrockTriangles = 0;
+  model.scene.traverse(node => {
+    assert.ok(node.matrixWorld.elements.every(Number.isFinite), `Non-finite matrix on ${node.name}`);
+    if (!node.isMesh) return;
+    meshes++;
+    assert.ok(!node.isSkinnedMesh, 'Static environment unexpectedly contains a skin');
+    const positions = node.geometry.attributes.position;
+    assert.ok(positions?.count > 0, 'Empty environment mesh');
+    for (let i = 0; i < positions.count; i++) {
+      const vertex = new Vector3().fromBufferAttribute(positions, i).applyMatrix4(node.matrixWorld);
+      assert.ok(vertex.toArray().every(Number.isFinite), 'Non-finite transformed environment vertex');
+      maxRadius = Math.max(maxRadius, Math.hypot(vertex.x, vertex.z));
+    }
+    const materials = Array.isArray(node.material) ? node.material : [node.material];
+    for (const material of materials) {
+      assert.ok(material.color.toArray().every(Number.isFinite), 'Invalid material color');
+      assert.ok(Number.isFinite(material.roughness) && Number.isFinite(material.metalness), 'Invalid PBR material');
+    }
+    if (name === 'island' && materials.some(material => /deep bedrock|blue facets|shadow facets/.test(material.name))) {
+      const indices = node.geometry.index;
+      const count = indices ? indices.count : positions.count;
+      for (let i = 0; i < count; i += 3) {
+        const vertex = offset => new Vector3().fromBufferAttribute(positions, indices ? indices.getX(i + offset) : i + offset).applyMatrix4(node.matrixWorld);
+        const a = vertex(0), b = vertex(1), c = vertex(2);
+        const normal = new Vector3().subVectors(b, a).cross(new Vector3().subVectors(c, a));
+        const center = a.clone().add(b).add(c).multiplyScalar(1 / 3);
+        // Area-weighted radial orientation is insensitive to vertex normals.
+        // Inward triangle winding makes the island disappear under backface culling.
+        bedrockOrientation += normal.x * center.x + normal.z * center.z;
+        bedrockTriangles++;
+      }
+    }
+  });
+  assert.ok(meshes > 0);
+  const bounds = new Box3().setFromObject(model.scene, true);
+  const size = bounds.getSize(new Vector3());
+  assert.ok(!bounds.isEmpty() && size.toArray().every(v => Number.isFinite(v) && v > 0), 'Invalid world-space bounds');
+  if (name === 'island') {
+    assert.ok(size.x > 16 && size.x < 19 && size.z > 16 && size.z < 19, 'Island diameter does not contain the playable radius');
+    assert.ok(bounds.min.y < -3.5 && bounds.min.y > -5 && bounds.max.y >= 0 && bounds.max.y < 0.2, 'Island floor or floating depth is misaligned');
+    assert.ok(bedrockTriangles > 0 && bedrockOrientation > 0, `Island bedrock winding points inward; backface culling would hide it (orientation ${bedrockOrientation})`);
+  } else if (name === 'props') {
+    assert.ok(maxRadius < 8.2 && bounds.max.y < 2 && bounds.min.y > -0.5, 'Scattered props escape their island coordinates');
+  } else {
+    assert.ok(Math.abs(bounds.min.y) < 0.001 && size.y > 1 && size.y < 3, 'Station is not grounded at y=0 with game-scale height');
+    assert.ok(maxRadius <= 1.7501, `Station exceeds the 1.75m collision footprint: ${maxRadius}`);
+  }
 });
