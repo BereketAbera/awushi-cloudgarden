@@ -17,6 +17,10 @@ export function compareExports(beforeBytes, afterBytes) {
     indexAccessors.add(primitive.indices);
     normalAccessors.add(primitive.attributes.NORMAL);
     positionAccessors.add(primitive.attributes.POSITION);
+    for (const target of primitive.targets || []) {
+      if (target.NORMAL !== undefined) normalAccessors.add(target.NORMAL);
+      if (target.POSITION !== undefined) positionAccessors.add(target.POSITION);
+    }
   }
   const triangles = values => {
     const flat = values.flat(), result = [];

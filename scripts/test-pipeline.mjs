@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { parseOptions, blenderArguments, findBlender } from './generate.mjs';
-import { parseGLB, accessorValues, validateModel, REQUIRED_CLIPS } from './validate-assets.mjs';
+import { parseGLB, accessorValues, validateModel, REQUIRED_CLIPS, REQUIRED_EXPRESSIONS } from './validate-assets.mjs';
 import { compareExports } from './compare-glb.mjs';
 
 function fixture() {
@@ -27,6 +28,21 @@ function encodeGLB({ json, bin }) {
   const binHeader = Buffer.alloc(8);
   binHeader.writeUInt32LE(bin.length, 0); binHeader.writeUInt32LE(0x004e4942, 4);
   return Buffer.concat([header, text, binHeader, bin]);
+}
+
+function sparseFixture({ base = false, normalized = false } = {}) {
+  const model = fixture();
+  const indices = Buffer.from([0, 2, 0, 0]);
+  const deltas = normalized ? Buffer.from([0,128,255,255,128,0,0,0]) : Buffer.alloc(24);
+  if (!normalized) [1,2,3,4,5,6].forEach((value, i) => deltas.writeFloatLE(value, i * 4));
+  const indicesView = model.json.bufferViews.push({ buffer: 0, byteOffset: model.bin.length, byteLength: 2 }) - 1;
+  const valuesView = model.json.bufferViews.push({ buffer: 0, byteOffset: model.bin.length + indices.length, byteLength: normalized ? 6 : 24 }) - 1;
+  model.bin = Buffer.concat([model.bin, indices, deltas]);
+  model.json.buffers[0].byteLength = model.bin.length;
+  const index = model.json.accessors.push({ ...(base ? { bufferView: 0 } : {}),
+    componentType: normalized ? 5121 : 5126, normalized, count: 3, type: 'VEC3',
+    sparse: { count: 2, indices: { bufferView: indicesView, componentType: 5121 }, values: { bufferView: valuesView } } }) - 1;
+  return { model, index, indicesView, valuesView };
 }
 
 function animatedCharacter({ forwardJump = false, rootDrift = false, blink = true } = {}) {
@@ -105,6 +121,44 @@ test('respects interleaved accessor stride and rejects out-of-bounds reads', () 
   assert.throws(() => accessorValues(model, 0), /exceeds its buffer/);
 });
 
+test('expands sparse deltas over zero-filled and existing base accessors', () => {
+  const zero = sparseFixture();
+  assert.deepEqual(accessorValues(parseGLB(encodeGLB(zero.model)), zero.index), [[1,2,3], [0,0,0], [4,5,6]]);
+  const base = sparseFixture({ base: true });
+  assert.deepEqual(accessorValues(base.model, base.index), [[1,2,3], [1,0,0], [4,5,6]]);
+  const normalized = sparseFixture({ normalized: true });
+  assert.deepEqual(accessorValues(normalized.model, normalized.index), [[0,128/255,1], [0,0,0], [1,128/255,0]]);
+});
+
+test('rejects malformed sparse indices, bounds, counts and excessive expansion', () => {
+  for (const value of [0, 3]) {
+    const { model, index, indicesView } = sparseFixture();
+    model.bin[model.json.bufferViews[indicesView].byteOffset + 1] = value;
+    assert.throws(() => accessorValues(model, index), /must increase and stay within count/);
+  }
+  const { model, index, valuesView } = sparseFixture();
+  model.json.bufferViews[valuesView].byteLength = 12;
+  assert.throws(() => accessorValues(model, index), /Sparse values.*exceeds/);
+  model.json.bufferViews[valuesView].byteLength = 24;
+  model.json.accessors[index].sparse.count = 4;
+  assert.throws(() => accessorValues(model, index), /Invalid sparse count/);
+  model.json.accessors[index].count = 2_000_000;
+  assert.throws(() => accessorValues(model, index), /safe expansion budget/);
+});
+
+test('rejects non-finite sparse morph values and incompatible morph target counts', () => {
+  const { model, index, valuesView } = sparseFixture();
+  model.json.meshes[0].primitives[0].targets = [{ POSITION: index }];
+  model.bin.writeFloatLE(NaN, model.json.bufferViews[valuesView].byteOffset);
+  assert.throws(() => validateModel(model), /Non-finite/);
+  model.bin.writeFloatLE(1, model.json.bufferViews[valuesView].byteOffset);
+  model.json.meshes[0].extras = { targetNames: ['Happy', 'Sleepy'] };
+  assert.throws(() => validateModel(model), /Morph target names do not match/);
+  model.json.meshes[0].extras.targetNames = ['Happy'];
+  model.json.accessors[index].count = 4;
+  assert.throws(() => validateModel(model), /Morph target count does not match POSITION/);
+});
+
 test('rejects over-budget exports and missing character animations', () => {
   assert.throws(() => validateModel(fixture(), { byteLength: 9 * 1024 * 1024 }), /file-size budget/);
   assert.throws(() => validateModel(fixture(), { triangleBudget: 0 }), /Triangle budget/);
@@ -132,6 +186,46 @@ test('rejects an idle clip with no blink even when other animation channels chan
   assert.throws(() => validateModel(animatedCharacter({ blink: false }), { character: true }), /eye blink/);
 });
 
+test('validates real Awushi facial targets without requiring them in generic character fixtures', () => {
+  assert.equal(validateModel(animatedCharacter(), { character: true }).morphTargets.length, 0);
+  assert.throws(() => validateModel(animatedCharacter(), { character: true, expressions: true }), /facial morph targets are missing/);
+  const bytes = readFileSync(new URL('../public/assets/awushi.glb', import.meta.url));
+  const result = validateModel(parseGLB(bytes), { character: true, expressions: true, byteLength: bytes.length });
+  assert.deepEqual(result.morphTargets, REQUIRED_EXPRESSIONS);
+  assert.equal(result.animations.length, 5);
+});
+
+test('rejects expression names, default weights, and skeletal clips overriding the facial layer', () => {
+  const bytes = readFileSync(new URL('../public/assets/awushi.glb', import.meta.url));
+  const named = parseGLB(bytes);
+  named.json.meshes.find(mesh => mesh.extras?.targetNames).extras.targetNames[0] = 'Unknown';
+  assert.throws(() => validateModel(named, { expressions: true }), /expression target names are incomplete/);
+  const weighted = parseGLB(bytes);
+  weighted.json.meshes.find(mesh => mesh.extras?.targetNames).weights[0] = 1;
+  assert.throws(() => validateModel(weighted, { expressions: true }), /Neutral expression weights/);
+  const animated = parseGLB(bytes);
+  const faceNode = animated.json.nodes.findIndex(node => node.mesh !== undefined && animated.json.meshes[node.mesh].extras?.targetNames);
+  const nodeWeighted = parseGLB(bytes);
+  nodeWeighted.json.nodes[faceNode].weights = REQUIRED_EXPRESSIONS.map((_, i) => i === 0 ? 1 : 0);
+  assert.throws(() => validateModel(nodeWeighted, { expressions: true }), /Neutral expression weights/);
+  animated.json.animations[0].channels.push({ sampler: 0, target: { node: faceNode, path: 'weights' } });
+  assert.throws(() => validateModel(animated, { expressions: true }), /overrides independent facial expression/);
+});
+
+test('rejects an empty expression and a facial mesh disconnected from its skin', () => {
+  const bytes = readFileSync(new URL('../public/assets/awushi.glb', import.meta.url));
+  const empty = parseGLB(bytes);
+  const face = empty.json.meshes.find(mesh => mesh.extras?.targetNames);
+  for (const primitive of face.primitives) {
+    primitive.targets[0].POSITION = empty.json.accessors.push({ componentType: 5126,
+      type: 'VEC3', count: empty.json.accessors[primitive.attributes.POSITION].count }) - 1;
+  }
+  assert.throws(() => validateModel(empty, { expressions: true }), /Expression Happy has no changing POSITION/);
+  const unskinned = parseGLB(bytes);
+  delete unskinned.json.nodes.find(node => node.mesh !== undefined && unskinned.json.meshes[node.mesh].extras?.targetNames).skin;
+  assert.throws(() => validateModel(unskinned, { expressions: true }), /expressive face is not skinned/);
+});
+
 test('reproducibility accepts rotated triangle indices while preserving oriented topology', () => {
   const before = fixture(), after = fixture();
   [1,2,0].forEach((v, i) => after.bin.writeUInt16LE(v, 72 + i * 2));
@@ -146,4 +240,16 @@ test('reproducibility rejects a shape change or flipped triangle winding', () =>
   [0,2,1].forEach((v, i) => winding.bin.writeUInt16LE(v, 72 + i * 2));
   assert.throws(() => compareExports(encodeGLB(before), encodeGLB(shape)), /Vertex position changed/);
   assert.throws(() => compareExports(encodeGLB(before), encodeGLB(winding)), /triangle topology changed/);
+});
+
+test('reproducibility applies normal tolerance to morph normals while preserving exact morph positions', () => {
+  const before = sparseFixture(), after = sparseFixture();
+  for (const item of [before, after]) item.model.json.meshes[0].primitives[0].targets = [{ POSITION: 0, NORMAL: item.index }];
+  after.model.bin.writeFloatLE(1.00008, after.model.json.bufferViews[after.valuesView].byteOffset);
+  assert.ok(compareExports(encodeGLB(before.model), encodeGLB(after.model)).maxNormalDelta < .0002);
+  after.model.bin.writeFloatLE(1.01, after.model.json.bufferViews[after.valuesView].byteOffset);
+  assert.throws(() => compareExports(encodeGLB(before.model), encodeGLB(after.model)), /Normal changed beyond/);
+  after.model.bin.writeFloatLE(1, after.model.json.bufferViews[after.valuesView].byteOffset);
+  after.model.bin.writeFloatLE(.001, 0);
+  assert.throws(() => compareExports(encodeGLB(before.model), encodeGLB(after.model)), /Vertex position changed/);
 });

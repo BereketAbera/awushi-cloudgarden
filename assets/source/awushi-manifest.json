@@ -3,7 +3,31 @@
   "blender": "5.1.1",
   "seed": 24,
   "height_m": 3.921,
-  "skin_triangles": 56184,
+  "skin_triangles": 52332,
+  "expressions": [
+    "Neutral",
+    "Happy",
+    "Curious",
+    "Thinking",
+    "Excited",
+    "Worried",
+    "Surprised",
+    "Determined",
+    "Celebrating",
+    "Sleepy"
+  ],
+  "morph_targets": [
+    "Happy",
+    "Curious",
+    "Thinking",
+    "Excited",
+    "Worried",
+    "Surprised",
+    "Determined",
+    "Celebrating",
+    "Sleepy"
+  ],
+  "face_vertices": 3670,
   "clips": {
     "Idle": 120,
     "Walk": 30,
@@ -11,7 +35,7 @@
     "Interact": 90,
     "Celebrate": 66
   },
-  "glb_bytes": 2026776,
+  "glb_bytes": 2704328,
   "reference": "assets/reference/awushi.png",
   "render_settings": {
     "resolution": 900,

@@ -7,6 +7,7 @@ from pathlib import Path
 from mathutils import Vector
 sys.path.insert(0,str(Path(__file__).parent))
 from common import *
+from facial_helpers import create_face, add_expression_keys, EXPRESSIONS
 P=argparse.ArgumentParser(); P.add_argument('--root',default=str(Path(__file__).resolve().parents[2])); P.add_argument('--previews',action='store_true'); P.add_argument('--resolution',type=int,default=900); P.add_argument('--samples',type=int,default=64)
 args=P.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else [])
 ROOT=Path(args.root); random.seed(24); reset()
@@ -90,26 +91,9 @@ for i,(loc,scale,bone) in enumerate([
     ((0,.01,.88),(.43,.285,.39),'body'),
 ]):
     o=uv(f'DenseGelInterior_{i}',loc,scale,coremat,32,20);objects.append(o);attachments.append((o,bone))
-# Slightly pear-shaped domed eye meshes; front UV projection keeps amber gradient upright.
-def eye_mesh(name,x,z,w,h,depth,mat,y):
-    o=uv(name,(x,y,z),(w,depth,h),mat,segments=40,rings=24)
-    for v in o.data.vertices:
-        t=v.co.z/h; v.co.x*=1-.14*t
-    for poly in o.data.polygons:
-        for li in poly.loop_indices:
-            co=o.data.vertices[o.data.loops[li].vertex_index].co
-            o.data.uv_layers.active.data[li].uv=(co.x/(2*w)+.5,co.z/(2*h)+.5)
-    return o
-for s,label in [(-1,'L'),(1,'R')]:
-    # Head surface retreats toward the temples. Eyes are convex and slightly turned.
-    rim=eye_mesh('EyeOutline_'+label,s*.49,2.10,.29,.355,.072,black,-.592)
-    iris=eye_mesh('AmberEye_'+label,s*.49,2.10,.249,.310,.060,amber,-.647)
-    glint=uv('EyeGlint_'+label,(s*.49-.080,-.703,2.253),(.052,.018,.069),white)
-    for o in [rim,iris,glint]: attachments.append((o,'eye_'+label));objects.append(o)
-smile=curve('FriendlySmile',[(-.145,-.690,1.85),(-.09,-.710,1.795),(0,-.715,1.775),(.09,-.710,1.795),(.145,-.690,1.85)],.026,black)
-objects.append(smile); attachments.append((smile,'head'))
-for x in [-.145,.145]:
-    o=uv('SmileRoundEnd',(x,-.690,1.85),(.026,.026,.026),black,20,12);objects.append(o);attachments.append((o,'head'))
+# The small expression mesh stays separate from the body to keep morphs compact.
+face_objects,face_attachments=create_face(black,amber,white)
+objects.extend(face_objects);attachments.extend(face_attachments)
 # Embedded bubbles distributed on both faces and sides, never pasted to only one view.
 for i in range(18):
     az=random.uniform(0,math.tau); elev=random.uniform(-.35,1.05)
@@ -226,12 +210,20 @@ rig['asset']='Awushi';rig['forward']='+Z in glTF';rig['generator']='scripts/blen
 # scene roots: glTF ignores transforms on non-root skinned mesh nodes.
 bpy.ops.object.select_all(action='DESELECT')
 for o in objects:
-    if o.type=='MESH':o.select_set(True)
+    if o.type=='MESH' and o not in face_objects:o.select_set(True)
 bpy.context.view_layer.objects.active=skin;bpy.ops.object.join()
 skin.parent=None
 if skin.data.uv_layers:
     skin.data.uv_layers.active_index=0;skin.data.uv_layers[0].active_render=True
-objects=[skin,rig]
+bpy.ops.object.select_all(action='DESELECT')
+for o in face_objects:o.select_set(True)
+bpy.context.view_layer.objects.active=face_objects[0];bpy.ops.object.join()
+face=bpy.context.object;face.name='Awushi_ExpressiveFace';face.parent=None
+bpy.ops.object.transform_apply(location=True,rotation=True,scale=True)
+if face.data.uv_layers:
+    face.data.uv_layers.active_index=0;face.data.uv_layers[0].active_render=True
+add_expression_keys(face)
+objects=[skin,face,rig]
 export_glb(ROOT/'public/assets/awushi.glb',objects,True)
 # Preserve studio in source blend, excluded from the exported asset selection.
 studio=material('Studio • midnight',(.009,.017,.029),.36)
@@ -263,5 +255,14 @@ if args.previews:
     views={'front':(0,-8,2.85),'three-quarter':(4.8,-7,3.2),'side':(8,0,2.85),'back':(0,8,2.85)}
     for name,loc in views.items():
         camera.location=loc;look_at(camera,(0,0,1.96));scene.render.filepath=str(ROOT/f'assets/previews/awushi-{name}.png');bpy.ops.render.render(write_still=True)
-report={'generator':'generate_awushi.py','blender':bpy.app.version_string,'seed':24,'height_m':round(max(v.co.z for v in skin.data.vertices),3),'skin_triangles':sum(len(p.vertices)-2 for p in skin.data.polygons),'clips':clips,'glb_bytes':(ROOT/'public/assets/awushi.glb').stat().st_size,'reference':'assets/reference/awushi.png','render_settings':{'resolution':args.resolution,'cycles_samples':args.samples}}
+    # Close facial review uses real shape keys and the same material/light rig.
+    scene.render.resolution_x=640;scene.render.resolution_y=640;scene.cycles.samples=min(args.samples,32)
+    camera.location=(0,-8,2.75);look_at(camera,(0,0,2.22));camera.data.ortho_scale=2.5
+    for expression in EXPRESSIONS:
+        for key in face.data.shape_keys.key_blocks:
+            if key.name!='Basis':key.value=1 if key.name==expression else 0
+        scene.render.filepath=str(ROOT/f'assets/previews/awushi-expression-{expression.lower()}.png');bpy.ops.render.render(write_still=True)
+    for key in face.data.shape_keys.key_blocks:key.value=0
+
+report={'generator':'generate_awushi.py','blender':bpy.app.version_string,'seed':24,'height_m':round(max(v.co.z for v in skin.data.vertices),3),'skin_triangles':sum(len(p.vertices)-2 for obj in [skin,face] for p in obj.data.polygons),'expressions':list(EXPRESSIONS),'morph_targets':list(EXPRESSIONS[1:]),'face_vertices':len(face.data.vertices),'clips':clips,'glb_bytes':(ROOT/'public/assets/awushi.glb').stat().st_size,'reference':'assets/reference/awushi.png','render_settings':{'resolution':args.resolution,'cycles_samples':args.samples}}
 (ROOT/'assets/source/awushi-manifest.json').write_text(json.dumps(report,indent=2)+'\n');print('AWUSHI_COMPLETE',json.dumps(report))
