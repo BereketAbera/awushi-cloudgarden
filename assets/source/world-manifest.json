@@ -1,10 +1,139 @@
 {
-  "generator": "generate_world.py",
+  "generator": "scripts/blender/generate_world.py",
   "blender": "5.1.1",
+  "version": 2,
   "seed": 74,
-  "island_radius": 8.6,
-  "playable_y": 0,
+  "layout": "src/data/world-layout.json",
+  "layout_sha256": "678bc4b037b1be0db6086beb30188efd611b7d1a713adcefe6038a58211057b8",
   "assets": {
+    "world-hub": {
+      "triangles": 42648,
+      "vertices": 23958,
+      "materials": 19,
+      "bytes": 1296328,
+      "bounds_blender": [
+        [
+          -19.3505,
+          -19.2943,
+          -6.6
+        ],
+        [
+          19.3505,
+          19.2943,
+          1.5956
+        ]
+      ]
+    },
+    "district-development": {
+      "triangles": 44202,
+      "vertices": 24514,
+      "materials": 21,
+      "bytes": 1326632,
+      "bounds_blender": [
+        [
+          -6.642,
+          -6.3056,
+          -6.6
+        ],
+        [
+          6.5845,
+          6.5406,
+          3.18
+        ]
+      ]
+    },
+    "district-infrastructure": {
+      "triangles": 21342,
+      "vertices": 13004,
+      "materials": 14,
+      "bytes": 684400,
+      "bounds_blender": [
+        [
+          -6.5799,
+          -6.3058,
+          -6.6
+        ],
+        [
+          6.5744,
+          6.5406,
+          3.18
+        ]
+      ]
+    },
+    "district-orchestration": {
+      "triangles": 43634,
+      "vertices": 23828,
+      "materials": 20,
+      "bytes": 1222304,
+      "bounds_blender": [
+        [
+          -6.6493,
+          -6.2787,
+          -6.6
+        ],
+        [
+          6.6284,
+          6.5406,
+          3.18
+        ]
+      ]
+    },
+    "district-security": {
+      "triangles": 20754,
+      "vertices": 12384,
+      "materials": 14,
+      "bytes": 612420,
+      "bounds_blender": [
+        [
+          -6.6371,
+          -6.5406,
+          -6.6
+        ],
+        [
+          6.6303,
+          6.2787,
+          3.18
+        ]
+      ]
+    },
+    "district-observability": {
+      "triangles": 20982,
+      "vertices": 12348,
+      "materials": 16,
+      "bytes": 555760,
+      "bounds_blender": [
+        [
+          -6.5732,
+          -6.5406,
+          -6.6
+        ],
+        [
+          6.5554,
+          6.2787,
+          3.18
+        ]
+      ]
+    },
+    "district-data": {
+      "triangles": 23118,
+      "vertices": 13622,
+      "materials": 16,
+      "bytes": 594080,
+      "bounds_blender": [
+        [
+          -6.6672,
+          -6.5406,
+          -6.6
+        ],
+        [
+          6.5619,
+          6.2787,
+          3.18
+        ]
+      ]
+    }
+  },
+  "legacy_assets": {
     "island": {
       "triangles": 8964,
       "bytes": 416948,
@@ -31,21 +160,226 @@
       "materials": 8
     }
   },
-  "station_positions_gltf": {
-    "github-workshop": [
-      -4.5,
-      0,
-      -3
-    ],
-    "ci-factory": [
-      4.5,
-      0,
-      -3
-    ],
-    "kubernetes-cluster": [
-      0,
-      0,
-      -6
-    ]
-  }
+  "total_world_triangles": 216680,
+  "total_world_bytes": 6291924,
+  "station_bounds": {
+    "github": {
+      "model": "github-workshop",
+      "radius": 1.5267,
+      "collision_radius": 1.55,
+      "scale": 0.8816,
+      "position": [
+        -20.7065,
+        0.25,
+        -8.8372
+      ],
+      "rotation_y": 1.04272
+    },
+    "ci": {
+      "model": "ci-factory",
+      "radius": 1.5267,
+      "collision_radius": 1.55,
+      "scale": 0.9091,
+      "position": [
+        -17.8848,
+        0.25,
+        -13.6744
+      ],
+      "rotation_y": 1.04272
+    },
+    "delivery": {
+      "model": "delivery",
+      "radius": 0.67,
+      "collision_radius": 0.82,
+      "scale": 1,
+      "position": [
+        -21.7574,
+        0.25,
+        -12.6918
+      ],
+      "rotation_y": 1.04272
+    },
+    "registry": {
+      "model": "registry",
+      "radius": 1.4518,
+      "collision_radius": 1.55,
+      "scale": 1,
+      "position": [
+        -2.8,
+        0.55,
+        -22.5
+      ],
+      "rotation_y": -0.0
+    },
+    "infrastructure": {
+      "model": "infrastructure",
+      "radius": 1.4465,
+      "collision_radius": 1.55,
+      "scale": 1,
+      "position": [
+        2.8,
+        0.55,
+        -22.5
+      ],
+      "rotation_y": -0.0
+    },
+    "containers": {
+      "model": "containers",
+      "radius": 0.7099,
+      "collision_radius": 0.82,
+      "scale": 1,
+      "position": [
+        0.0,
+        0.55,
+        -25.35
+      ],
+      "rotation_y": -0.0
+    },
+    "kubernetes": {
+      "model": "kubernetes-cluster",
+      "radius": 1.5267,
+      "collision_radius": 1.55,
+      "scale": 0.9725,
+      "position": [
+        17.8848,
+        0.85,
+        -13.6744
+      ],
+      "rotation_y": -1.04272
+    },
+    "gitops": {
+      "model": "gitops",
+      "radius": 1.35,
+      "collision_radius": 1.55,
+      "scale": 1,
+      "position": [
+        20.7065,
+        0.85,
+        -8.8372
+      ],
+      "rotation_y": -1.04272
+    },
+    "network": {
+      "model": "network",
+      "radius": 0.7594,
+      "collision_radius": 0.82,
+      "scale": 1,
+      "position": [
+        21.7574,
+        0.85,
+        -12.6918
+      ],
+      "rotation_y": -1.04272
+    },
+    "security": {
+      "model": "security",
+      "radius": 1.317,
+      "collision_radius": 1.55,
+      "scale": 1,
+      "position": [
+        20.7065,
+        0.6,
+        8.8372
+      ],
+      "rotation_y": -2.09887
+    },
+    "secrets": {
+      "model": "secrets",
+      "radius": 1.3893,
+      "collision_radius": 1.55,
+      "scale": 1,
+      "position": [
+        17.8848,
+        0.6,
+        13.6744
+      ],
+      "rotation_y": -2.09887
+    },
+    "supply-chain": {
+      "model": "supply-chain",
+      "radius": 0.7591,
+      "collision_radius": 0.82,
+      "scale": 1,
+      "position": [
+        21.7574,
+        0.6,
+        12.6918
+      ],
+      "rotation_y": -2.09887
+    },
+    "observability": {
+      "model": "observability",
+      "radius": 1.4471,
+      "collision_radius": 1.55,
+      "scale": 1,
+      "position": [
+        2.8,
+        0.4,
+        22.5
+      ],
+      "rotation_y": -3.14159
+    },
+    "alerts": {
+      "model": "alerts",
+      "radius": 1.2185,
+      "collision_radius": 1.55,
+      "scale": 1,
+      "position": [
+        -2.8,
+        0.4,
+        22.5
+      ],
+      "rotation_y": -3.14159
+    },
+    "database": {
+      "model": "database",
+      "radius": 1.29,
+      "collision_radius": 1.55,
+      "scale": 1,
+      "position": [
+        -17.8848,
+        0.2,
+        13.6744
+      ],
+      "rotation_y": 2.09887
+    },
+    "messaging": {
+      "model": "messaging",
+      "radius": 1.3479,
+      "collision_radius": 1.55,
+      "scale": 1,
+      "position": [
+        -20.7065,
+        0.2,
+        8.8372
+      ],
+      "rotation_y": 2.09887
+    },
+    "recovery": {
+      "model": "recovery",
+      "radius": 0.7513,
+      "collision_radius": 0.82,
+      "scale": 1,
+      "position": [
+        -21.7574,
+        0.2,
+        12.6918
+      ],
+      "rotation_y": 2.09887
+    }
+  },
+  "previews": [
+    "assets/previews/world-overview.png",
+    "assets/previews/world-north.png",
+    "assets/previews/world-plan.png",
+    "assets/previews/district-development.png",
+    "assets/previews/district-infrastructure.png",
+    "assets/previews/district-orchestration.png",
+    "assets/previews/district-security.png",
+    "assets/previews/district-observability.png",
+    "assets/previews/district-data.png"
+  ],
+  "previews_rendered_this_run": false,
+  "navigation": "assets/source/world-navigation.json",
+  "provenance": "All meshes, text, and materials are locally generated. No external art, fonts, or texture files."
 }
