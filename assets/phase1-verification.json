@@ -1,0 +1,112 @@
+{
+  "date": "2026-11-06",
+  "node": "v24.13.0",
+  "blender": "5.1.1",
+  "command": "npm run verify",
+  "result": "passed",
+  "suites": {
+    "pipeline": 20,
+    "runtime": 19,
+    "gameAndExpressions": 13,
+    "browserPassed": 10,
+    "browserSkipped": 4,
+    "browserFailed": 0
+  },
+  "browserTarget": "Production Vite preview at 127.0.0.1:5176",
+  "browserTests": [
+    {
+      "name": "welcome, architecture map, camera modes, settings, focus and recovery",
+      "project": "desktop",
+      "status": "passed"
+    },
+    {
+      "name": "welcome, architecture map, camera modes, settings, focus and recovery",
+      "project": "mobile",
+      "status": "passed"
+    },
+    {
+      "name": "studio blends every expression while locomotion remains selected",
+      "project": "desktop",
+      "status": "passed"
+    },
+    {
+      "name": "studio blends every expression while locomotion remains selected",
+      "project": "mobile",
+      "status": "passed"
+    },
+    {
+      "name": "rendered follow camera tracks actual keyboard movement with stable orientation",
+      "project": "desktop",
+      "status": "passed"
+    },
+    {
+      "name": "rendered follow camera tracks actual keyboard movement with stable orientation",
+      "project": "mobile",
+      "status": "skipped"
+    },
+    {
+      "name": "all six introductions are reachable through real keyboard movement and persist",
+      "project": "desktop",
+      "status": "passed"
+    },
+    {
+      "name": "all six introductions are reachable through real keyboard movement and persist",
+      "project": "mobile",
+      "status": "skipped"
+    },
+    {
+      "name": "measures rendered frame rate and captures the full overview",
+      "project": "desktop",
+      "status": "passed"
+    },
+    {
+      "name": "measures rendered frame rate and captures the full overview",
+      "project": "mobile",
+      "status": "passed"
+    },
+    {
+      "name": "mobile movement releases cleanly, panels pause input, and recovery is one tap away",
+      "project": "desktop",
+      "status": "skipped"
+    },
+    {
+      "name": "mobile movement releases cleanly, panels pause input, and recovery is one tap away",
+      "project": "mobile",
+      "status": "passed"
+    },
+    {
+      "name": "350px studio controls and discovery map stay inside the viewport",
+      "project": "desktop",
+      "status": "skipped"
+    },
+    {
+      "name": "350px studio controls and discovery map stay inside the viewport",
+      "project": "mobile",
+      "status": "passed"
+    }
+  ],
+  "assets": {
+    "exports": 13,
+    "khronosErrors": 0,
+    "khronosWarnings": 0,
+    "report": "assets/validation-report.json"
+  },
+  "sourceSha256": {
+    "src/App.tsx": "d31d30f55665b0bf9e022f2902ab3571eacb5217747bef752f0b88b7d5c7eb38",
+    "src/Scene.tsx": "eb037a4af2f4caf9f4658622dcb0fc14eddc79f3ee3a14a3064fd9929c0be847",
+    "src/data/world-layout.json": "678bc4b037b1be0db6086beb30188efd611b7d1a713adcefe6038a58211057b8",
+    "scripts/blender/generate_awushi.py": "06d95857817211969c68b3ecb016b640288a3d5f8ea576d3d555d7a85f4f8288",
+    "scripts/blender/facial_helpers.py": "61844a13ae1a16795f13b6c2be93ca9af3dde8c80023a7696bacb0f1319f3544",
+    "scripts/blender/generate_world.py": "bbb7e969ce0df6a597709d8e4d554be09bb59e0b12752cd77db106529b7d98e7",
+    "scripts/blender/asset_factory.py": "a9de59b5cec3fec5eef816e29cc54e0ae35db7d653b99ba6eaa50f8ec6151511"
+  },
+  "performance": [
+    "assets/performance-desktop.json",
+    "assets/performance-mobile.json"
+  ],
+  "notes": [
+    "Four browser skips are intentional platform-specific deduplication.",
+    "Phone viewport is desktop Chrome emulation, not physical mobile hardware.",
+    "Vite reports a large Three.js scene chunk; build succeeds."
+  ]
+}

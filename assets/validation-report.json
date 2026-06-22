@@ -3,15 +3,15 @@
   "assets": [
     {
       "file": "awushi.glb",
-      "bytes": 2026776,
-      "sha256": "b94b20bccc399fc8e519570f58cc0a94070984669453388260b095cf8ef5f23e",
-      "meshes": 1,
-      "primitives": 6,
-      "vertices": 30882,
-      "triangles": 56184,
-      "materials": 6,
+      "bytes": 2704328,
+      "sha256": "58b66c832421f4ec456333d3f62e3717dda64f127e0ee7eec112799b8892ae70",
+      "meshes": 2,
+      "primitives": 7,
+      "vertices": 28814,
+      "triangles": 52332,
+      "materials": 7,
       "skins": 1,
-      "nodes": 18,
+      "nodes": 19,
       "meshLocalBounds": {
         "min": [
           -1.2382259368896484,
@@ -21,7 +21,7 @@
         "max": [
           1.3799999952316284,
           3.9213078022003174,
-          0.7407207489013672
+          0.7409999966621399
         ]
       },
       "sceneBounds": {
@@ -33,7 +33,7 @@
         "max": [
           1.3799999952316284,
           3.9213078022003174,
-          0.7407207489013672
+          0.7409999966621399
         ]
       },
       "animations": [
@@ -152,12 +152,24 @@
         "KHR_materials_clearcoat",
         "KHR_materials_transmission",
         "KHR_materials_volume",
+        "KHR_materials_specular",
         "KHR_materials_ior"
+      ],
+      "morphTargets": [
+        "Happy",
+        "Curious",
+        "Thinking",
+        "Excited",
+        "Worried",
+        "Surprised",
+        "Determined",
+        "Celebrating",
+        "Sleepy"
       ],
       "khronos": {
         "errors": 0,
         "warnings": 0,
-        "infos": 5,
+        "infos": 6,
         "truncated": false,
         "messages": [
           {
@@ -182,13 +194,19 @@
             "code": "UNUSED_OBJECT",
             "message": "This object may be unused.",
             "severity": 2,
-            "pointer": "/meshes/0/primitives/4/attributes/TEXCOORD_0"
+            "pointer": "/meshes/1/primitives/0/attributes/TEXCOORD_0"
           },
           {
             "code": "UNUSED_OBJECT",
             "message": "This object may be unused.",
             "severity": 2,
-            "pointer": "/meshes/0/primitives/5/attributes/TEXCOORD_0"
+            "pointer": "/meshes/1/primitives/2/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/1/primitives/3/attributes/TEXCOORD_0"
           }
         ]
       }
@@ -196,7 +214,7 @@
     {
       "file": "ci-factory.glb",
       "bytes": 788672,
-      "sha256": "5db3276e59af77ede416f5d0fb77eef8c1844ae05e39f5a746618fae93845771",
+      "sha256": "4e107556014db5d1aca2ccf9d60b0619f44579f02568fd205bd58bf1f89bc622",
       "meshes": 1,
       "primitives": 8,
       "vertices": 21101,
@@ -233,6 +251,7 @@
         "KHR_materials_clearcoat",
         "KHR_materials_emissive_strength"
       ],
+      "morphTargets": [],
       "khronos": {
         "errors": 0,
         "warnings": 0,
@@ -291,9 +310,301 @@
       }
     },
     {
+      "file": "district-data.glb",
+      "bytes": 594080,
+      "sha256": "cdd3ace7d08204c40a6fe4a5df4f9c7b82e3c48f71112bad71ad57cdfeced6c3",
+      "meshes": 1,
+      "primitives": 16,
+      "vertices": 18352,
+      "triangles": 23118,
+      "materials": 16,
+      "skins": 0,
+      "nodes": 1,
+      "meshLocalBounds": {
+        "min": [
+          -6.667229175567627,
+          -6.599999904632568,
+          -6.278708457946777
+        ],
+        "max": [
+          6.5619025230407715,
+          3.179999828338623,
+          6.540634632110596
+        ]
+      },
+      "sceneBounds": {
+        "min": [
+          -6.667229175567627,
+          -6.599999904632568,
+          -6.278708457946777
+        ],
+        "max": [
+          6.5619025230407715,
+          3.179999828338623,
+          6.540634632110596
+        ]
+      },
+      "animations": [],
+      "extensions": [
+        "KHR_materials_clearcoat"
+      ],
+      "morphTargets": [],
+      "khronos": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 0,
+        "truncated": false,
+        "messages": []
+      }
+    },
+    {
+      "file": "district-development.glb",
+      "bytes": 1326632,
+      "sha256": "14d34b6547a3a8fe4d23d19fa4533adbc57f60311ccf5767f58fc1eaa372f4d6",
+      "meshes": 1,
+      "primitives": 21,
+      "vertices": 43360,
+      "triangles": 44202,
+      "materials": 21,
+      "skins": 0,
+      "nodes": 1,
+      "meshLocalBounds": {
+        "min": [
+          -6.642021179199219,
+          -6.599999904632568,
+          -6.5406341552734375
+        ],
+        "max": [
+          6.584501266479492,
+          3.179999828338623,
+          6.305593013763428
+        ]
+      },
+      "sceneBounds": {
+        "min": [
+          -6.642021179199219,
+          -6.599999904632568,
+          -6.5406341552734375
+        ],
+        "max": [
+          6.584501266479492,
+          3.179999828338623,
+          6.305593013763428
+        ]
+      },
+      "animations": [],
+      "extensions": [
+        "KHR_materials_clearcoat",
+        "KHR_materials_emissive_strength"
+      ],
+      "morphTargets": [],
+      "khronos": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 0,
+        "truncated": false,
+        "messages": []
+      }
+    },
+    {
+      "file": "district-infrastructure.glb",
+      "bytes": 684400,
+      "sha256": "41321e48b0bc71081bae277ebccf90fef9b2d82c6d1bc36618212d8402237cc5",
+      "meshes": 1,
+      "primitives": 14,
+      "vertices": 22610,
+      "triangles": 21342,
+      "materials": 14,
+      "skins": 0,
+      "nodes": 1,
+      "meshLocalBounds": {
+        "min": [
+          -6.57989501953125,
+          -6.599999904632568,
+          -6.540634632110596
+        ],
+        "max": [
+          6.574384689331055,
+          3.179999828338623,
+          6.305836200714111
+        ]
+      },
+      "sceneBounds": {
+        "min": [
+          -6.57989501953125,
+          -6.599999904632568,
+          -6.540634632110596
+        ],
+        "max": [
+          6.574384689331055,
+          3.179999828338623,
+          6.305836200714111
+        ]
+      },
+      "animations": [],
+      "extensions": [
+        "KHR_materials_clearcoat"
+      ],
+      "morphTargets": [],
+      "khronos": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 0,
+        "truncated": false,
+        "messages": []
+      }
+    },
+    {
+      "file": "district-observability.glb",
+      "bytes": 555760,
+      "sha256": "a96a886e1c435581ad169901f8c9f30786038a0eb4cb4b25bbc55f09fe7520ca",
+      "meshes": 1,
+      "primitives": 16,
+      "vertices": 17369,
+      "triangles": 20982,
+      "materials": 16,
+      "skins": 0,
+      "nodes": 1,
+      "meshLocalBounds": {
+        "min": [
+          -6.573152542114258,
+          -6.599999904632568,
+          -6.278708457946777
+        ],
+        "max": [
+          6.5554375648498535,
+          3.179999828338623,
+          6.540634632110596
+        ]
+      },
+      "sceneBounds": {
+        "min": [
+          -6.573152542114258,
+          -6.599999904632568,
+          -6.278708457946777
+        ],
+        "max": [
+          6.5554375648498535,
+          3.179999828338623,
+          6.540634632110596
+        ]
+      },
+      "animations": [],
+      "extensions": [
+        "KHR_materials_clearcoat"
+      ],
+      "morphTargets": [],
+      "khronos": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 0,
+        "truncated": false,
+        "messages": []
+      }
+    },
+    {
+      "file": "district-orchestration.glb",
+      "bytes": 1222304,
+      "sha256": "4f2ff166e1e28b2fc69caaadc1694f993ff2cb4041a8ee330fbd69e9bf041a95",
+      "meshes": 1,
+      "primitives": 20,
+      "vertices": 39288,
+      "triangles": 43634,
+      "materials": 20,
+      "skins": 0,
+      "nodes": 1,
+      "meshLocalBounds": {
+        "min": [
+          -6.6492719650268555,
+          -6.599999904632568,
+          -6.540635108947754
+        ],
+        "max": [
+          6.628383159637451,
+          3.179999828338623,
+          6.278707504272461
+        ]
+      },
+      "sceneBounds": {
+        "min": [
+          -6.6492719650268555,
+          -6.599999904632568,
+          -6.540635108947754
+        ],
+        "max": [
+          6.628383159637451,
+          3.179999828338623,
+          6.278707504272461
+        ]
+      },
+      "animations": [],
+      "extensions": [
+        "KHR_materials_clearcoat",
+        "KHR_materials_transmission",
+        "KHR_materials_emissive_strength",
+        "KHR_materials_ior"
+      ],
+      "morphTargets": [],
+      "khronos": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 0,
+        "truncated": false,
+        "messages": []
+      }
+    },
+    {
+      "file": "district-security.glb",
+      "bytes": 612420,
+      "sha256": "9939442f0f679053def425b582e32a28e876716352e864c079662113acdfce09",
+      "meshes": 1,
+      "primitives": 14,
+      "vertices": 19755,
+      "triangles": 20754,
+      "materials": 14,
+      "skins": 0,
+      "nodes": 1,
+      "meshLocalBounds": {
+        "min": [
+          -6.637110233306885,
+          -6.599999904632568,
+          -6.278708457946777
+        ],
+        "max": [
+          6.630318641662598,
+          3.179999828338623,
+          6.540634632110596
+        ]
+      },
+      "sceneBounds": {
+        "min": [
+          -6.637110233306885,
+          -6.599999904632568,
+          -6.278708457946777
+        ],
+        "max": [
+          6.630318641662598,
+          3.179999828338623,
+          6.540634632110596
+        ]
+      },
+      "animations": [],
+      "extensions": [
+        "KHR_materials_clearcoat"
+      ],
+      "morphTargets": [],
+      "khronos": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 0,
+        "truncated": false,
+        "messages": []
+      }
+    },
+    {
       "file": "github-workshop.glb",
       "bytes": 497688,
-      "sha256": "bb055ae33fa8589a9225025a9f60711f65d9ee4e9c40f317c53a420cea3555d1",
+      "sha256": "1083311fbcf2e95b4a87eb3cf92638c5f5c4b8e2980e552fe5a29084ef38a214",
       "meshes": 1,
       "primitives": 7,
       "vertices": 12846,
@@ -329,6 +640,7 @@
       "extensions": [
         "KHR_materials_clearcoat"
       ],
+      "morphTargets": [],
       "khronos": {
         "errors": 0,
         "warnings": 0,
@@ -383,7 +695,7 @@
     {
       "file": "island.glb",
       "bytes": 416948,
-      "sha256": "7c1ad9391e229280909811225ff7aace3aad63bf289dd51ba8e47e7daec5bb1b",
+      "sha256": "107c061e6337cbee1c9f919cc33809eadbb1e558f536ef4247bdd7da5ad0c404",
       "meshes": 1,
       "primitives": 10,
       "vertices": 10984,
@@ -422,6 +734,7 @@
         "KHR_materials_emissive_strength",
         "KHR_materials_ior"
       ],
+      "morphTargets": [],
       "khronos": {
         "errors": 0,
         "warnings": 0,
@@ -494,7 +807,7 @@
     {
       "file": "kubernetes-cluster.glb",
       "bytes": 944112,
-      "sha256": "3bb97e1e58b9c10b4f25e2489ac006a4d24537a6f8674f71f20a50c096ba8a9e",
+      "sha256": "d287b4a8eea6765df7705e457bb6459fcfeafc60443ccaf9189cbae76c4a08e6",
       "meshes": 1,
       "primitives": 7,
       "vertices": 25194,
@@ -533,6 +846,7 @@
         "KHR_materials_emissive_strength",
         "KHR_materials_ior"
       ],
+      "morphTargets": [],
       "khronos": {
         "errors": 0,
         "warnings": 0,
@@ -587,7 +901,7 @@
     {
       "file": "props.glb",
       "bytes": 600332,
-      "sha256": "7023cea0aa4e0167326e5d1f7841c74879385b3a9518e08ef20193bf8d559559",
+      "sha256": "4e647e620c28e02f5cd2d2342f2c4537d9c5b538e5aae361022be6ab0b3f1791",
       "meshes": 1,
       "primitives": 8,
       "vertices": 15268,
@@ -625,6 +939,7 @@
         "KHR_materials_transmission",
         "KHR_materials_ior"
       ],
+      "morphTargets": [],
       "khronos": {
         "errors": 0,
         "warnings": 0,
@@ -680,6 +995,54 @@
             "pointer": "/meshes/0/primitives/7/attributes/TEXCOORD_0"
           }
         ]
+      }
+    },
+    {
+      "file": "world-hub.glb",
+      "bytes": 1296328,
+      "sha256": "5f1a3c2df745287431cfe0b680863c656e131b906f1901fbabfb737da84c27b5",
+      "meshes": 1,
+      "primitives": 19,
+      "vertices": 42701,
+      "triangles": 42648,
+      "materials": 19,
+      "skins": 0,
+      "nodes": 1,
+      "meshLocalBounds": {
+        "min": [
+          -19.35048484802246,
+          -6.599999904632568,
+          -19.29429054260254
+        ],
+        "max": [
+          19.35048484802246,
+          1.5956000089645386,
+          19.29429054260254
+        ]
+      },
+      "sceneBounds": {
+        "min": [
+          -19.35048484802246,
+          -6.599999904632568,
+          -19.29429054260254
+        ],
+        "max": [
+          19.35048484802246,
+          1.5956000089645386,
+          19.29429054260254
+        ]
+      },
+      "animations": [],
+      "extensions": [
+        "KHR_materials_clearcoat"
+      ],
+      "morphTargets": [],
+      "khronos": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 0,
+        "truncated": false,
+        "messages": []
       }
     }
   ]

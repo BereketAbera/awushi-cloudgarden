@@ -1,60 +1,59 @@
 # Awushi’s DevOps World
 
-A fully local, reproducible Blender → glTF → React Three Fiber character and world pipeline. Awushi is modeled from the included user-supplied reference with a continuous splash-shaped sculpt, cyan jelly PBR, amber eyes, embedded bubbles and five skeletal animations.
+A local, procedural Blender → glTF → React Three Fiber adventure. Explore six connected floating districts with a cyan jelly companion, ten blendable expressions, five skeletal animations, and 17 educational discovery locations. Phase 1 teaches concepts through field notes; infrastructure simulations are future work.
 
-## Run the game
+## Run
+
+Use Node 22.13+ or Node 24 and npm. Blender 5.1.1 is required only to regenerate assets; generated models are committed.
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Open the loopback URL printed by Vite. Everything the running game needs is served from this repository: no API keys, external model services, asset packs, CDN fonts or downloaded environment maps. Package installation needs npm access once; regeneration and gameplay then work offline.
+Open the loopback address printed by Vite. There are no API keys, cloud integrations, downloaded model packs, CDN fonts, remote textures, or external runtime requests. Dependency installation needs npm access once; the game and generation then run locally.
 
-- **WASD / arrow keys:** move; **Shift:** run.
-- **E:** curious interaction; **Space:** celebrate; **R:** reset.
-- Drag to orbit, scroll to zoom. Use camera presets and animation controls for inspection.
-- Studio mode puts character fidelity first. World mode shows the generated DevOps island. Walk near a station and press **E** to discover its DevOps concept; the interface tracks the three visited stations for the current session. Touch controls support movement on narrow screens.
+Choose **Play Adventure** for six guided introductions, **Free Explore** for an open itinerary, or **View Architecture** for the lifecycle map. The character studio is always available.
 
-## Regenerate assets
+- **WASD / arrows:** camera-relative movement. **Shift:** run.
+- **E:** open the nearby discovery. **Space:** celebrate. **R:** return to the hub.
+- **M:** journal and world map. **Escape:** settings or close a panel.
+- **Follow:** steady tracking. **Explore:** drag to orbit and scroll/pinch to zoom. **Overview:** the whole world.
+- Touch movement, interaction, running and recovery controls appear on mobile.
+- Discoveries and preferences persist in this browser. Recovery keeps progress; **Reset exploration progress** starts a fresh notebook.
 
-Install Blender 5.1 (tested with 5.1.1), then:
+## Generate and verify
 
 ```sh
-npm run assets:generate                 # character + four studio renders
-npm run assets:generate -- --character # character export only
-npm run assets:generate -- --all       # character, world, all previews
-npm run assets:build                   # regenerate everything, then validate
-npm run assets:validate
-npm run test:pipeline
-npm run test:runtime
-npm run build
-# Or run all verification steps together:
-npm run verify
+npm run assets:generate                         # character + four angles + ten expression renders
+npm run assets:generate -- --character          # character export only
+npm run assets:generate -- --environment        # seven district composites + five legacy assets
+npm run assets:generate -- --all                # all sources, exports and previews
+npm run assets:build                            # regenerate everything, then validate
+npm run verify                                 # lint, types, unit/runtime/pipeline, GLB, build, browser
 ```
 
-Set `BLENDER_BIN` when Blender is not found automatically. On macOS, the runner detects `/Applications/Blender.app/Contents/MacOS/Blender`. A restricted execution sandbox may need permission to launch Blender, because Metal initialization happens even in headless mode.
+`BLENDER_BIN` can point to a local Blender executable. The runner detects the standard macOS application. Headless Blender can require host execution permission in restricted sandboxes because Metal initializes before Python. Browser tests use an installed Google Chrome and a local preview on port 5176; set up Chrome before `npm run test:browser`.
 
-## Source of truth
+## Repository map
 
-| Path | Purpose |
+| Path | Responsibility |
 | --- | --- |
-| `assets/reference/awushi.png` | Supplied character reference; preserved unchanged |
-| `scripts/blender/generate_awushi.py` | All character geometry, colors, rig and animation authoring |
-| `scripts/blender/common.py` | Shared modeling, material and glTF export helpers |
-| `scripts/blender/generate_world.py` | Island, workshop, CI factory, cluster and prop generators |
-| `assets/source/` | Editable generated `.blend` scenes and manifests |
-| `public/assets/` | Self-contained game-ready GLBs |
-| `assets/previews/` | Actual Blender camera renders |
-| `assets/validation-report.json` | Actual exported model and animation checks |
-| `docs/PIPELINE.md` | Pipeline internals, customization, coordinate and material contracts |
-| `docs/WORLD.md` | Environment layout and generator customization |
-| `docs/VALIDATION.md` | Verification evidence and visual limitations |
+| `src/App.tsx`, `src/components/` | Welcome, studio, HUD, accessible panels, minimap and local progress |
+| `src/Scene.tsx` | Orthographic cameras, asset loading, rendering, movement and animation integration |
+| `src/data/world-layout.json` | Shared district, station, bridge and collision layout |
+| `src/game/` | Typed navigation, camera math, behavior and progress rules |
+| `src/character/expressions.ts` | Cached, independent facial morph blending |
+| `scripts/blender/` | Reusable local character, terrain, bridge, building and prop generation |
+| `assets/reference/awushi.png` | Preserved visual source of truth |
+| `assets/source/`, `public/assets/` | Editable Blender scenes/manifests and portable GLBs |
+| `assets/previews/` | Actual Blender renders and browser screenshots |
+| `scripts/test-*.mjs`, `tests/` | Pipeline, real Three.js loader, pure game logic and Playwright checks |
 
-Open `assets/source/awushi.blend` in Blender to inspect the generated scene. It opens framed in the studio camera with materials visible. The active clip is **Idle**, frames 0–120. Select `AwushiRig` and use the Action Editor to select **Walk**, **Run**, **Interact** or **Celebrate**. Reopen/revert the file after a headless regeneration to see the latest result. The editable Python generator is authoritative: manual `.blend` edits are replaced when regenerating.
+Read [world architecture](docs/ARCHITECTURE.md), [world generation](docs/WORLD.md), [expressions](docs/EXPRESSIONS.md), [camera and navigation](docs/CAMERA.md), [local pipeline](docs/PIPELINE.md), [UI and accessibility](docs/UI.md), and [Phase 1 verification](docs/PHASE1-VALIDATION.md).
+
+Open `assets/source/awushi.blend` in Blender to inspect the character and its actions. `assets/source/world.blend` contains the generated world review scene. Reopen/revert after generation to see new output; Python and layout data are authoritative, so manual `.blend` edits are replaced on regeneration.
 
 ## Local AI authoring
 
-The procedural generator is code authored and refined by an AI coding agent against real Blender renders. It does not contain or silently call an AI modeling service, and it does not require a local LLM to execute. Given the same Blender version and code, the modeling seed, materials and animations are reproducible. If using a local coding model, give it the reference and rendered previews and ask it to change the checked-in parameters/functions; rerun the same validation loop.
-
-This is an original procedural 3D reconstruction from one image. Unseen surfaces and motion are authored to preserve the same character, rather than recovered from unavailable multiview data. See the visual review notes for remaining differences.
+An AI coding agent authored and refined the procedural Python against actual renders. Generation does not call an AI modeling service or require an installed neural model. A local coding model can edit the same functions and parameters, then run the documented generation and review loop. The 3D reconstruction preserves the supplied character; unseen surfaces and motion are authored from the single available reference.

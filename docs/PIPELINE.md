@@ -4,7 +4,7 @@ The repository is the source of truth. Blender Python creates the meshes, materi
 
 ## Requirements and first run
 
-- Node.js 22 or newer, npm, and a locally installed Blender. The authoring environment uses Blender 5.1.1.
+- Node.js 22.13+ or Node.js 24, npm, and a locally installed Blender. The authoring environment uses Blender 5.1.1.
 - `npm ci` installs the locked game and validation tools. This initial dependency installation requires package-registry access. Afterwards, regeneration, validation, preview, and gameplay use local files.
 - Blender is discovered through `BLENDER_BIN`, the standard macOS application path, or `PATH`. `BLENDER_BIN` must be an executable file path, not a command containing arguments.
 
@@ -18,7 +18,7 @@ npm run build
 npm run dev
 ```
 
-`npm run verify` runs both test suites, validates all exports, and builds the production game. `npm run assets:build` regenerates all assets and previews, then validates them. The latter includes the environment now that the character milestone has passed review.
+`npm run verify` runs lint, type checking, pipeline/runtime/game/expression tests, validates all exports, builds the production game, and runs Playwright. Browser tests use installed Google Chrome and port 5176. `npm run assets:build` regenerates all assets and previews, then validates them. The latter includes the environment now that the character milestone has passed review.
 
 The default generator builds the first milestone: Awushi's GLB, editable `.blend`, manifest, and four rendered views. It starts from Blender factory settings and runs a fresh Blender process per generator. Explicit Python errors produce a nonzero process exit; the wrapper also fails on process crashes. A partial output left by a failed run is not proof of success.
 
@@ -111,7 +111,7 @@ The character uses one weighted armature. The crown has its own deformation infl
 | `Interact` | Play a curious head tilt and arm gesture |
 | `Celebrate` | Play the happy jump and small splash |
 
-The combined mesh and armature are separate exported scene roots. Blender 5.1 may print an armature-parent advisory because it resolves the selected rig by name in this arrangement; there is exactly one rig, and the exported skin is checked by both Khronos validation and actual Three.js deformation tests. This avoids the non-root skinned-mesh warnings in the earlier export.
+The body mesh, compact expressive face mesh, and armature are separate exported scene roots. The nine facial morph targets blend independently of the five skeletal clips; Neutral uses zero weights. See `EXPRESSIONS.md`. Blender 5.1 may print an armature-parent advisory because it resolves the selected rig by name in this arrangement; there is exactly one rig, and the exported skin is checked by both Khronos validation and actual Three.js deformation tests. This avoids the non-root skinned-mesh warnings in the earlier export.
 
 Load `/assets/awushi.glb` using `useGLTF`, clone it with `SkeletonUtils.clone` if creating multiple independent characters, and drive its clips with `useAnimations` or `THREE.AnimationMixer`. Crossfade between locomotion states. Play interaction and celebration once, then return to the current locomotion state. Do not apply a second `−π/2` rotation: the GLB already has the correct game coordinate system.
 
@@ -153,3 +153,7 @@ Do not proceed to elaborate environmental modeling merely because the generator 
 - [Khronos glTF Validator](https://github.com/KhronosGroup/glTF-Validator) supplies the independent specification checks used by the validation script.
 
 These links are documentation only; the asset pipeline and running game do not fetch them.
+
+## Phase 1 factory additions
+
+`facial_helpers.py` authors morphable eye, rim, highlight, mouth and brow geometry. `asset_factory.py` provides a consistent material library and reusable terrain, path, bridge, miniature building, signage and vegetation primitives. `generate_world.py` reads `src/data/world-layout.json`, exporting seven runtime composites and preserving the five legacy assets via `legacy_world.py`. Character rendering now includes ten expression closeups alongside the four whole-character angles. World rendering includes overview, north, plan and six district closeups. Static material-only world meshes omit unused UV layers to reduce size and remove nondeterministic data. See `WORLD.md` for customization.

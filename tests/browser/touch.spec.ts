@@ -1,0 +1,72 @@
+import { expect, test, type Page } from '@playwright/test'
+
+async function position(page: Page) {
+  return (await page.getByTestId('world-position').getAttribute('data-position'))!.split(',').map(Number)
+}
+const distance = (a: number[], b: number[]) => Math.hypot(a[0] - b[0], a[2] - b[2])
+
+test('mobile movement releases cleanly, panels pause input, and recovery is one tap away', async ({ page }, info) => {
+  test.skip(info.project.name !== 'mobile', 'Pointer pad is shown for touch and narrow screens.')
+  await page.goto('/')
+  await page.getByTestId('play-adventure').click()
+  await expect(page.locator('canvas')).toBeVisible()
+  const forward = page.getByRole('button', { name: 'Move forward', exact: true })
+  await expect(forward).toBeVisible()
+  const start = await position(page)
+  const bounds = (await forward.boundingBox())!
+  // Real pointer down/up exercises the same capture/release path as a held finger.
+  await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2)
+  await page.mouse.down()
+  await page.waitForTimeout(700)
+  await page.mouse.up()
+  await page.waitForTimeout(350)
+  let stopped = await position(page)
+  expect(distance(stopped, start)).toBeGreaterThan(.35)
+  await page.waitForTimeout(450)
+  expect(distance(await position(page), stopped)).toBeLessThan(.03)
+
+  const run = (await page.getByRole('button', { name: 'Run while moving', exact: true }).boundingBox())!
+  await page.mouse.move(run.x + run.width / 2, run.y + run.height / 2)
+  await page.mouse.down(); await page.keyboard.down('w'); await page.waitForTimeout(500)
+  await page.keyboard.up('w'); await page.mouse.up(); await page.waitForTimeout(300)
+  expect(distance(await position(page), stopped)).toBeGreaterThan(1.65)
+  stopped = await position(page)
+
+  await page.getByTestId('world-minimap').tap()
+  await expect(page.getByRole('dialog')).toBeVisible()
+  await page.keyboard.down('w')
+  await page.waitForTimeout(400)
+  await page.keyboard.up('w')
+  expect(distance(await position(page), stopped)).toBeLessThan(.03)
+  await page.getByTestId('close-dialog').tap()
+  await expect(page.getByTestId('world-minimap')).toBeFocused()
+  await expect(page.getByTestId('return-to-hub')).toBeVisible()
+  await page.getByTestId('return-to-hub').tap()
+  await expect(page.getByTestId('world-position')).toHaveAttribute('data-position', '0,0,1.5')
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1)).toBeFalsy()
+})
+
+test('350px studio controls and discovery map stay inside the viewport', async ({ page }, info) => {
+  test.skip(info.project.name !== 'mobile', 'Small-width regression runs once.')
+  await page.setViewportSize({ width: 350, height: 740 })
+  await page.goto('/')
+  await page.getByTestId('enter-studio').tap()
+  const controls = page.getByRole('button', { name: 'CHARACTER CONTROLS', exact: true })
+  if (await controls.getAttribute('aria-expanded') === 'false') await controls.tap()
+  await expect(page.getByTestId('expression-happy')).toBeVisible()
+  await page.getByTestId('expression-happy').tap()
+  await expect(page.getByTestId('expression-happy')).toHaveAttribute('aria-pressed', 'true')
+  await page.getByRole('button', { name: 'Scene & playback', exact: true }).tap()
+  await page.getByTestId('studio-speed').selectOption('0.5')
+  await page.getByRole('button', { name: 'Moonlight', exact: true }).tap()
+  await expect(page.getByRole('button', { name: 'Moonlight', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  await page.getByRole('button', { name: 'Open settings', exact: true }).tap()
+  await page.getByRole('dialog').getByRole('button', { name: 'Return to central hub', exact: true }).tap()
+  await expect(page.getByTestId('district-name')).toHaveText('The Common')
+  await page.getByTestId('world-minimap').tap()
+  await expect(page.getByRole('dialog')).toContainText('Memory Gardens')
+  const dialog = await page.getByRole('dialog').boundingBox()
+  expect(dialog!.x).toBeGreaterThanOrEqual(0)
+  expect(dialog!.x + dialog!.width).toBeLessThanOrEqual(351)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1)).toBeFalsy()
+})

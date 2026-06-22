@@ -1,0 +1,31 @@
+{
+  "browser": "installed Chrome, headless WebGL",
+  "project": "desktop",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "quality": "balanced",
+  "view": "overview",
+  "samples": [
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    59,
+    57,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60
+  ],
+  "mean": 59.733333333333334,
+  "minimum": 57,
+  "maximum": 60,
+  "note": "Observed local test environment; not a universal frame-rate guarantee."
+}

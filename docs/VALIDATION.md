@@ -1,5 +1,7 @@
 # Validation record
 
+> Historical prototype audit. See [Phase 1 verification](PHASE1-VALIDATION.md) for the current six-district world, expressions, tests and performance evidence.
+
 Review date: 6 November 2026. This record distinguishes automated export checks, visual observations, and runtime checks. The machine-readable source for the current binaries is `assets/validation-report.json`; regenerate it after any asset change.
 
 ## Character export
