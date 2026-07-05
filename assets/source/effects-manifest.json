@@ -1,0 +1,125 @@
+{
+  "generator": "scripts/blender/generate_effects.py",
+  "version": 1,
+  "blender": "5.1.1",
+  "asset": "deployment-effects.glb",
+  "bytes": 209460,
+  "coordinate_system": "Y-up metres after export",
+  "animation_policy": "No autonomous clips: simulation history and infrastructure state drive runtime motion.",
+  "prototypes": {
+    "CodePacket": {
+      "triangles": 248,
+      "vertices": 136,
+      "materials": 3,
+      "role": "Code change travelling from source repository to CI",
+      "bounds_blender": [
+        [
+          -0.32,
+          -0.107,
+          0.0
+        ],
+        [
+          0.32,
+          0.07,
+          0.46
+        ]
+      ]
+    },
+    "ImagePackage": {
+      "triangles": 1452,
+      "vertices": 760,
+      "materials": 4,
+      "role": "Immutable container image identified by digest",
+      "bounds_blender": [
+        [
+          -0.31,
+          -0.2495,
+          0.0
+        ],
+        [
+          0.31,
+          0.225,
+          0.4875
+        ]
+      ]
+    },
+    "ConfigPacket": {
+      "triangles": 648,
+      "vertices": 336,
+      "materials": 4,
+      "role": "Rendered desired state sent through the local Git mirror to Argo CD",
+      "bounds_blender": [
+        [
+          -0.2575,
+          -0.071,
+          0.0
+        ],
+        [
+          0.24,
+          0.065,
+          0.5
+        ]
+      ]
+    },
+    "PodShell": {
+      "triangles": 1404,
+      "vertices": 712,
+      "materials": 4,
+      "role": "Reusable visual pod; color and visibility reflect actual replica state",
+      "bounds_blender": [
+        [
+          -0.27,
+          -0.27,
+          0.0
+        ],
+        [
+          0.27,
+          0.27,
+          0.6225
+        ]
+      ]
+    },
+    "SignalOrb": {
+      "triangles": 824,
+      "vertices": 414,
+      "materials": 2,
+      "role": "A bounded telemetry event marker",
+      "bounds_blender": [
+        [
+          -0.163,
+          -0.163,
+          0.0
+        ],
+        [
+          0.163,
+          0.163,
+          0.28
+        ]
+      ]
+    },
+    "SyncRing": {
+      "triangles": 1704,
+      "vertices": 858,
+      "materials": 2,
+      "role": "Active synchronization or readiness halo",
+      "bounds_blender": [
+        [
+          -0.387,
+          -0.387,
+          -0.015
+        ],
+        [
+          0.415,
+          0.387,
+          0.095
+        ]
+      ]
+    }
+  },
+  "triangles": 6280,
+  "previews": [
+    "assets/previews/deployment-effects-three-quarter.png",
+    "assets/previews/deployment-effects-front.png",
+    "assets/previews/deployment-effects-back.png"
+  ]
+}

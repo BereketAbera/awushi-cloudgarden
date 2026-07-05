@@ -1,0 +1,17 @@
+{
+  "asset": "deployment-effects.glb",
+  "beforeSha256": "d34b21a25c822a4178c22cc1ffca9da8202a62f95498854ac7ae63e5964bb98c",
+  "afterSha256": "bab45cd6c1ae4b3e2d2eb1d604c9c3ae7fe89bf7aa48f68d3b6bfe24f147141a",
+  "bytes": 209460,
+  "byteIdentical": false,
+  "jsonIdentical": true,
+  "positionsExact": true,
+  "orientedTriangleSetsExact": true,
+  "skinAndAnimationAccessorsExact": true,
+  "embeddedImagesExact": true,
+  "reorderedIndexAccessors": 2,
+  "normalComponentsChanged": 6,
+  "maxNormalDelta": 0.00009107589721679688,
+  "normalTolerance": 0.0002,
+  "result": "Geometry, materials, textures, skinning, and animation reproduced; binary ordering and tiny normal differences are permitted."
+}

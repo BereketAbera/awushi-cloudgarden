@@ -310,6 +310,54 @@
       }
     },
     {
+      "file": "deployment-effects.glb",
+      "bytes": 209460,
+      "sha256": "d34b21a25c822a4178c22cc1ffca9da8202a62f95498854ac7ae63e5964bb98c",
+      "meshes": 6,
+      "primitives": 19,
+      "vertices": 6880,
+      "triangles": 6280,
+      "materials": 5,
+      "skins": 0,
+      "nodes": 6,
+      "meshLocalBounds": {
+        "min": [
+          -0.38700002431869507,
+          -0.015000000596046448,
+          -0.38700002431869507
+        ],
+        "max": [
+          0.4150000214576721,
+          0.6225000023841858,
+          0.38700002431869507
+        ]
+      },
+      "sceneBounds": {
+        "min": [
+          -0.38700002431869507,
+          -0.015000000596046448,
+          -0.38700002431869507
+        ],
+        "max": [
+          0.4150000214576721,
+          0.6225000023841858,
+          0.38700002431869507
+        ]
+      },
+      "animations": [],
+      "extensions": [
+        "KHR_materials_clearcoat"
+      ],
+      "morphTargets": [],
+      "khronos": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 0,
+        "truncated": false,
+        "messages": []
+      }
+    },
+    {
       "file": "district-data.glb",
       "bytes": 594080,
       "sha256": "cdd3ace7d08204c40a6fe4a5df4f9c7b82e3c48f71112bad71ad57cdfeced6c3",

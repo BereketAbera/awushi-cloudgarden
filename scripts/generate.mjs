@@ -46,9 +46,9 @@ function main() {
     console.log(`Awushi local asset generator
 
 Usage: node scripts/generate.mjs [options]
-  (no options)   Character GLB + Blender source + four preview views
+  (no options)   Character GLB + Blender source + character/expression previews
   --character    Generate Awushi
-  --environment  Generate the world and supporting props
+  --environment  Generate the world, supporting props, and deployment effects
   --previews     Render previews for the selected generator(s)
   --all          Generate character, environment, and previews
   --help         Show this help
@@ -59,7 +59,7 @@ Each generator runs in a fresh factory-startup Blender process.`);
     return;
   }
   const blender = findBlender();
-  const scripts = [options.character && 'generate_awushi.py', options.environment && 'generate_world.py'].filter(Boolean);
+  const scripts = [options.character && 'generate_awushi.py', options.environment && 'generate_world.py', options.environment && 'generate_effects.py'].filter(Boolean);
   for (const script of scripts) {
     if (!existsSync(join(ROOT, 'scripts', 'blender', script))) throw new Error(`Generator does not exist: ${script}`);
     console.log(`\n[assets] ${script} via ${blender}`);
