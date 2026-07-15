@@ -1,10 +1,11 @@
-import { BRIDGES, DISTRICTS, HUB, STATIONS } from '../worldConfig'
+import { BRIDGES, DISTRICTS, HUB, STATIONS, getStation } from '../worldConfig'
 import type { Progress } from '../game/progress'
 
-type Props = { position: [number, number, number]; districtId: string; progress: Progress; expanded?: boolean; targetId?: string }
-export function MiniMap({ position, districtId, progress, expanded = false, targetId }: Props) {
+type Props = { position: [number, number, number]; districtId: string; progress: Progress; expanded?: boolean; targetId?: string; targetStationId?: string | null }
+export function MiniMap({ position, districtId, progress, expanded = false, targetId, targetStationId }: Props) {
+  const target = targetStationId ? getStation(targetStationId) : undefined
   const names = progress.districts.map(id => DISTRICTS.find(d => d.id === id)?.label).filter(Boolean).join(', ')
-  return <svg viewBox="-31 -31 62 62" className={`mini-map-svg ${expanded ? 'expanded' : ''}`} role="img" aria-label={`World map. You are in ${DISTRICTS.find(d => d.id === districtId)?.label ?? (districtId === 'skyway' ? 'the skyways' : HUB.name)}. ${progress.districts.length} districts visited${names ? `: ${names}` : ''}.`}>
+  return <svg viewBox="-31 -31 62 62" className={`mini-map-svg ${expanded ? 'expanded' : ''}`} role="img" aria-label={`World map. You are in ${DISTRICTS.find(d => d.id === districtId)?.label ?? (districtId === 'skyway' ? 'the skyways' : HUB.name)}. ${progress.districts.length} districts visited${names ? `: ${names}` : ''}.${target ? ` Destination: ${target.name}.` : ''}`}>
     <defs><radialGradient id={expanded ? 'map-glow-large' : 'map-glow-small'}><stop stopColor="#244851" /><stop offset="1" stopColor="#142b34" /></radialGradient></defs>
     <circle r="30.2" fill={`url(#${expanded ? 'map-glow-large' : 'map-glow-small'})`} stroke="#45616a" strokeWidth=".18" />
     <circle r="27.8" fill="none" stroke="#41616b" strokeWidth=".12" strokeDasharray=".6 1" />
@@ -18,7 +19,8 @@ export function MiniMap({ position, districtId, progress, expanded = false, targ
         <text x={district.center[0]} y={district.center[2] + .8} textAnchor="middle" fill="#effbfa" fontSize={expanded ? 2.5 : 3.1} fontWeight="600">{district.order}</text>
       </g>
     })}
-    {expanded && STATIONS.map(station => <circle key={station.id} cx={station.position[0]} cy={station.position[2]} r=".48" fill={progress.stations.includes(station.id) ? '#f8dca4' : '#203842'} stroke="#e7f6ed" strokeWidth=".14" />)}
+    {STATIONS.map(station => <circle key={station.id} cx={station.position[0]} cy={station.position[2]} r={expanded ? .48 : .35} fill={progress.stations.includes(station.id) ? '#f8dca4' : '#203842'} stroke="#e7f6ed" strokeWidth=".14" />)}
+    {target && <g className="map-destination"><circle cx={target.position[0]} cy={target.position[2]} r="1.5" fill="none" stroke="#f4d29a" strokeWidth=".35" /><circle cx={target.position[0]} cy={target.position[2]} r=".65" fill="#f4d29a" /></g>}
     <circle cx={position[0]} cy={position[2]} r={expanded ? 1 : 1.35} fill="#dcfffb" stroke="#193c44" strokeWidth=".45" />
     <circle cx={position[0]} cy={position[2]} r=".35" fill="#3c9b9f" />
     <text x="27" y="-24.5" fill="#a3c6c8" fontSize="2.2" textAnchor="middle">N</text>

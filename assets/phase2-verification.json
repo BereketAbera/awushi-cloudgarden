@@ -1,0 +1,305 @@
+{
+  "date": "2026-11-06",
+  "timezone": "Africa/Addis_Ababa",
+  "node": "v24.13.0",
+  "blender": "5.1.1",
+  "command": "npm run verify",
+  "result": "passed",
+  "gates": {
+    "eslint": "passed",
+    "typescript": "passed",
+    "productionBuild": "passed"
+  },
+  "suites": {
+    "pipeline": 20,
+    "runtime": 19,
+    "unit": 49,
+    "browserPassed": 23,
+    "browserSkipped": 7,
+    "browserFailed": 0,
+    "totalPassed": 111
+  },
+  "browserTarget": "Production Vite preview at 127.0.0.1:5176",
+  "browserStats": {
+    "startTime": "2026-11-05T23:18:16.556Z",
+    "duration": 299849.355,
+    "expected": 23,
+    "skipped": 7,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "browserTests": [
+    {
+      "name": "welcome, architecture map, camera modes, settings, focus and recovery",
+      "project": "desktop",
+      "status": "passed",
+      "durationMs": 3554
+    },
+    {
+      "name": "welcome, architecture map, camera modes, settings, focus and recovery",
+      "project": "mobile",
+      "status": "passed",
+      "durationMs": 3566
+    },
+    {
+      "name": "studio blends every expression while locomotion remains selected",
+      "project": "desktop",
+      "status": "passed",
+      "durationMs": 2512
+    },
+    {
+      "name": "studio blends every expression while locomotion remains selected",
+      "project": "mobile",
+      "status": "passed",
+      "durationMs": 2377
+    },
+    {
+      "name": "optional isometric camera tracks actual keyboard movement with stable orientation",
+      "project": "desktop",
+      "status": "passed",
+      "durationMs": 5607
+    },
+    {
+      "name": "optional isometric camera tracks actual keyboard movement with stable orientation",
+      "project": "mobile",
+      "status": "skipped",
+      "durationMs": 852
+    },
+    {
+      "name": "all six introductions are reachable through real keyboard movement and persist",
+      "project": "desktop",
+      "status": "passed",
+      "durationMs": 75917
+    },
+    {
+      "name": "all six introductions are reachable through real keyboard movement and persist",
+      "project": "mobile",
+      "status": "skipped",
+      "durationMs": 859
+    },
+    {
+      "name": "measures rendered frame rate and captures the full overview",
+      "project": "desktop",
+      "status": "passed",
+      "durationMs": 18982
+    },
+    {
+      "name": "measures rendered frame rate and captures the full overview",
+      "project": "mobile",
+      "status": "passed",
+      "durationMs": 18895
+    },
+    {
+      "name": "third-person framing, turning, first-person look, projection switching and persistence",
+      "project": "desktop",
+      "status": "passed",
+      "durationMs": 8764
+    },
+    {
+      "name": "third-person framing, turning, first-person look, projection switching and persistence",
+      "project": "mobile",
+      "status": "passed",
+      "durationMs": 7535
+    },
+    {
+      "name": "immersive camera and steering cross a real bridge and interact at the workshop",
+      "project": "desktop",
+      "status": "passed",
+      "durationMs": 18158
+    },
+    {
+      "name": "immersive camera and steering cross a real bridge and interact at the workshop",
+      "project": "mobile",
+      "status": "skipped",
+      "durationMs": 288
+    },
+    {
+      "name": "measures active third-person delivery with the real renderer",
+      "project": "desktop",
+      "status": "passed",
+      "durationMs": 30490
+    },
+    {
+      "name": "measures active third-person delivery with the real renderer",
+      "project": "mobile",
+      "status": "passed",
+      "durationMs": 30558
+    },
+    {
+      "name": "complete deployment waits for a person, reconciles the chosen environment and exposes telemetry",
+      "project": "desktop",
+      "status": "passed",
+      "durationMs": 33371
+    },
+    {
+      "name": "complete deployment waits for a person, reconciles the chosen environment and exposes telemetry",
+      "project": "mobile",
+      "status": "skipped",
+      "durationMs": 273
+    },
+    {
+      "name": "a failed check can be repaired, and cancellation keeps a clear terminal state",
+      "project": "desktop",
+      "status": "passed",
+      "durationMs": 12563
+    },
+    {
+      "name": "a failed check can be repaired, and cancellation keeps a clear terminal state",
+      "project": "mobile",
+      "status": "skipped",
+      "durationMs": 278
+    },
+    {
+      "name": "architecture supports technology inspection and location guidance without prior discovery",
+      "project": "desktop",
+      "status": "passed",
+      "durationMs": 1906
+    },
+    {
+      "name": "architecture supports technology inspection and location guidance without prior discovery",
+      "project": "mobile",
+      "status": "passed",
+      "durationMs": 2275
+    },
+    {
+      "name": "deployment controls and close remain usable after scrolling on each viewport",
+      "project": "desktop",
+      "status": "passed",
+      "durationMs": 1740
+    },
+    {
+      "name": "deployment controls and close remain usable after scrolling on each viewport",
+      "project": "mobile",
+      "status": "passed",
+      "durationMs": 2264
+    },
+    {
+      "name": "keyboard users can open event history and receive pipeline status inside the modal",
+      "project": "desktop",
+      "status": "passed",
+      "durationMs": 1676
+    },
+    {
+      "name": "keyboard users can open event history and receive pipeline status inside the modal",
+      "project": "mobile",
+      "status": "passed",
+      "durationMs": 1819
+    },
+    {
+      "name": "mobile movement releases cleanly, panels pause input, and recovery is one tap away",
+      "project": "desktop",
+      "status": "skipped",
+      "durationMs": 293
+    },
+    {
+      "name": "mobile movement releases cleanly, panels pause input, and recovery is one tap away",
+      "project": "mobile",
+      "status": "passed",
+      "durationMs": 4191
+    },
+    {
+      "name": "350px studio controls and discovery map stay inside the viewport",
+      "project": "desktop",
+      "status": "skipped",
+      "durationMs": 285
+    },
+    {
+      "name": "350px studio controls and discovery map stay inside the viewport",
+      "project": "mobile",
+      "status": "passed",
+      "durationMs": 2792
+    }
+  ],
+  "assets": {
+    "exports": 14,
+    "khronosErrors": 0,
+    "khronosWarnings": 0,
+    "report": "assets/validation-report.json",
+    "newExport": "deployment-effects.glb",
+    "reproducibility": "assets/source/effects-reproducibility.json"
+  },
+  "sourceSha256": {
+    "package-lock.json": "d53fa3f5b8b86c0202b81b853e9c660c2c2d7b5e016f6308c6e0146bddad6cda",
+    "package.json": "8975bcd910466eac0dae08f18dad4c7d97782635e1ca1b43b4fba7120d877e43",
+    "playwright.config.ts": "4b3c96d042eefd3beb2f25343837735cf3e565937da9ecccd7fadeb391b15e4e",
+    "scripts/blender/asset_factory.py": "a9de59b5cec3fec5eef816e29cc54e0ae35db7d653b99ba6eaa50f8ec6151511",
+    "scripts/blender/common.py": "17a48d6a53c58f0152421f59b14a1a1500bd394c0deed5f7e38b9967f451fada",
+    "scripts/blender/facial_helpers.py": "61844a13ae1a16795f13b6c2be93ca9af3dde8c80023a7696bacb0f1319f3544",
+    "scripts/blender/generate_awushi.py": "06d95857817211969c68b3ecb016b640288a3d5f8ea576d3d555d7a85f4f8288",
+    "scripts/blender/generate_effects.py": "dd8327f250a5a634545f7134f0008a3a5a2a8f81029751e7e908eb75d11abe7d",
+    "scripts/blender/generate_world.py": "bbb7e969ce0df6a597709d8e4d554be09bb59e0b12752cd77db106529b7d98e7",
+    "scripts/blender/legacy_world.py": "55daacf00fce6a96025c99d037e394e59a1eba5e1ba5e98b90cccf2886450304",
+    "scripts/compare-glb.mjs": "e78a628753b863fba03ccc5d38f7a089ed858af61909e23e5a7a97e7fec9ff0e",
+    "scripts/generate.mjs": "57532c27a897b67004b48cc9b080000d6870b0dc71a9fd297eba07ad1502f0d0",
+    "scripts/test-pipeline.mjs": "a0b91230ab8b88153a338b647d4ef8d7b5303bd8b465f01e80fbe88431eb859b",
+    "scripts/test-runtime.mjs": "451ee0807e39a3c0022cbe2b2f931ee7c47ee860bad303e0aeb995ae45320433",
+    "scripts/validate-assets.mjs": "fd968eb170acef3e1e121784a8fbb25f8ebc7adeea8102e5c94c4866917d6f89",
+    "src/App.tsx": "7e615a8e12da3243330cd9471cdbf264da36115d4920cf74613d3dcb055ab29d",
+    "src/Scene.tsx": "24802b6e31b0a9d7aa5335fcf1ae31a9d32bfbb9a16343267bddbbc04bd40c78",
+    "src/character/expressions.ts": "d46543b1ee2aaa7e79dfbdfa691672944823de860388e1127a5efd613c15906c",
+    "src/components/Dialog.tsx": "306197d2a0396dc9156211b6419254ad738b6e0f25405d9d9dbf52241d3213f6",
+    "src/components/MiniMap.tsx": "d8c31a4f190ef9bc3836683ff3b5d14d7a26e3394a00ebfcda03e105a073e8c7",
+    "src/components/SimulationPanels.tsx": "15fdd80057df2ca0976bd10169267f2abd9c328a745abc7f767307dc0f0866a9",
+    "src/components/TechnologyPanels.tsx": "510258143fcd3b0e57250b30689d1123468a41c8ec2a843d0f0c477a30bc517a",
+    "src/components/useSimulation.ts": "5e942cf8f2bfc40fac6ee2485ff15c906cb1fd3afb171294475bc67dcebf62c7",
+    "src/data/world-layout.json": "678bc4b037b1be0db6086beb30188efd611b7d1a713adcefe6038a58211057b8",
+    "src/game/behavior.ts": "edc4f332936a147ce80a65a639864f0818336c0c0d50bd064d65991161506a60",
+    "src/game/camera.ts": "4bcad3b0d49ff137accf8d03a04571ff3a8c20c31f92b07697aced1bde40d82c",
+    "src/game/navigation.ts": "035727d167ce71d2b577e2477234bd55de14ddb5d57e50da421d104907d1a8db",
+    "src/game/progress.ts": "4617318a313c7e595c529d09c69505c68d2b174f5c3226f462fe8f00dee9392e",
+    "src/game/types.ts": "59669babbb0d87e74865f20e2a70c376f68a1cf3052f525dc461e6be6f48082e",
+    "src/main.tsx": "449360d409ecbdd6aa7fb603226836ba7a6f3ed5cdcbb1a814397e7deb96a9bb",
+    "src/simulation/SimulationEffects.tsx": "15c8bc33ce09b70dcd92a8c0d06fe66234d1e26ff234bb8c58e5067cebb1c408",
+    "src/simulation/domain.ts": "1bc864a75a2800177206f16dc19ad0707e69f18681206e7b87e4277c2a0e912e",
+    "src/simulation/effects.ts": "c2981f7110f840414395d6247d9ad8a4997b6b6ace8fa77003a830ae470b88bd",
+    "src/simulation/engine.ts": "096d1637489c92f15920392aa850ae8091910ef408a47e52044b0b0fccf1df57",
+    "src/simulation/registry.ts": "fb1e0b9c29ca46b92147b02d8763cac30e8db3bbf837e5c355c6fdfec33b2bb0",
+    "src/simulation/scenario.ts": "629450f359d31af7ace9438d6a24c8e0b7423ec9f9ac02eecd85e6d6b896ffdb",
+    "src/styles.css": "eec8fc7a5a19d1cc86be929df9e60c5ca63a891e0d0b787d4d96299d97a57011",
+    "src/worldConfig.ts": "5079bc09a4d8f81a7c261b335b2d69055ff78b07b4e2d41991276983dd8e6bc0",
+    "tests/browser/adventure.spec.ts": "261e1880fb39bfb0175d65f18cea6b5d0330fcc51b59919c447acef96d40b86e",
+    "tests/browser/camera.spec.ts": "95e65d193911812ed225efc2590382920902577c3e027b2043178a30015c4b7a",
+    "tests/browser/fixtures.ts": "328b6e0539c56e54bd77b33a39db3c986e8867e1207647c46c99db923e8cecb0",
+    "tests/browser/performance.spec.ts": "0e1a5b0540df87bda593c6fa47ddab6bcad6a602e3d2de986c5ea0d81c8a982d",
+    "tests/browser/simulation.spec.ts": "0311082b3cb0dde10743269ee01365e7d900cf66a843d0d4d36c7f4c19d9a014",
+    "tests/browser/touch.spec.ts": "0f652ad1ab476c9de133e03c298b09ccd6820b73af53f2493921d7cc6ea5ea5e",
+    "tests/camera.test.ts": "28de744bc82cab7b65918c83fd84955116e4d619665fde26e2ad5cd64a92541e",
+    "tests/effects.test.ts": "9258e760a83ee8359eec38eecc91003c7c23df77a8dc909665b060dfad6a4bc0",
+    "tests/expressions.test.ts": "7013d72e42cca5dc770a8225dae998afe89571d70c19206032906fb5f792d5fb",
+    "tests/game.test.ts": "a9bfca64c0392f07ce250bdf3d4517459e969ba37cb04916b5d8773d10a75d92",
+    "tests/simulation.test.ts": "ff8ad00b73144be2d95df40361ad415d9562df8b296e34763a075dff39afd90a"
+  },
+  "performance": [
+    {
+      "file": "assets/phase2-idle-performance-desktop.json",
+      "meanFps": 60,
+      "minimumFps": 60,
+      "maximumFps": 60
+    },
+    {
+      "file": "assets/phase2-idle-performance-mobile.json",
+      "meanFps": 58.53333333333333,
+      "minimumFps": 38,
+      "maximumFps": 60
+    },
+    {
+      "file": "assets/phase2-performance-desktop.json",
+      "meanFps": 59.32142857142857,
+      "minimumFps": 41,
+      "maximumFps": 60
+    },
+    {
+      "file": "assets/phase2-performance-mobile.json",
+      "meanFps": 59.5,
+      "minimumFps": 46,
+      "maximumFps": 60
+    }
+  ],
+  "notes": [
+    "Seven browser skips intentionally avoid duplicate desktop routes/scenarios and mobile-only touch checks.",
+    "Phone viewport is desktop Chrome emulation, not physical mobile hardware.",
+    "Active-rendering samples include early transient dips; averages are not universal FPS guarantees.",
+    "Vite reports the lazy Three.js scene chunk above its default size warning threshold; build passes.",
+    "No Phase 2 dependencies or external runtime services were added."
+  ]
+}

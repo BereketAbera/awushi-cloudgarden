@@ -1,4 +1,4 @@
-# Phase 1 architecture
+# World and runtime architecture
 
 The existing Vite/React/R3F prototype is extended, with no backend. `App.tsx` owns screen routing, settings, discovery panels and local storage. `Scene.tsx` owns the live Three.js graph. Pure TypeScript modules contain navigation, camera and behavior rules so they can be tested without a GPU. The 3D scene is lazy-loaded separately from the interface.
 
@@ -19,7 +19,7 @@ Each district connects to the Common and its two neighbors. Elevations vary from
 
 ## Interaction and personality
 
-`eligibleStation()` uses horizontal distance, elevation and hysteresis. A ring highlights the eligible station and the HUD names it. E or the touch prompt opens a shared `Dialog`; a 650ms guard, key-repeat suppression and modal input blocking prevent accidental reopening. The panel lists the concept, concrete lifecycle steps, and an explicit future scenario label. Every station is a discovery interaction, not a live service or simulated deployment.
+`eligibleStation()` uses horizontal distance, elevation and hysteresis. A ring highlights the eligible station and the HUD names it. E or the touch prompt opens a shared `Dialog`; a 650ms guard, key-repeat suppression and modal input blocking prevent accidental reopening. The panel lists the concept, concrete lifecycle steps, and an explicit future scenario label. Every station retains its discovery and now adds registry-driven technology details and simulated state. The Deployment Lab executes a local typed scenario; no live services are connected.
 
 `progress.ts` validates versioned storage, drops unknown IDs, deduplicates discoveries, and counts the six district introductions. Entering a district and discovering a station are separate events. Local storage failure leaves the session usable. Recovery resets position and camera but preserves discoveries. Full progress reset is a distinct settings action. Finishing six introductions triggers a celebration after the panel closes.
 
@@ -39,4 +39,8 @@ Six entrance beacons use one `InstancedMesh`. World meshes are joined by materia
 2. Add or reuse a factory function in `scripts/blender/asset_factory.py`; fit visible geometry within the declared footprint. Keep signs overhead or outside walkable space.
 3. Regenerate the environment and inspect the district close render and runtime camera view. Run navigation reachability, bounds/winding and GLB checks.
 4. No UI switch statement is needed: minimap, proximity, discovery panel and progress consume station data. Old saves accept new IDs automatically when they are discovered.
-5. A real future simulation should introduce its own explicit state and tests. Change the panel's status and architecture legend only when the simulation exists.
+5. Extend the typed domain and add deterministic tests for a new simulation capability. Derive educational graph links and station inspection from the shared technology registry.
+
+## Phase 2 infrastructure layer
+
+`src/simulation/domain.ts` defines serializable events, commands and environment state. `engine.ts` is a deterministic reducer with an injectable clock; `scenario.ts` declares the 22-stage guided deployment. `registry.ts` owns 43 technology explanations and 49 graph relationships mapped to the existing facilities. The 2D architecture explorer and 3D station panels use that same registry. `components/useSimulation.ts` advances the model on a 100ms timer independently of WebGL frames; `SimulationEffects.tsx` only projects state and history into visuals. No visual completion can approve a pull request or advance a stage. See `SIMULATION.md` and `INFRASTRUCTURE.md` for dependency and environment contracts.

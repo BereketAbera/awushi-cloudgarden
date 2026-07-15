@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test, type Page } from './fixtures'
 
 async function position(page: Page) {
   return (await page.getByTestId('world-position').getAttribute('data-position'))!.split(',').map(Number)

@@ -63,7 +63,7 @@ test('interaction proximity accounts for elevation and does not reach remote sta
 })
 
 test('orthographic follow preserves framing while translation tracks the character', () => {
-  const first = desiredCamera('follow', [0, 0, 0], 1.5), second = desiredCamera('follow', [12, .6, -7], 1.5)
+  const first = desiredCamera('isometric', [0, 0, 0], 1.5), second = desiredCamera('isometric', [12, .6, -7], 1.5)
   assert.equal(first.span, second.span)
   for (let axis = 0; axis < 3; axis++) assert.ok(Math.abs((first.position[axis] - first.target[axis]) - (second.position[axis] - second.target[axis])) < 1e-9)
   assert.ok(desiredCamera('overview', [20, 1, 10], .5).span >= 100)
@@ -72,7 +72,7 @@ test('orthographic follow preserves framing while translation tracks the charact
 })
 
 test('camera smoothing is time-step independent and converges without overshoot', () => {
-  const from = desiredCamera('follow', [0, 0, 0], 1.5), to = desiredCamera('follow', [10, 0, -10], 1.5)
+  const from = desiredCamera('isometric', [0, 0, 0], 1.5), to = desiredCamera('isometric', [10, 0, -10], 1.5)
   let at30 = from, at60 = from
   for (let i = 0; i < 30; i++) at30 = advanceCamera(at30, to, 1 / 30)
   for (let i = 0; i < 60; i++) at60 = advanceCamera(at60, to, 1 / 60)

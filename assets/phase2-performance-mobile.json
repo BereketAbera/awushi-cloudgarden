@@ -1,0 +1,158 @@
+{
+  "date": "2026-11-06",
+  "project": "mobile",
+  "browser": "Installed Chrome, headless WebGL",
+  "mode": "third-person",
+  "quality": "balanced",
+  "scenario": "Active healthy deployment, 10 seconds before approval and 18 seconds after approval",
+  "viewport": {
+    "width": 390,
+    "height": 664
+  },
+  "samples": [
+    {
+      "fps": 46,
+      "drawCalls": 109,
+      "triangles": 280468
+    },
+    {
+      "fps": 60,
+      "drawCalls": 109,
+      "triangles": 280468
+    },
+    {
+      "fps": 60,
+      "drawCalls": 109,
+      "triangles": 280468
+    },
+    {
+      "fps": 60,
+      "drawCalls": 111,
+      "triangles": 277556
+    },
+    {
+      "fps": 60,
+      "drawCalls": 110,
+      "triangles": 280480
+    },
+    {
+      "fps": 60,
+      "drawCalls": 109,
+      "triangles": 280468
+    },
+    {
+      "fps": 60,
+      "drawCalls": 113,
+      "triangles": 279964
+    },
+    {
+      "fps": 60,
+      "drawCalls": 2,
+      "triangles": 4
+    },
+    {
+      "fps": 60,
+      "drawCalls": 117,
+      "triangles": 281764
+    },
+    {
+      "fps": 60,
+      "drawCalls": 109,
+      "triangles": 280468
+    },
+    {
+      "fps": 60,
+      "drawCalls": 105,
+      "triangles": 277060
+    },
+    {
+      "fps": 60,
+      "drawCalls": 105,
+      "triangles": 277060
+    },
+    {
+      "fps": 60,
+      "drawCalls": 106,
+      "triangles": 277072
+    },
+    {
+      "fps": 60,
+      "drawCalls": 105,
+      "triangles": 277060
+    },
+    {
+      "fps": 60,
+      "drawCalls": 105,
+      "triangles": 277060
+    },
+    {
+      "fps": 60,
+      "drawCalls": 105,
+      "triangles": 277060
+    },
+    {
+      "fps": 60,
+      "drawCalls": 105,
+      "triangles": 277060
+    },
+    {
+      "fps": 60,
+      "drawCalls": 106,
+      "triangles": 277072
+    },
+    {
+      "fps": 60,
+      "drawCalls": 106,
+      "triangles": 277072
+    },
+    {
+      "fps": 60,
+      "drawCalls": 105,
+      "triangles": 277060
+    },
+    {
+      "fps": 60,
+      "drawCalls": 105,
+      "triangles": 277060
+    },
+    {
+      "fps": 60,
+      "drawCalls": 106,
+      "triangles": 277072
+    },
+    {
+      "fps": 60,
+      "drawCalls": 105,
+      "triangles": 277060
+    },
+    {
+      "fps": 60,
+      "drawCalls": 105,
+      "triangles": 277060
+    },
+    {
+      "fps": 60,
+      "drawCalls": 105,
+      "triangles": 277060
+    },
+    {
+      "fps": 60,
+      "drawCalls": 2,
+      "triangles": 4
+    },
+    {
+      "fps": 60,
+      "drawCalls": 106,
+      "triangles": 277444
+    },
+    {
+      "fps": 60,
+      "drawCalls": 106,
+      "triangles": 277444
+    }
+  ],
+  "meanFps": 59.5,
+  "minimumFps": 46,
+  "maximumFps": 60,
+  "note": "Phone profile is desktop browser emulation; no physical-mobile or universal frame-rate claim."
+}

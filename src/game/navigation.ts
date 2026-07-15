@@ -51,3 +51,12 @@ export function eligibleStation(position: Point3, current: string | null = null,
   if (previous && candidates[0] && previous.distance <= candidates[0].distance + 0.25) return previous.station.id
   return candidates[0]?.station.id ?? null
 }
+
+/** Immersive modes steer with A/D; W/S follow the view heading without yaw feedback. */
+export function immersiveDirection(keys: Set<string>, heading: number) {
+  const forward = Number(keys.has('KeyW') || keys.has('ArrowUp')) - Number(keys.has('KeyS') || keys.has('ArrowDown'))
+  return { x: Math.sin(heading) * forward, z: Math.cos(heading) * forward, moving: forward !== 0 }
+}
+export function steeringInput(keys: Set<string>) {
+  return Number(keys.has('KeyA') || keys.has('ArrowLeft')) - Number(keys.has('KeyD') || keys.has('ArrowRight'))
+}

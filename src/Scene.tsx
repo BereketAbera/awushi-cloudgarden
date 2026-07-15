@@ -1,17 +1,18 @@
 import { Component, Suspense, useEffect, useMemo, useRef, type ErrorInfo, type MutableRefObject, type ReactNode } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { ContactShadows, Environment, Lightformer, OrbitControls, useAnimations, useGLTF } from '@react-three/drei'
-import { NeutralToneMapping, Group, LoopOnce, LoopRepeat, Mesh, Vector3, OrthographicCamera, DirectionalLight, InstancedMesh, Object3D, Color, type AnimationAction } from 'three'
+import { ContactShadows, Environment, Lightformer, OrbitControls, PerspectiveCamera as PerspectiveLens, OrthographicCamera as OrthographicLens, useAnimations, useGLTF } from '@react-three/drei'
+import { NeutralToneMapping, Group, LoopOnce, LoopRepeat, Mesh, Vector3, PerspectiveCamera, OrthographicCamera, DirectionalLight, InstancedMesh, Object3D, Color, type AnimationAction } from 'three'
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js'
 import type { OrbitControls as OrbitControlsType } from 'three-stdlib'
 import { DISTRICTS, HUB, STATIONS, WORLD_LAYOUT, type Point3 } from './worldConfig'
 import type { Clip, ExpressionName, SceneProps } from './game/types'
-import { eligibleStation, moveCharacter, movementDirection, surfaceAt } from './game/navigation'
-import { advanceCamera, damp, desiredCamera, FOLLOW_AZIMUTH, studioCamera, type CameraPose } from './game/camera'
+import { eligibleStation, moveCharacter, movementDirection, immersiveDirection, steeringInput, surfaceAt } from './game/navigation'
+import { advanceCamera, advanceSteering, damp, desiredCamera, cameraObstruction, FOLLOW_ANCHOR_HEIGHT, WORLD_CHARACTER_SCALE, INITIAL_HEADING, isImmersive, FOLLOW_AZIMUTH, studioCamera, type CameraPose } from './game/camera'
 import { createBehavior, stepBehavior } from './game/behavior'
+import { SimulationEffects } from './simulation/SimulationEffects'
 import { applyExpression, getExpressionTargets, resetExpression } from './character/expressions'
 
-type LiveWorld = { position: Vector3; azimuth: number; nearby: string | null }
+type LiveWorld = { position: Vector3; azimuth: number; viewYaw: number; movementYaw: number; heading: number; bodyVisible: boolean; nearby: string | null }
 type LiveRef = MutableRefObject<LiveWorld>
 const emptyKeys = new Set<string>()
 
@@ -65,27 +66,29 @@ function Awushi(props: SceneProps & { live: LiveRef }) {
   useEffect(() => {
     const finish = (event: { action: AnimationAction }) => {
       if (event.action !== actions[clip]) return
-      const direction = movementDirection(inputEnabled ? input.current : emptyKeys, live.current.azimuth)
+      const keys = inputEnabled ? input.current : emptyKeys
+      const direction = mode === 'world' && isImmersive(props.cameraMode) ? immersiveDirection(keys, live.current.movementYaw) : movementDirection(keys, live.current.azimuth)
       const running = input.current.has('ShiftLeft') || input.current.has('ShiftRight')
       onClip(direction.moving ? running ? 'Run' : 'Walk' : 'Idle')
     }
     mixer.addEventListener('finished', finish)
     return () => mixer.removeEventListener('finished', finish)
-  }, [mixer, onClip, actions, clip, input, inputEnabled, live])
+  }, [mixer, onClip, actions, clip, input, inputEnabled, live, mode, props.cameraMode])
   useEffect(() => {
     const position = mode === 'world' ? WORLD_LAYOUT.spawn : [0, 0, 0]
     mover.current.position.set(...position as Point3)
-    mover.current.rotation.set(0, 0, 0)
+    mover.current.rotation.set(0, mode === 'world' ? INITIAL_HEADING : 0, 0)
     live.current.position.copy(mover.current.position); live.current.nearby = null
-    moving.current = false; targetRotation.current = 0; behavior.current = createBehavior()
+    moving.current = false; targetRotation.current = mode === 'world' ? INITIAL_HEADING : 0; live.current.heading = targetRotation.current; behavior.current = createBehavior()
     resetExpression(scene)
   }, [reset, mode, live, scene])
   useEffect(() => { reaction.current = props.reaction ? { expression: props.reaction.expression, remaining: 2.2 } : null }, [props.reaction])
 
   useFrame(({ gl }, delta) => {
-    const dt = Math.min(delta, 0.05)
+    const dt = Math.min(delta, 0.1)
     const keys = inputEnabled && playing ? input.current : emptyKeys
-    const direction = movementDirection(keys, live.current.azimuth)
+    const immersive = mode === 'world' && isImmersive(props.cameraMode)
+    const direction = immersive ? immersiveDirection(keys, live.current.movementYaw) : movementDirection(keys, live.current.azimuth)
     const running = keys.has('ShiftLeft') || keys.has('ShiftRight')
     const oneShot = clip === 'Interact' || clip === 'Celebrate'
     let blocked = false
@@ -109,10 +112,13 @@ function Awushi(props: SceneProps & { live: LiveRef }) {
       targetRotation.current = Math.atan2(direction.x, direction.z)
     } else if (moving.current && !oneShot) onClip('Idle')
     moving.current = direction.moving
+    if (immersive && !direction.moving) targetRotation.current = live.current.viewYaw + (props.activeStation || clip === 'Celebrate' || reaction.current?.expression === 'Happy' ? Math.PI : 0)
+    mover.current.visible = mode === 'studio' || live.current.bodyVisible
     const rotation = targetRotation.current + (mode === 'studio' ? props.rotation * Math.PI / 180 : 0)
     const difference = Math.atan2(Math.sin(rotation - mover.current.rotation.y), Math.cos(rotation - mover.current.rotation.y))
     mover.current.rotation.y += difference * (1 - Math.exp(-dt * 12))
     live.current.position.copy(mover.current.position)
+    live.current.heading = mover.current.rotation.y
     const position = mover.current.position.toArray() as Point3
     live.current.nearby = mode === 'world' ? eligibleStation(position, live.current.nearby) : null
     if (reaction.current) { reaction.current.remaining -= dt; if (reaction.current.remaining <= 0) reaction.current = null }
@@ -128,7 +134,7 @@ function Awushi(props: SceneProps & { live: LiveRef }) {
       props.onTelemetry({ position, districtId: surfaceAt(position[0], position[2])?.districtId ?? 'hub', nearbyId: live.current.nearby, expression: face, fps: sample.fps, drawCalls: gl.info.render.calls, triangles: gl.info.render.triangles })
     }
   })
-  return <group ref={mover} scale={mode === 'world' ? 0.58 : 1}><primitive object={scene} /></group>
+  return <group ref={mover} scale={mode === 'world' ? WORLD_CHARACTER_SCALE : 1}><primitive object={scene} /></group>
 }
 
 function WorldAsset({ path, position = [0, 0, 0], quality }: { path: string; position?: Point3; quality: SceneProps['quality'] }) {
@@ -164,10 +170,10 @@ function DistrictBeacons({ reducedMotion }: { reducedMotion: boolean }) {
   })
   return <instancedMesh ref={instances} args={[undefined, undefined, DISTRICTS.length]}><icosahedronGeometry args={[.14, 1]} /><meshBasicMaterial toneMapped={false} /></instancedMesh>
 }
-function WorldMarker({ live, reducedMotion }: { live: LiveRef; reducedMotion: boolean }) {
+function WorldMarker({ live, reducedMotion, targetStation }: { live: LiveRef; reducedMotion: boolean; targetStation?: string | null }) {
   const marker = useRef<Group>(null!)
   useFrame(({ clock }) => {
-    const station = STATIONS.find(value => value.id === live.current.nearby)
+    const station = STATIONS.find(value => value.id === (live.current.nearby ?? targetStation))
     marker.current.visible = Boolean(station)
     if (station) {
       marker.current.position.set(station.position[0], station.position[1] + 0.035, station.position[2])
@@ -177,11 +183,11 @@ function WorldMarker({ live, reducedMotion }: { live: LiveRef; reducedMotion: bo
   })
   return <group ref={marker} visible={false}><mesh rotation={[-Math.PI / 2, 0, 0]}><ringGeometry args={[1, 1.045, 64]} /><meshBasicMaterial color="#ffe4a3" toneMapped={false} transparent opacity={0.85} depthWrite={false} /></mesh></group>
 }
-function Stage({ mode, quality, live, reducedMotion }: Pick<SceneProps, 'mode' | 'quality' | 'reducedMotion'> & { live: LiveRef }) {
+function Stage({ mode, quality, live, reducedMotion, targetStation }: Pick<SceneProps, 'mode' | 'quality' | 'reducedMotion' | 'targetStation'> & { live: LiveRef }) {
   if (mode === 'world') return <group>
     <WorldAsset path="/assets/world-hub.glb" quality={quality} />
     {DISTRICTS.map(district => <WorldAsset key={district.id} path={district.asset} position={district.center} quality={quality} />)}
-    <WorldMarker live={live} reducedMotion={reducedMotion} /><DistrictBeacons reducedMotion={reducedMotion} />
+    <WorldMarker live={live} reducedMotion={reducedMotion} targetStation={targetStation} /><DistrictBeacons reducedMotion={reducedMotion} />
     <mesh position={[0, -0.07, 0]} rotation={[-Math.PI / 2, 0, 0]}><ringGeometry args={[1.05, 1.09, 64]} /><meshBasicMaterial color={HUB.color} /></mesh>
   </group>
   return <group>
@@ -191,54 +197,109 @@ function Stage({ mode, quality, live, reducedMotion }: Pick<SceneProps, 'mode' |
   </group>
 }
 
-function CameraRig({ view, reset, mode, cameraMode, reducedMotion, inputEnabled, live }: Pick<SceneProps, 'view' | 'reset' | 'mode' | 'cameraMode' | 'reducedMotion' | 'inputEnabled'> & { live: LiveRef }) {
+function CameraRig({ view, reset, mode, cameraMode, reducedMotion, inputEnabled, input, live }: Pick<SceneProps, 'view' | 'reset' | 'mode' | 'cameraMode' | 'reducedMotion' | 'inputEnabled' | 'input'> & { live: LiveRef }) {
   const controls = useRef<OrbitControlsType>(null!)
-  const camera = useThree(state => state.camera) as OrthographicCamera
+  const camera = useThree(state => state.camera) as PerspectiveCamera | OrthographicCamera
+  const gl = useThree(state => state.gl)
   const size = useThree(state => state.size)
-  const pose = useRef<CameraPose>({ position: [14, 14, 18], target: [0, 1, 0], span: 18 })
-  const transition = useRef(1)
-  const initialized = useRef(false)
-  const publish = useRef(0)
+  const pose = useRef<CameraPose>({ position: [14, 14, 18], target: [0, 1, 0], span: 18, fov: 58 })
+  const transition = useRef(.85), initialized = useRef(false), publish = useRef(0)
+  const look = useRef({ yaw: INITIAL_HEADING, pitch: .2, distance: 5.8, dragging: false })
+  const lastProjection = useRef<boolean | null>(null)
   const aspect = size.width / size.height
-  useEffect(() => { transition.current = 0.7 }, [view, reset, mode, cameraMode, aspect])
-  useFrame(({ gl }, delta) => {
-    const dt = Math.min(delta, 0.05)
+  const immersive = mode === 'world' && isImmersive(cameraMode)
+  useEffect(() => { transition.current = .85 }, [view, reset, mode, cameraMode, aspect])
+  useEffect(() => { look.current = { yaw: INITIAL_HEADING, pitch: .2, distance: 5.8, dragging: false }; live.current.viewYaw = INITIAL_HEADING; live.current.movementYaw = INITIAL_HEADING }, [reset, live])
+  useEffect(() => {
+    const canvas = gl.domElement
+    if (!immersive || !inputEnabled) return
+    let pointer: number | null = null, x = 0, y = 0
+    const original = canvas.style.touchAction
+    canvas.style.touchAction = 'none'
+    const down = (event: PointerEvent) => {
+      if (pointer !== null || event.button !== 0 && event.button !== 2) return
+      pointer = event.pointerId; x = event.clientX; y = event.clientY; look.current.dragging = true
+      canvas.setPointerCapture(pointer); event.preventDefault()
+    }
+    const move = (event: PointerEvent) => {
+      if (event.pointerId !== pointer) return
+      look.current.yaw -= (event.clientX - x) * .005
+      look.current.pitch = Math.max(cameraMode === 'first-person' ? -.9 : -.02, Math.min(cameraMode === 'first-person' ? 1.3 : .72, look.current.pitch + (event.clientY - y) * .004))
+      x = event.clientX; y = event.clientY
+    }
+    const up = () => { pointer = null; look.current.dragging = false }
+    const wheel = (event: WheelEvent) => { if (cameraMode === 'third-person') { look.current.distance = Math.max(3.8, Math.min(8, look.current.distance + event.deltaY * .006)); event.preventDefault() } }
+    const context = (event: MouseEvent) => event.preventDefault()
+    canvas.addEventListener('pointerdown', down); canvas.addEventListener('pointermove', move)
+    canvas.addEventListener('pointerup', up); canvas.addEventListener('pointercancel', up); canvas.addEventListener('lostpointercapture', up)
+    canvas.addEventListener('wheel', wheel, { passive: false }); canvas.addEventListener('contextmenu', context)
+    return () => {
+      canvas.style.touchAction = original; up()
+      canvas.removeEventListener('pointerdown', down); canvas.removeEventListener('pointermove', move)
+      canvas.removeEventListener('pointerup', up); canvas.removeEventListener('pointercancel', up); canvas.removeEventListener('lostpointercapture', up)
+      canvas.removeEventListener('wheel', wheel); canvas.removeEventListener('contextmenu', context)
+    }
+  }, [gl, immersive, inputEnabled, cameraMode])
+  // Resolve steering before movement; midpoint yaw avoids low-FPS path bias.
+  useFrame((_, delta) => {
+    if (!immersive) return
+    const result = advanceSteering(live.current.viewYaw, look.current.yaw, inputEnabled ? steeringInput(input.current) : 0, Math.min(delta, .1))
+    look.current.yaw = result.targetYaw; live.current.viewYaw = result.viewYaw; live.current.movementYaw = result.movementYaw
+  }, -2)
+  useFrame((_, delta) => {
+    const dt = Math.min(delta, .1)
+    const perspective = camera instanceof PerspectiveCamera
     const player = live.current.position.toArray() as Point3
-    const desired = mode === 'studio' ? studioCamera(view, aspect) : desiredCamera(cameraMode, player, aspect)
-    const manual = mode === 'studio' || cameraMode === 'explore'
-    const orbit = controls.current
+    const desired = mode === 'studio' ? studioCamera(view, aspect) : desiredCamera(cameraMode, player, aspect, live.current.viewYaw, look.current.pitch, look.current.distance)
     if (!initialized.current) { pose.current = desired; initialized.current = true }
-    if (transition.current > 0 || !manual) {
-      pose.current = reducedMotion ? desired : advanceCamera(pose.current, desired, dt, transition.current > 0 ? 8 : 12)
+    // Match the apparent size at the focal plane when swapping projection types.
+    if (lastProjection.current !== null && perspective !== lastProjection.current) {
+      const length = Math.hypot(...pose.current.position.map((value, axis) => value - pose.current.target[axis]))
+      if (perspective) pose.current.fov = 2 * Math.atan(pose.current.span / (2 * Math.max(1, length))) * 180 / Math.PI
+      else pose.current.span = 2 * length * Math.tan((pose.current.fov ?? 58) * Math.PI / 360)
+    }
+    lastProjection.current = perspective
+    const orbit = controls.current
+    if (mode === 'studio' && transition.current <= 0) {
+      pose.current = { position: camera.position.toArray() as Point3, target: orbit.target.toArray() as Point3, span: 18 / camera.zoom, fov: 18 }
+    } else {
+      pose.current = reducedMotion ? desired : advanceCamera(pose.current, desired, dt, transition.current > 0 ? 7 : 14)
+      if (immersive) {
+        if (cameraMode === 'first-person' && transition.current <= 0) pose.current.position = desired.position
+        else if (cameraMode === 'third-person') {
+          const anchor: Point3 = [player[0], player[1] + FOLLOW_ANCHOR_HEIGHT, player[2]]
+          // Recheck the damped position, so smoothing cannot carry the camera through a wall.
+          pose.current.position = cameraObstruction(anchor, pose.current.position).position
+        }
+      }
       camera.position.fromArray(pose.current.position)
       orbit.target.fromArray(pose.current.target)
-      camera.zoom = 18 / pose.current.span
       camera.lookAt(orbit.target)
       transition.current = Math.max(0, transition.current - dt)
-    } else {
-      if (mode === 'world') {
-        const dx = damp(orbit.target.x, desired.target[0], 10, dt) - orbit.target.x
-        const dy = damp(orbit.target.y, desired.target[1], 10, dt) - orbit.target.y
-        const dz = damp(orbit.target.z, desired.target[2], 10, dt) - orbit.target.z
-        orbit.target.add(new Vector3(dx, dy, dz)); camera.position.add(new Vector3(dx, dy, dz))
-      }
-      pose.current = { position: camera.position.toArray() as Point3, target: orbit.target.toArray() as Point3, span: 18 / camera.zoom }
     }
-    camera.left = -9 * aspect; camera.right = 9 * aspect; camera.top = 9; camera.bottom = -9
+    if (perspective) { camera.aspect = aspect; camera.fov = Math.max(5, Math.min(90, pose.current.fov ?? 58)); camera.zoom = 1 }
+    else { camera.left = -9 * aspect; camera.right = 9 * aspect; camera.top = 9; camera.bottom = -9; camera.zoom = 18 / pose.current.span }
     camera.updateProjectionMatrix()
-    orbit.enabled = manual && transition.current === 0 && inputEnabled
-    orbit.update()
-    live.current.azimuth = mode === 'world' && cameraMode === 'follow' ? FOLLOW_AZIMUTH : orbit.getAzimuthalAngle()
+    orbit.enabled = mode === 'studio' && transition.current === 0 && inputEnabled
+    if (mode === 'studio') orbit.update()
+    live.current.azimuth = immersive ? live.current.viewYaw + Math.PI : FOLLOW_AZIMUTH
+    live.current.bodyVisible = cameraMode !== 'first-person' || mode === 'studio'
+    if (immersive && cameraMode === 'third-person') live.current.bodyVisible = camera.position.distanceTo(live.current.position.clone().add(new Vector3(0, FOLLOW_ANCHOR_HEIGHT, 0))) > 1.1
     publish.current += delta
     if (publish.current >= .2) {
       publish.current = 0
       gl.domElement.dataset.cameraPosition = camera.position.toArray().join(',')
       gl.domElement.dataset.cameraTarget = orbit.target.toArray().join(',')
       gl.domElement.dataset.cameraMode = mode === 'studio' ? view : cameraMode
+      gl.domElement.dataset.cameraProjection = perspective ? 'perspective' : 'orthographic'
+      gl.domElement.dataset.viewYaw = String(live.current.viewYaw)
+      gl.domElement.dataset.characterVisible = String(live.current.bodyVisible)
+      gl.domElement.dataset.characterHeading = String(live.current.heading)
     }
   })
-  return <OrbitControls ref={controls} makeDefault enablePan={false} minZoom={0.18} maxZoom={mode === 'world' ? 2 : 6} minPolarAngle={0.3} maxPolarAngle={mode === 'world' ? 1.12 : Math.PI / 2 + 0.05} enableDamping={!reducedMotion} dampingFactor={0.12} />
+  return <><PerspectiveLens makeDefault={immersive} position={[5, 3, 5]} near={.08} far={180} fov={58} /><OrthographicLens makeDefault={!immersive} position={[14, 14, 18]} near={.08} far={180} /><OrbitControls ref={controls} enablePan={false} minZoom={.18} maxZoom={6} minPolarAngle={.3} maxPolarAngle={Math.PI / 2 + .05} enableDamping={!reducedMotion} dampingFactor={.12} enabled={false} /></>
 }
+
 function Lighting({ lighting, quality, live, mode }: Pick<SceneProps, 'lighting' | 'quality' | 'mode'> & { live: LiveRef }) {
   const light = useRef<DirectionalLight>(null!)
   const night = lighting === 'moonlight'
@@ -260,13 +321,13 @@ function Lighting({ lighting, quality, live, mode }: Pick<SceneProps, 'lighting'
   </>
 }
 function SceneContents(props: SceneProps) {
-  const live = useRef<LiveWorld>({ position: new Vector3(...WORLD_LAYOUT.spawn), azimuth: FOLLOW_AZIMUTH, nearby: null })
+  const live = useRef<LiveWorld>({ position: new Vector3(...WORLD_LAYOUT.spawn), azimuth: FOLLOW_AZIMUTH, viewYaw: INITIAL_HEADING, movementYaw: INITIAL_HEADING, heading: INITIAL_HEADING, bodyVisible: true, nearby: null })
   return <>
     <Lighting {...props} live={live} />
-    <Suspense fallback={null}><Awushi {...props} live={live} /><Stage {...props} live={live} /></Suspense>
+    <Suspense fallback={null}><Awushi {...props} live={live} /><Stage {...props} live={live} />{props.mode === 'world' && props.simulation && <SimulationEffects simulation={props.simulation} environment={props.simulationEnvironment ?? props.simulation.environment} reducedMotion={props.reducedMotion} />}</Suspense>
     <CameraRig {...props} live={live} />
   </>
 }
 export default function Scene(props: SceneProps) {
-  return <SceneBoundary><Canvas fallback={<div className="scene-error">Interactive 3D needs WebGL. Try a browser with hardware acceleration enabled.</div>} data-testid="awushi-canvas" orthographic shadows={props.quality !== 'low'} camera={{ position: [14, 14, 18], near: 0.1, far: 180, zoom: 1 }} dpr={[1, props.quality === 'low' ? 1 : props.quality === 'high' ? 1.75 : 1.5]} gl={{ antialias: true, alpha: true, toneMapping: NeutralToneMapping, toneMappingExposure: 1 }}><SceneContents {...props} /></Canvas></SceneBoundary>
+  return <SceneBoundary><Canvas fallback={<div className="scene-error">Interactive 3D needs WebGL. Try a browser with hardware acceleration enabled.</div>} data-testid="awushi-canvas" shadows={props.quality !== 'low'} camera={{ position: [14, 14, 18], near: 0.1, far: 180, zoom: 1 }} dpr={[1, props.quality === 'low' ? 1 : props.quality === 'high' ? 1.75 : 1.5]} gl={{ antialias: true, alpha: true, toneMapping: NeutralToneMapping, toneMappingExposure: 1 }}><SceneContents {...props} /></Canvas></SceneBoundary>
 }

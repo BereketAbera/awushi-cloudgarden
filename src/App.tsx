@@ -1,15 +1,19 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
-import { Activity, ArrowDown, ArrowLeft, ArrowRight, ArrowUp, BookOpen, Box, Check, ChevronDown, ChevronRight, CircleHelp, Compass, Database, Droplets, Expand, Footprints, GitBranch, Home, Layers3, Map, Moon, Pause, Play, RotateCcw, Settings2, Shield, Ship, Smile, Sparkles, Sun, Telescope, Zap } from 'lucide-react'
+import { Activity, ArrowDown, ArrowLeft, ArrowRight, ArrowUp, BookOpen, Box, Check, ChevronDown, ChevronRight, CircleHelp, Compass, Crosshair, Droplets, Expand, Footprints, Home, Layers3, Map, Moon, Pause, Play, RotateCcw, Settings2, Smile, Sparkles, Sun, X, Zap } from 'lucide-react'
 import { Dialog } from './components/Dialog'
 import { MiniMap } from './components/MiniMap'
+import { SimulationDock, SimulationPanel } from './components/SimulationPanels'
+import { ArchitectureExplorer, StationTechnologyPanel } from './components/TechnologyPanels'
+import { useSimulation } from './components/useSimulation'
+import type { EnvironmentId, ScenarioId, SimulationCommand } from './simulation/domain'
 import { DISTRICTS, HUB, STATIONS, WORLD_LAYOUT, getDistrict, getStation } from './worldConfig'
 import { STORAGE_KEY, createProgress, discoverStation, enterDistrict, introductoryProgress, parseProgress, resetProgress, type Progress } from './game/progress'
 import type { AssetInfo, CameraMode, Clip, ExpressionName, Lighting, Quality, Reaction, Telemetry, View } from './game/types'
 
 const Scene = lazy(() => import('./Scene'))
 type Screen = 'welcome' | 'adventure' | 'explore' | 'studio'
-type Modal = 'settings' | 'help' | 'architecture' | 'journal' | 'station' | null
-type Preferences = { quality: Quality; reducedMotion: boolean; lighting: Lighting }
+type Modal = 'settings' | 'help' | 'architecture' | 'journal' | 'station' | 'simulation' | null
+type Preferences = { quality: Quality; reducedMotion: boolean; lighting: Lighting; cameraMode: CameraMode }
 const PREFS_KEY = 'awushi-preferences-v2'
 const expressions: ExpressionName[] = ['Neutral', 'Happy', 'Curious', 'Thinking', 'Excited', 'Worried', 'Surprised', 'Determined', 'Celebrating', 'Sleepy']
 const animations: { clip: Clip; icon: typeof Activity; name: string }[] = [
@@ -17,17 +21,17 @@ const animations: { clip: Clip; icon: typeof Activity; name: string }[] = [
   { clip: 'Run', icon: Zap, name: 'On a mission' }, { clip: 'Interact', icon: Smile, name: 'Oh, hello!' }, { clip: 'Celebrate', icon: Sparkles, name: 'We did it!' },
 ]
 const views: { id: View; label: string }[] = [{ id: 'three-quarter', label: '¾' }, { id: 'front', label: 'Front' }, { id: 'side', label: 'Side' }, { id: 'back', label: 'Back' }]
-const cameraModes: { id: CameraMode; name: string; icon: typeof Compass }[] = [{ id: 'follow', name: 'Follow', icon: Footprints }, { id: 'explore', name: 'Explore', icon: Compass }, { id: 'overview', name: 'Overview', icon: Map }]
-const districtIcons: Record<string, typeof Compass> = { development: GitBranch, infrastructure: Ship, orchestration: Layers3, security: Shield, observability: Telescope, data: Database }
+const cameraModes: { id: CameraMode; name: string; icon: typeof Compass }[] = [{ id: 'third-person', name: 'Follow', icon: Footprints }, { id: 'first-person', name: 'First person', icon: Crosshair }, { id: 'overview', name: 'Overview', icon: Map }, { id: 'isometric', name: 'Isometric', icon: Layers3 }]
+const cameraHints: Record<CameraMode, string> = { 'third-person': 'W/S move · A/D turn · Drag to look', 'first-person': 'W/S move · A/D turn · Drag to look', overview: 'Every district, one connected world.', isometric: 'A steady miniature view · C changes view' }
 const movementKeys = new Set(['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'ShiftLeft', 'ShiftRight'])
 const initialTelemetry: Telemetry = { position: WORLD_LAYOUT.spawn, districtId: 'hub', nearbyId: null, expression: 'Neutral', fps: 0, drawCalls: 0, triangles: 0 }
 
 function readProgress(): Progress { try { return parseProgress(localStorage.getItem(STORAGE_KEY)) } catch { return createProgress() } }
 function readPreferences(): Preferences {
-  const initial: Preferences = { quality: 'balanced', reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches, lighting: 'daylight' }
+  const initial: Preferences = { quality: 'balanced', reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches, lighting: 'daylight', cameraMode: 'third-person' }
   try {
     const saved = JSON.parse(localStorage.getItem(PREFS_KEY) ?? '{}') as Partial<Preferences>
-    return { quality: ['low', 'balanced', 'high'].includes(saved.quality ?? '') ? saved.quality! : initial.quality, reducedMotion: typeof saved.reducedMotion === 'boolean' ? saved.reducedMotion : initial.reducedMotion, lighting: ['daylight', 'moonlight', 'studio'].includes(saved.lighting ?? '') ? saved.lighting! : initial.lighting }
+    return { quality: ['low', 'balanced', 'high'].includes(saved.quality ?? '') ? saved.quality! : initial.quality, reducedMotion: typeof saved.reducedMotion === 'boolean' ? saved.reducedMotion : initial.reducedMotion, lighting: ['daylight', 'moonlight', 'studio'].includes(saved.lighting ?? '') ? saved.lighting! : initial.lighting, cameraMode: cameraModes.some(item => item.id === saved.cameraMode) ? saved.cameraMode! : initial.cameraMode }
   } catch { return initial }
 }
 function BrandMark() {
@@ -41,15 +45,21 @@ export default function App() {
   const [playing, setPlaying] = useState(true)
   const [speed, setSpeed] = useState(1)
   const [view, setView] = useState<View>('three-quarter')
-  const [cameraMode, setCameraMode] = useState<CameraMode>('follow')
   const [expression, setExpression] = useState<ExpressionName | 'Auto'>('Neutral')
   const [expressionIntensity, setExpressionIntensity] = useState(1)
   const [rotation, setRotation] = useState(0)
   const [preferences, setPreferences] = useState<Preferences>(readPreferences)
+  const cameraMode = preferences.cameraMode
+  const setCameraMode = useCallback((value: CameraMode) => setPreferences(previous => ({ ...previous, cameraMode: value })), [])
   const [progress, setProgress] = useState<Progress>(readProgress)
   const [telemetry, setTelemetry] = useState<Telemetry>(initialTelemetry)
   const [info, setInfo] = useState<AssetInfo | null>(null)
   const [selectedStation, setSelectedStation] = useState<string | null>(null)
+  const [navigationTarget, setNavigationTarget] = useState<string | null>(null)
+  const [environment, setEnvironment] = useState<EnvironmentId>('development')
+  const [scenario, setScenario] = useState<ScenarioId>('healthy')
+  const { state: simulation, dispatch: dispatchSimulation } = useSimulation()
+  const previousSimulationStatus = useRef(simulation.status)
   const [reset, setReset] = useState(0)
   const [reaction, setReaction] = useState<Reaction>(null)
   const [notice, setNotice] = useState<{ id: number; text: string; type: 'discovery' | 'info' } | null>(null)
@@ -64,11 +74,14 @@ export default function App() {
   const pendingCelebration = useRef(false)
   const mode = screen === 'studio' ? 'studio' : 'world'
   const inGame = screen === 'adventure' || screen === 'explore'
+  const immersive = cameraMode === 'third-person' || cameraMode === 'first-person'
   const station = selectedStation ? getStation(selectedStation) : undefined
   const nearbyStation = telemetry.nearbyId ? getStation(telemetry.nearbyId) : undefined
   const currentDistrict = getDistrict(telemetry.districtId)
   const currentDistrictName = currentDistrict?.label ?? (telemetry.districtId === 'skyway' ? 'The Skyways' : HUB.name)
   const introCount = introductoryProgress(progress)
+  const targetStation = navigationTarget ? getStation(navigationTarget) : undefined
+  const targetDistance = targetStation ? Math.round(Math.hypot(targetStation.position[0] - telemetry.position[0], targetStation.position[2] - telemetry.position[2])) : 0
   const objective = DISTRICTS.find(district => !progress.stations.includes(district.introStation))
 
   const notify = useCallback((text: string, type: 'discovery' | 'info' = 'info') => setNotice({ id: ++noticeNumber.current, text, type }), [])
@@ -76,6 +89,19 @@ export default function App() {
   const onReady = useCallback((value: AssetInfo) => setInfo(value), [])
   const onClip = useCallback((value: Clip) => setClip(value), [])
   const onTelemetry = useCallback((value: Telemetry) => setTelemetry(value), [])
+
+  useEffect(() => {
+    if (previousSimulationStatus.current === simulation.status) return
+    previousSimulationStatus.current = simulation.status
+    if (simulation.status === 'failed') { react('Worried'); notify('A check caught a problem. Open the lab to inspect it.') }
+    if (simulation.status === 'retrying') react('Determined')
+    if (simulation.status === 'waiting-approval') { react('Thinking'); notify('The image is ready. Your approval is the next step.') }
+    if (simulation.status === 'succeeded') {
+      react('Celebrating')
+      if (inGame) { setClip('Celebrate'); setPlaying(true) }
+      notify('A healthy release, from code to telemetry.', 'discovery')
+    }
+  }, [simulation.status, inGame, react, notify])
 
   useEffect(() => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)) } catch { /* Exploring still works with browser storage disabled. */ } }, [progress])
   useEffect(() => { try { localStorage.setItem(PREFS_KEY, JSON.stringify(preferences)) } catch { /* Preferences remain effective for this visit. */ } }, [preferences])
@@ -100,7 +126,7 @@ export default function App() {
     react('Determined')
   }, [react])
   const start = useCallback((next: Screen) => {
-    setScreen(next); setModal(null); setCameraMode('follow'); setSelectedStation(null); recover()
+    setScreen(next); setModal(null); setSelectedStation(null); recover()
     if (next === 'studio') { setView('three-quarter'); setExpression('Neutral'); setExpressionIntensity(1); setRotation(0) }
     if (next === 'adventure') notify('Follow the bridges. Every district has a story.')
     if (next === 'explore') notify('No itinerary. Follow whatever catches your eye.')
@@ -136,6 +162,7 @@ export default function App() {
       if (event.code === 'KeyE') { event.preventDefault(); if (inGame) interact(); else { setClip('Interact'); setPlaying(true) } }
       if (event.code === 'Space' && !(event.target instanceof HTMLButtonElement)) { event.preventDefault(); setPlaying(true); setClip('Celebrate'); react('Celebrating') }
       if (event.code === 'KeyR') { event.preventDefault(); recover(); if (inGame) notify('Back at the Common. Your discoveries are safe.') }
+      if (event.code === 'KeyC' && inGame) { event.preventDefault(); setCameraMode(cameraModes[(cameraModes.findIndex(item => item.id === cameraMode) + 1) % cameraModes.length].id) }
       if (event.code === 'KeyM' && inGame) { event.preventDefault(); setModal('journal') }
       if (event.code === 'Escape') setModal('settings')
     }
@@ -144,7 +171,7 @@ export default function App() {
     window.addEventListener('keydown', down); window.addEventListener('keyup', up); window.addEventListener('blur', clear)
     document.addEventListener('visibilitychange', clear)
     return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up); window.removeEventListener('blur', clear); document.removeEventListener('visibilitychange', clear) }
-  }, [modal, screen, inGame, interact, react, recover, notify])
+  }, [modal, screen, inGame, interact, react, recover, notify, cameraMode, setCameraMode])
 
   const chooseClip = (value: Clip) => { setClip(value); setPlaying(true) }
   const setPreference = <K extends keyof Preferences>(key: K, value: Preferences[K]) => setPreferences(previous => ({ ...previous, [key]: value }))
@@ -152,6 +179,18 @@ export default function App() {
   const resetStudio = () => { recover(); setExpression('Neutral'); setExpressionIntensity(1); setSpeed(1); setRotation(0); setView('three-quarter') }
   const style = { '--district-color': currentDistrict?.color ?? HUB.color } as CSSProperties
   const openNotes = (id: string) => { setSelectedStation(id); setModal('station') }
+  const locateStation = (id: string) => {
+    const destination = getStation(id)
+    if (!destination) return
+    if (!inGame) start('explore')
+    setModal(null); setSelectedStation(null); setNavigationTarget(id); input.current.clear()
+    notify(`Follow the gold marker to ${destination.name}.`)
+  }
+  const commandSimulation = (command: SimulationCommand) => {
+    dispatchSimulation(command)
+    if (command.type === 'backup') { react('Happy'); notify('A simulated backup was saved for this environment.') }
+    if (command.type === 'restore') { react('Determined'); notify('The snapshot was restored into a simulated recovery target.') }
+  }
 
   return <div className={`app phase-one screen-${screen} ${preferences.reducedMotion ? 'reduce-motion' : ''}`} ref={container} style={style}>
     <div className="app-shell">
@@ -171,32 +210,33 @@ export default function App() {
             <Scene clip={clip} playing={playing} speed={mode === 'studio' ? speed : 1} mode={mode} view={view} reset={reset} input={input} onClip={onClip} onReady={onReady}
               cameraMode={screen === 'welcome' ? 'overview' : cameraMode} expression={mode === 'world' ? 'Auto' : expression} expressionIntensity={mode === 'world' ? 1 : expressionIntensity}
               lighting={preferences.lighting} rotation={mode === 'studio' ? rotation : 0} quality={preferences.quality} reducedMotion={preferences.reducedMotion}
-              activeStation={modal === 'station' ? selectedStation : null} reaction={reaction} inputEnabled={screen !== 'welcome' && modal === null} onTelemetry={onTelemetry} />
+              activeStation={modal === 'station' ? selectedStation : null} reaction={reaction} inputEnabled={screen !== 'welcome' && modal === null} onTelemetry={onTelemetry} targetStation={navigationTarget} simulation={simulation} simulationEnvironment={environment} />
           </Suspense>
         </div>
-        <div className="scene-vignette" aria-hidden="true" />
+        <div className="scene-vignette" aria-hidden="true" />{inGame && cameraMode === 'first-person' && <span className="first-person-reticle" aria-hidden="true" />}
 
         {screen === 'welcome' && <section className="welcome" data-testid="screen-welcome">
-          <div className="welcome-story"><div className="eyebrow"><span className="tiny-spark">✦</span> AN ADVENTURE IN THE MAKING</div><h1>A little world.<br /><em>A big adventure.</em></h1><p>Meet Awushi. Follow a curious little splash across six floating districts, and discover how good software finds its way into the world.</p>
+          <div className="welcome-story"><div className="eyebrow"><span className="tiny-spark">✦</span> AN ADVENTURE IN THE MAKING</div><h1>A little world.<br /><em>A big adventure.</em></h1><p>Meet Awushi. Follow a curious little splash across six floating districts, and bring a code change to life through a working DevOps simulation.</p>
             <div className="welcome-actions"><button className="primary-button" onClick={() => start('adventure')} data-testid="play-adventure"><Play size={16} fill="currentColor" />Play Adventure<ArrowRight size={17} /></button><button className="secondary-button" onClick={() => start('explore')} data-testid="free-explore"><Compass size={17} />Free Explore</button></div>
             <button className="text-button architecture-link" onClick={() => setModal('architecture')} data-testid="view-architecture">View Architecture<ArrowRight size={14} /></button>
             <div className="welcome-facts"><span><b>06</b> connected districts</span><span><b>{STATIONS.length}</b> places to discover</span><span><b>01</b> very curious companion</span></div>
           </div>
           <div className="welcome-map-caption"><span className="caption-line" /><span>A WORLD BUILT WITH CARE<small>Every bridge leads to a new perspective.</small></span></div>
-          <div className="welcome-footer"><span><Footprints size={14} />Explore at your own pace. No precise gaming skills needed.</span><span>PHASE 01 / DISCOVERY</span></div>
+          <div className="welcome-footer"><span><Footprints size={14} />Explore at your own pace. No precise gaming skills needed.</span><span>PHASE 02 / DELIVERY</span></div>
         </section>}
 
         {inGame && <div className="game-hud">
           <section className="district-heading" aria-label="Current district"><div className="eyebrow"><span className="district-dot" />{currentDistrict ? `DISTRICT 0${currentDistrict.order}` : telemetry.districtId === 'skyway' ? 'BETWEEN WORLDS' : 'YOUR ADVENTURE STARTS HERE'}</div><h1 data-testid="district-name">{currentDistrictName}</h1><p>{currentDistrict?.name ?? (telemetry.districtId === 'skyway' ? 'A small bridge. A new perspective.' : 'Six directions. Follow your curiosity.')}</p></section>
           <button className="progress-pill" onClick={() => setModal('journal')} aria-label="Open exploration journal" data-testid="exploration-progress"><BookOpen size={15} /><span><b>{progress.stations.length}</b> / {STATIONS.length} discoveries</span><span className="progress-mini"><i style={{ width: `${progress.stations.length / STATIONS.length * 100}%` }} /></span></button>
-          {screen === 'adventure' && <div className="objective-pill"><Sparkles size={14} /><span>{objective ? <>NEXT LITTLE STEP<small>Discover {objective.label}</small></> : <>FIRST JOURNEY COMPLETE<small>Keep exploring the stories you missed.</small></>}</span><b>{introCount}/6</b></div>}
-          <button className="minimap" onClick={() => setModal('journal')} aria-label="Open world map and journal" data-testid="world-minimap"><div className="map-label"><Map size={12} /><span>THE LITTLE WORLD</span><kbd>M</kbd></div><MiniMap position={telemetry.position} districtId={telemetry.districtId} progress={progress} targetId={screen === 'adventure' ? objective?.id : undefined} /><span className="map-footer">{progress.districts.length} of 6 districts visited<ChevronRight size={12} /></span></button>
-          <div className="game-bottom-center"><button className={`interaction-prompt ${nearbyStation ? 'available' : ''}`} onClick={interact} disabled={!nearbyStation} data-testid="nearby-interaction"><kbd>E</kbd><span>{nearbyStation ? <><small>TAKE A CLOSER LOOK</small>{nearbyStation.name}</> : 'Follow a path to discover something new'}</span>{nearbyStation && <ArrowRight size={16} />}</button><div className="keyboard-hint"><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>Move</span><span><kbd>Shift</kbd>Run</span><span><kbd>Space</kbd>Celebrate</span></div></div>
-          <div className="camera-hud"><span className="eyebrow">YOUR VIEW OF THE WORLD</span><div className="camera-modes" aria-label="Camera mode">{cameraModes.map(item => <button key={item.id} onClick={() => setCameraMode(item.id)} className={cameraMode === item.id ? 'active' : ''} aria-pressed={cameraMode === item.id} data-testid={`camera-${item.id}`}><item.icon size={15} /><span>{item.name}</span></button>)}</div><div className="camera-help">{cameraMode === 'follow' ? 'Awushi leads. The camera follows.' : cameraMode === 'explore' ? 'Drag to orbit · Scroll or pinch to zoom' : 'Every district, one connected world.'}<button className="icon-button" onClick={() => { recover(); notify('Back at the Common. Your discoveries are safe.') }} aria-label="Return to central hub" data-testid="return-to-hub"><Home size={14} /></button></div></div>
+          {targetStation ? <div className="objective-pill navigation-target" data-testid="navigation-target"><Compass size={15} /><span>FOLLOW THE GOLD MARKER<small>{targetStation.name}<span>{targetDistance} m away · {getDistrict(targetStation.districtId)?.label}</span></small></span><button className="icon-button" aria-label="Clear navigation target" onClick={() => setNavigationTarget(null)}><X size={13} /></button></div> : screen === 'adventure' && <div className="objective-pill"><Sparkles size={14} /><span>{objective ? <>NEXT LITTLE STEP<small>Discover {objective.label}</small></> : <>FIRST JOURNEY COMPLETE<small>Keep exploring the stories you missed.</small></>}</span><b>{introCount}/6</b></div>}
+          <button className="minimap" onClick={() => setModal('journal')} aria-label="Open world map and journal" data-testid="world-minimap"><div className="map-label"><Map size={12} /><span>THE LITTLE WORLD</span><kbd>M</kbd></div><MiniMap position={telemetry.position} districtId={telemetry.districtId} progress={progress} targetId={targetStation?.districtId ?? (screen === 'adventure' ? objective?.id : undefined)} targetStationId={navigationTarget} /><span className="map-footer">{progress.districts.length} of 6 districts visited<ChevronRight size={12} /></span></button>
+          <div className="game-bottom-center"><button className={`interaction-prompt ${nearbyStation ? 'available' : ''}`} onClick={interact} disabled={!nearbyStation} data-testid="nearby-interaction"><kbd>E</kbd><span>{nearbyStation ? <><small>TAKE A CLOSER LOOK</small>{nearbyStation.name}</> : 'Follow a path to discover something new'}</span>{nearbyStation && <ArrowRight size={16} />}</button><div className="keyboard-hint"><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>{immersive ? 'Move / turn' : 'Move'}</span><span><kbd>Shift</kbd>Run</span><span><kbd>Space</kbd>Celebrate</span></div></div>
+          <div className="camera-hud"><span className="eyebrow">YOUR VIEW OF THE WORLD</span><div className="camera-modes" aria-label="Camera mode">{cameraModes.map(item => <button key={item.id} onClick={() => setCameraMode(item.id)} className={cameraMode === item.id ? 'active' : ''} aria-pressed={cameraMode === item.id} data-testid={`camera-${item.id}`}><item.icon size={15} /><span>{item.name}</span></button>)}</div><div className="camera-help">{cameraHints[cameraMode]}<button className="icon-button" onClick={() => { recover(); notify('Back at the Common. Your discoveries are safe.') }} aria-label="Return to central hub" data-testid="return-to-hub"><Home size={14} /></button></div></div>
+          <SimulationDock state={simulation} environment={environment} onEnvironment={setEnvironment} onCommand={commandSimulation} onOpen={() => setModal('simulation')} onLocate={locateStation} />
           <div className="character-mood"><span className="status-dot" />Awushi is feeling <b>{telemetry.expression.toLowerCase()}</b></div>
-          <div className="touch-controls" aria-label="Movement controls">{[{ key: 'KeyW', label: 'Move forward', Icon: ArrowUp }, { key: 'KeyA', label: 'Move left', Icon: ArrowLeft }, { key: 'KeyS', label: 'Move backward', Icon: ArrowDown }, { key: 'KeyD', label: 'Move right', Icon: ArrowRight }].map(({ key, label, Icon }) => <button key={key} aria-label={label} onPointerDown={event => { event.currentTarget.setPointerCapture(event.pointerId); input.current.add(key); setPlaying(true) }} onPointerUp={() => input.current.delete(key)} onPointerCancel={() => input.current.delete(key)} onLostPointerCapture={() => input.current.delete(key)}><Icon size={20} /></button>)}<button className="touch-run" aria-label="Run while moving" onPointerDown={event => { event.currentTarget.setPointerCapture(event.pointerId); input.current.add('ShiftLeft') }} onPointerUp={() => input.current.delete('ShiftLeft')} onPointerCancel={() => input.current.delete('ShiftLeft')} onLostPointerCapture={() => input.current.delete('ShiftLeft')}><Zap size={18} /></button></div>
+          <div className="touch-controls" aria-label="Movement controls">{[{ key: 'KeyW', label: 'Move forward', Icon: ArrowUp }, { key: 'KeyA', label: immersive ? 'Turn left' : 'Move left', Icon: ArrowLeft }, { key: 'KeyS', label: 'Move backward', Icon: ArrowDown }, { key: 'KeyD', label: immersive ? 'Turn right' : 'Move right', Icon: ArrowRight }].map(({ key, label, Icon }) => <button key={key} aria-label={label} onPointerDown={event => { event.currentTarget.setPointerCapture(event.pointerId); input.current.add(key); setPlaying(true) }} onPointerUp={() => input.current.delete(key)} onPointerCancel={() => input.current.delete(key)} onLostPointerCapture={() => input.current.delete(key)}><Icon size={20} /></button>)}<button className="touch-run" aria-label="Run while moving" onPointerDown={event => { event.currentTarget.setPointerCapture(event.pointerId); input.current.add('ShiftLeft') }} onPointerUp={() => input.current.delete('ShiftLeft')} onPointerCancel={() => input.current.delete('ShiftLeft')} onLostPointerCapture={() => input.current.delete('ShiftLeft')}><Zap size={18} /></button></div>
           <button className="touch-celebrate" onClick={() => { chooseClip('Celebrate'); react('Celebrating') }} aria-label="Celebrate"><Sparkles size={20} /></button>
-          <output className="sr-only" data-testid="world-position" data-position={telemetry.position.join(',')} data-expression={telemetry.expression}>{telemetry.position.map(value => value.toFixed(2)).join(', ')}</output>
+          <output className="sr-only" data-testid="world-position" data-position={telemetry.position.join(',')} data-expression={telemetry.expression} data-fps={telemetry.fps} data-draw-calls={telemetry.drawCalls} data-triangles={telemetry.triangles}>{telemetry.position.map(value => value.toFixed(2)).join(', ')}</output>
         </div>}
 
         {screen === 'studio' && <>
@@ -210,17 +250,19 @@ export default function App() {
         </>}
         {notice && screen !== 'welcome' && <div className={`toast ${notice.type}`} role="status" aria-live="polite" key={notice.id}><span>{notice.type === 'discovery' ? <Sparkles size={16} /> : <Compass size={16} />}</span>{notice.text}</div>}
       </main>
-      <footer className="footer"><span>A tiny universe, made from scratch.</span><span>{screen === 'studio' ? 'A LITTLE DIGITAL LIFE' : 'PHASE 01 / DISCOVERY'}<i />LOCAL & YOURS</span></footer>
+      <footer className="footer"><span>A tiny universe, made from scratch.</span><span>{screen === 'studio' ? 'A LITTLE DIGITAL LIFE' : 'PHASE 02 / DELIVERY'}<i />LOCAL & YOURS</span></footer>
     </div>
 
-    {modal === 'station' && station && <Dialog title={station.name} eyebrow={`${getDistrict(station.districtId)?.label ?? 'The world'} / FIELD NOTES`} onClose={closeModal} className="discovery-dialog" testId="discovery-panel"><div className="discovery-badge"><Check size={13} />{progress.stations.includes(station.id) ? 'Discovered with Awushi' : 'Discovery notes'}</div><p className="dialog-intro">{station.description}</p><ol className="discovery-steps">{station.steps.map((step, index) => <li key={step.label}><span>{String(index + 1).padStart(2, '0')}</span><div><h3>{step.label}</h3><p>{step.detail}</p></div></li>)}</ol><div className="future-note"><Layers3 size={15} /><span><strong>Discovery today. Hands-on later.</strong>{station.future}</span></div><button className="primary-button" onClick={closeModal}>Keep exploring<ArrowRight size={16} /></button></Dialog>}
+    {modal === 'station' && station && <Dialog title={station.name} eyebrow={`${getDistrict(station.districtId)?.label ?? 'The world'} / TECHNOLOGY STATION`} onClose={closeModal} className="discovery-dialog" testId="discovery-panel"><div className="discovery-badge"><Check size={13} />{progress.stations.includes(station.id) ? 'Discovered with Awushi' : 'Explore the architecture'}</div><StationTechnologyPanel key={station.id} stationId={station.id} state={simulation} environment={environment} onEnvironment={setEnvironment} onCommand={commandSimulation} onLocate={locateStation} onOpenSimulation={() => setModal('simulation')} /></Dialog>}
+
+    {modal === 'simulation' && <Dialog title="From a small change to a healthy release." eyebrow="THE DEPLOYMENT LAB / SIMULATED" onClose={closeModal} wide className="simulation-dialog"><SimulationPanel state={simulation} environment={environment} onEnvironment={setEnvironment} onCommand={commandSimulation} onLocate={locateStation} scenario={scenario} onScenario={setScenario} /></Dialog>}
 
     {modal === 'settings' && <Dialog title="Make yourself at home." eyebrow="A FEW LITTLE PREFERENCES" onClose={closeModal} className="settings-dialog"><p className="dialog-intro">Find the view and pace that feel right for you.</p><label className="settings-row"><span><strong>Visual quality</strong><small>Choose Low for smaller devices or a lighter view.</small></span><select value={preferences.quality} onChange={event => setPreference('quality', event.target.value as Quality)} aria-label="Visual quality" data-testid="quality-select"><option value="low">Low</option><option value="balanced">Balanced</option><option value="high">High</option></select></label><label className="settings-row"><span><strong>Reduced motion</strong><small>Quieter camera transitions and decorative movement.</small></span><input type="checkbox" checked={preferences.reducedMotion} onChange={event => setPreference('reducedMotion', event.target.checked)} data-testid="reduced-motion" /></label><label className="settings-row"><span><strong>World lighting</strong><small>A different atmosphere, the same little world.</small></span><select value={preferences.lighting} onChange={event => setPreference('lighting', event.target.value as Lighting)} aria-label="World lighting"><option value="daylight">Daylight</option><option value="moonlight">Moonlight</option><option value="studio">Studio</option></select></label><div className="performance-card" data-testid="performance-stats"><Activity size={16} /><div><strong>{telemetry.fps > 0 ? `${Math.round(telemetry.fps)} FPS` : 'Measuring…'}</strong><span>Live frame rate · {telemetry.drawCalls} draw calls · {Math.round(telemetry.triangles / 1000)}k triangles</span></div></div><div className="settings-actions"><button className="secondary-button" onClick={() => { setModal(null); if (!inGame) start('adventure'); else recover(); notify('Back at the Common. Your discoveries are safe.') }}><Home size={15} />Return to central hub</button><button className="text-button" data-testid="reset-progress" onClick={() => { setProgress(resetProgress()); pendingCelebration.current = false; start('adventure'); notify('A fresh notebook. Your new journey starts here.') }}><RotateCcw size={14} />Reset exploration progress</button><small>Discoveries and preferences are saved in this browser when local storage is available.</small></div></Dialog>}
 
-    {modal === 'help' && <Dialog title="Curiosity is all you need." eyebrow="YOUR LITTLE ADVENTURE GUIDE" onClose={closeModal}><p className="dialog-intro">Follow the bridges between districts. Walk near a landmark, then take a closer look. Every place has a story.</p><div className="help-controls"><div><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><small>or arrow keys</small></span><strong>Move around</strong></div><div><kbd>Shift</kbd><strong>Run while moving</strong></div><div><kbd>E</kbd><strong>Discover a nearby landmark</strong></div><div><kbd>Space</kbd><strong>Make a happy splash</strong></div><div><kbd>M</kbd><strong>Open your map & journal</strong></div><div><kbd>R</kbd><strong>{mode === 'studio' ? 'Reset animation' : 'Return to the central hub'}</strong></div><div><kbd>Esc</kbd><strong>Close a panel / open settings</strong></div></div><p className="help-touch">On a touch screen, hold the arrow pad to move and tap the nearby landmark prompt to interact. Explore mode supports drag and pinch. Follow mode keeps Awushi in view.</p><button className="primary-button" onClick={closeModal}>Let’s make a splash<ArrowRight size={16} /></button></Dialog>}
+    {modal === 'help' && <Dialog title="Curiosity is all you need." eyebrow="YOUR LITTLE ADVENTURE GUIDE" onClose={closeModal}><p className="dialog-intro">Follow the bridges between districts. Walk near a landmark, then take a closer look. Every place has a story.</p><div className="help-controls"><div><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><small>or arrow keys</small></span><strong>W/S move · A/D turn in Follow and First person</strong></div><div><kbd>Shift</kbd><strong>Run while moving</strong></div><div><kbd>C</kbd><strong>Switch camera perspective</strong></div><div><kbd>E</kbd><strong>Discover a nearby landmark</strong></div><div><kbd>Space</kbd><strong>Make a happy splash</strong></div><div><kbd>M</kbd><strong>Open your map & journal</strong></div><div><kbd>R</kbd><strong>{mode === 'studio' ? 'Reset animation' : 'Return to the central hub'}</strong></div><div><kbd>Esc</kbd><strong>Close a panel / open settings</strong></div></div><p className="help-touch">On a touch screen, hold up/down to move and left/right to turn in Follow or First person; hold the lightning control with another finger to run and tap the nearby landmark prompt to interact. Drag the world to look around in Follow or First person. Use C or the camera buttons to change perspective.</p><button className="primary-button" onClick={closeModal}>Let’s make a splash<ArrowRight size={16} /></button></Dialog>}
 
-    {modal === 'journal' && <Dialog title="A notebook full of little discoveries." eyebrow="YOUR WORLD MAP & FIELD NOTES" onClose={closeModal} wide className="journal-dialog"><div className="journal-layout"><div className="journal-map"><MiniMap position={telemetry.position} districtId={telemetry.districtId} progress={progress} expanded /><div className="journal-totals"><span><b>{progress.districts.length}/6</b> districts visited</span><span><b>{progress.stations.length}/{STATIONS.length}</b> stories discovered</span></div><p>The bright dot is Awushi. Bridges connect the Common to every district, and each district to its neighbors.</p><button className="secondary-button" onClick={() => { setCameraMode('overview'); closeModal() }}><Map size={16} />See the whole world</button></div><div className="journal-districts">{DISTRICTS.map(district => <section key={district.id} style={{ '--place-color': district.color } as CSSProperties}><div className="journal-district-heading"><span>{district.order}</span><div><h3>{district.label}</h3><p>{district.name}</p></div>{progress.districts.includes(district.id) && <Check size={15} />}</div><div className="journal-stations">{STATIONS.filter(item => item.districtId === district.id).map(item => <button key={item.id} onClick={() => openNotes(item.id)} disabled={!progress.stations.includes(item.id)}><span>{item.name}</span>{progress.stations.includes(item.id) ? <ChevronRight size={14} /> : <small>Undiscovered</small>}</button>)}</div></section>)}</div></div></Dialog>}
+    {modal === 'journal' && <Dialog title="A notebook full of little discoveries." eyebrow="YOUR WORLD MAP & FIELD NOTES" onClose={closeModal} wide className="journal-dialog"><div className="journal-layout"><div className="journal-map"><MiniMap position={telemetry.position} districtId={telemetry.districtId} progress={progress} expanded targetStationId={navigationTarget} /><div className="journal-totals"><span><b>{progress.districts.length}/6</b> districts visited</span><span><b>{progress.stations.length}/{STATIONS.length}</b> stories discovered</span></div><p>The bright dot is Awushi. Bridges connect the Common to every district, and each district to its neighbors.</p><button className="secondary-button" onClick={() => { setCameraMode('overview'); closeModal() }}><Map size={16} />See the whole world</button></div><div className="journal-districts">{DISTRICTS.map(district => <section key={district.id} style={{ '--place-color': district.color } as CSSProperties}><div className="journal-district-heading"><span>{district.order}</span><div><h3>{district.label}</h3><p>{district.name}</p></div>{progress.districts.includes(district.id) && <Check size={15} />}</div><div className="journal-stations">{STATIONS.filter(item => item.districtId === district.id).map(item => <div key={item.id} className="journal-station-row"><button onClick={() => openNotes(item.id)} disabled={!progress.stations.includes(item.id)}><span>{item.name}</span>{progress.stations.includes(item.id) ? <ChevronRight size={14} /> : <small>Undiscovered</small>}</button><button className="journal-locate" aria-label={`Find ${item.name} in the world`} data-testid={`locate-station-${item.id}`} onClick={() => locateStation(item.id)}><Compass size={14} /></button></div>)}</div></section>)}</div></div></Dialog>}
 
-    {modal === 'architecture' && <Dialog title="One lifecycle. Six connected perspectives." eyebrow="THE DEVOPS WORLD / ARCHITECTURE" onClose={closeModal} wide className="architecture-dialog"><p className="dialog-intro">A map of the journey from a small code change to a dependable running system. Security, observability, and recovery matter throughout that journey.</p><div className="architecture-summary"><span><Check size={14} /><strong>Available now</strong>{STATIONS.length} educational discovery stops</span><span><Layers3 size={14} /><strong>Future phases</strong>Hands-on scenarios & simulation</span></div><div className="architecture-grid">{DISTRICTS.map(district => { const Icon = districtIcons[district.id] ?? Compass; return <article key={district.id} style={{ '--place-color': district.color } as CSSProperties}><div className="architecture-card-top"><Icon size={22} /><span>0{district.order}</span></div><h3>{district.name}</h3><p>{STATIONS.filter(item => item.districtId === district.id).map(item => item.name).join(' · ')}</p><div className="architecture-status"><span>Discovery ready</span><small>Simulation planned</small></div></article> })}</div><div className="architecture-bottom"><p>These introductions explain the concepts. They do not provision infrastructure or connect to GitHub, Kubernetes, or cloud accounts.</p><button className="primary-button" onClick={() => start('adventure')}>Explore the connections<ArrowRight size={16} /></button></div></Dialog>}
+    {modal === 'architecture' && <Dialog title="One lifecycle. Every connection matters." eyebrow="THE DEVOPS WORLD / INTERACTIVE ARCHITECTURE" onClose={closeModal} wide className="architecture-dialog"><ArchitectureExplorer state={simulation} environment={environment} onEnvironment={setEnvironment} onLocate={locateStation} /></Dialog>}
   </div>
 }

@@ -157,3 +157,7 @@ These links are documentation only; the asset pipeline and running game do not f
 ## Phase 1 factory additions
 
 `facial_helpers.py` authors morphable eye, rim, highlight, mouth and brow geometry. `asset_factory.py` provides a consistent material library and reusable terrain, path, bridge, miniature building, signage and vegetation primitives. `generate_world.py` reads `src/data/world-layout.json`, exporting seven runtime composites and preserving the five legacy assets via `legacy_world.py`. Character rendering now includes ten expression closeups alongside the four whole-character angles. World rendering includes overview, north, plan and six district closeups. Static material-only world meshes omit unused UV layers to reduce size and remove nondeterministic data. See `WORLD.md` for customization.
+
+## Phase 2 deployment visuals
+
+`generate_effects.py` runs after the world generator for `--environment` and `--all`. It creates six small origin-centered packet, image, configuration, Pod, signal and sync-ring prototypes in one GLB, plus `assets/source/effects.blend`, a manifest and three rendered views when previews are enabled. A separate isolated regeneration audit using `scripts/compare-glb.mjs` produced `assets/source/effects-reproducibility.json`; generation itself does not write that audit. The prototypes are reused by typed runtime event projections rather than exported as an autonomous deployment animation. See `EFFECTS.md` for names and customization.

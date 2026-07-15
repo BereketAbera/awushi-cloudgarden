@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { X } from 'lucide-react'
 
 type Props = { title: string; eyebrow?: string; children: ReactNode; onClose: () => void; wide?: boolean; className?: string; testId?: string }
-const FOCUSABLE = 'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]'
+const FOCUSABLE = 'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex="0"]'
 
 /** A shared modal: focus stays inside, Escape closes, and the opener regains focus. */
 export function Dialog({ title, eyebrow, children, onClose, wide, className = '', testId }: Props) {
@@ -36,7 +36,7 @@ export function Dialog({ title, eyebrow, children, onClose, wide, className = ''
   }, [])
   return <div className="dialog-backdrop" onClick={event => { if (event.target === event.currentTarget) onClose() }}>
     <section ref={panel} className={`dialog ${wide ? 'dialog-wide' : ''} ${className}`} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} data-testid={testId}>
-      <button className="icon-button dialog-close" onClick={onClose} aria-label="Close dialog" data-testid="close-dialog"><X size={20} /></button>
+      <div className="dialog-controls"><button className="icon-button dialog-close" onClick={onClose} aria-label="Close dialog" data-testid="close-dialog"><X size={20} /></button></div>
       {eyebrow && <div className="eyebrow">{eyebrow}</div>}
       <h2 id={titleId}>{title}</h2>
       {children}
