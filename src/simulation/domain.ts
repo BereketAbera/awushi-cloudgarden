@@ -11,7 +11,7 @@ export type StageDefinition = {
 }
 export type SimulationEvent = {
   id: number; runId: number; timestamp: number; environment: EnvironmentId
-  type: 'started' | 'stage-started' | 'stage-completed' | 'approval-required' | 'approved' | 'failed' | 'retrying' | 'cancelled' | 'succeeded' | 'backup-created' | 'restore-completed'
+  type: 'started' | 'stage-started' | 'stage-completed' | 'approval-required' | 'approved' | 'failed' | 'retrying' | 'cancelled' | 'succeeded' | 'backup-created' | 'restore-completed' | 'operation' | 'observation'
   stageId: StageId | null; message: string; fromStationId?: string; toStationId?: string; kind?: VisualKind
   visual?: { kind: VisualKind; fromStationId: string; toStationId: string }
 }
@@ -29,7 +29,8 @@ export type EnvironmentState = {
   metrics: { collected: boolean; requestsPerSecond: number; errorRate: number; latencyMs: number; availableReplicas: number }
   logs: { timestamp: number; level: 'info' | 'warning' | 'error'; message: string }[]
   dashboardReady: boolean; alert: 'inactive' | 'pending' | 'firing' | 'resolved'
-  data: { postgres: 'ready'; valkey: 'ready'; rabbitmq: 'ready'; objectStorage: 'ready'; backup: { id: string; timestamp: number; deploymentRevision: number; records: number } | null; restoredBackupId: string | null; recoveredRecords: number | null; records: number }
+  operations?: OperationalState
+  data: { postgres: 'ready' | 'corrupt' | 'restoring'; valkey: 'ready'; rabbitmq: 'ready'; objectStorage: 'ready' | 'missing' | 'restoring'; backup: { id: string; timestamp: number; deploymentRevision: number; records: number } | null; restoredBackupId: string | null; recoveredRecords: number | null; records: number }
 }
 export type InfrastructureState = {
   github: { commit: string | null; pullRequest: 'none' | 'open' | 'merged' | 'cancelled'; approvedBy: string | null }
@@ -46,6 +47,7 @@ export type SimulationState = {
 }
 export type SimulationCommand =
   | { type: 'start'; environment: EnvironmentId; scenario?: ScenarioId }
+  | { type: 'promote-existing'; environment: 'production'; source: 'development'; digest: string }
   | { type: 'approve' } | { type: 'retry' } | { type: 'cancel' } | { type: 'reset' }
   | { type: 'backup'; environment: EnvironmentId } | { type: 'restore'; environment: EnvironmentId }
 export type StateField = { label: string; value: string; tone?: 'neutral' | 'good' | 'warning' | 'bad' }
@@ -56,3 +58,12 @@ export const SCENARIOS: readonly { id: ScenarioId; name: string; description: st
   { id: 'security-fail', name: 'A security finding', description: 'A detected test credential blocks delivery until repaired.' },
   { id: 'rollout-fail', name: 'A readiness failure', description: 'A new Pod fails its readiness check; the old healthy version keeps serving.' },
 ]
+
+export type PodIssueCause = 'transient' | 'image' | 'readiness' | 'resources'
+export type BackupPoint = { id: string; label: string; ageMinutes: number; consistent: boolean; records: number; objects: number; checksum: string; location: 'same-host'; timestamp: number }
+export type OperationalState = {
+  pod?: { cause: PodIssueCause; beganAt: number; recoverAt: number | null; corrected: boolean; restartCount: number; imageReference: string; readinessPath: string; reason: string; event: string; requestMi: number; allocatableMi: number }
+  drift?: { desiredReplicas: number; liveReplicas: number; selfHeal: boolean; detectedAt: number; reconcileAt: number | null; corrected: boolean }
+  incident?: { beganAt: number; poolLimit: number; reviewedPoolLimit: number; diagnosis: string | null; corrected: boolean; verifyAt: number | null; recovered: boolean }
+  recovery?: { lossAt: number; startedAt: number | null; recoveredAt: number | null; rpoMinutes: number; targetRtoMs: number; snapshots: BackupPoint[]; selectedId: string | null; databaseRestored: boolean; objectsRestored: boolean; validated: boolean; recoveredObjects: number }
+}

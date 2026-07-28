@@ -44,6 +44,7 @@ export function parseSimulationCommand(value: unknown): SimulationCommand | null
     if (!ENVIRONMENTS.includes(command.environment as EnvironmentId) || (command.scenario !== undefined && !SCENARIOS.some(s => s.id === command.scenario))) return null
     return { type: 'start', environment: command.environment as EnvironmentId, scenario: command.scenario as ScenarioId | undefined }
   }
+  if (command.type === 'promote-existing') return command.environment === 'production' && command.source === 'development' && typeof command.digest === 'string' && /^sha256:[a-f0-9]{64}$/.test(command.digest) ? { type: command.type, environment: 'production', source: 'development', digest: command.digest } : null
   if (command.type === 'backup' || command.type === 'restore') return ENVIRONMENTS.includes(command.environment as EnvironmentId) ? { type: command.type, environment: command.environment as EnvironmentId } : null
   if (command.type === 'approve' || command.type === 'retry' || command.type === 'cancel' || command.type === 'reset') return { type: command.type }
   return null
@@ -211,6 +212,16 @@ export function reduceSimulation(state: SimulationState, input: SimulationComman
     enterStage(next, 0, now)
     return next
   }
+  if (command.type === 'promote-existing') {
+    const source = state.infra.environments.development
+    if (state.status !== 'succeeded' || state.environment !== 'development' || source.health !== 'Healthy' || source.activeImageDigest !== command.digest || state.infra.registry.imageDigest !== command.digest || !state.infra.registry.ghcrAvailable || state.infra.ci.status !== 'passed') return state
+    const next = cloneState(state)
+    next.environment = 'production'; next.runId++; next.status = 'running'; next.scenario = 'healthy'; next.clock = now
+    next.completedStages = []; next.error = null; next.repaired = false; next.infra.github.pullRequest = 'none'; next.infra.github.approvedBy = null
+    emit(next, 'started', 'Propose the verified development artifact for production without rebuilding its immutable digest.', now)
+    enterStage(next, DEPLOYMENT_STAGES.findIndex(stage => stage.id === 'pull-request'), now)
+    return next
+  }
   if (command.type === 'approve') {
     if (state.status !== 'waiting-approval' || state.stageId !== 'approval' || state.infra.github.pullRequest !== 'open') return state
     const next = cloneState(state); next.clock = now; next.status = 'running'
@@ -263,17 +274,25 @@ export function stationSnapshot(state: SimulationState, stationId: string, envir
     case 'registry': return [...candidate, text('Candidate digest', registry.imageDigest), text('Candidate version', registry.version), text('GHCR candidate', registry.ghcrAvailable ? 'Available' : 'Not published'), text('Local candidate', registry.localAvailable ? 'Available' : 'Not promoted'), text('Verified candidate digest', registry.localDigest)]
     case 'containers': return [...candidate, text('Candidate promotion', registry.promotion), text('Build cache use', registry.cache === 'warm' ? 'Warmed during this run' : 'Not used in this run'), text('Pinned local candidate', registry.localDigest), text('Image builds', 'Docker → OCI artifact')]
     case 'infrastructure': return [...common, text('Platform', 'Shared kind cluster; Terraform bootstrapped'), text('Manifest rendering', env.manifestsRendered ? 'Helm + Kustomize ready' : 'Pending'), text('Replicas', env.config.replicas), text('Host', env.config.host)]
-    case 'kubernetes': return [...common, gate('Health', env.health), text('Stable deployment revision', env.deploymentRevision), text('Applied template revision', env.rollout.targetRevision), text('Desired replicas', env.desiredReplicas), text('Available replicas', env.availableReplicas), text('Updated replicas', env.updatedReplicas), text('Active version', env.version), text('Active digest', env.activeImageDigest)]
-    case 'gitops': return [...common, text('Desired revision', env.desiredRevision), text('Local Git mirror', env.gitMirrorRevision), text('Applied revision', env.appliedRevision), gate('Sync status', env.syncStatus), gate('Health', env.health)]
+    case 'kubernetes': return [...common, gate('Health', env.health), text('Stable deployment revision', env.deploymentRevision), text('Applied template revision', env.rollout.targetRevision), text('Desired replicas', env.desiredReplicas), text('Available replicas', env.availableReplicas), text('Updated replicas', env.updatedReplicas), text('Active version', env.version), text('Active digest', env.activeImageDigest), ...(env.operations?.pod ? [text('Pod event',env.operations.pod.event),text('Fault corrected',env.operations.pod.corrected)] : [])]
+    case 'gitops': return [...common, text('Desired revision', env.desiredRevision), text('Local Git mirror', env.gitMirrorRevision), text('Applied revision', env.appliedRevision), gate('Sync status', env.syncStatus), gate('Health', env.health), ...(env.operations?.drift ? [text('Self-heal',env.operations.drift.selfHeal?'Enabled':'Disabled'),text('Git / live replicas',`${env.operations.drift.desiredReplicas} / ${env.operations.drift.liveReplicas}`)] : [])]
     case 'network': return [...common, text('Service endpoints', env.availableReplicas), text('Service', env.serviceReady ? 'Ready' : 'Waiting'), text('Traefik', env.ingressReady ? 'Routing' : 'Waiting'), text('Host rule', env.config.host)]
     case 'security': return [...common, text('RBAC', 'Namespace-scoped service account'), text('NetworkPolicies', env.policiesApplied ? 'Applied by supported CNI' : 'Pending'), text('Resources', 'Requests 100m / 128Mi; limits 500m / 256Mi'), text('Isolation boundary', 'Shared cluster, kernel and host')]
     case 'secrets': return [...common, text('Infisical reference', env.secretRef), text('Operator synchronization', env.secretsSynced ? 'Ready' : 'Pending'), text('Secret version', env.secretVersion), text('Secret values', 'Never stored or displayed in this simulation')]
     case 'supply-chain': return [...candidate, gate('gitleaks / source scans', ci.security), gate('Trivy image inspection', ci.imageScan), text('Gate policy', 'Block the demonstrated finding before publishing')]
     case 'observability': return [...common, text('Prometheus', env.metrics.collected ? 'Scraped' : 'Awaiting journey sample'), text('Requests / second', env.metrics.collected ? env.metrics.requestsPerSecond : 'Not sampled'), text('Latency (ms)', env.metrics.collected ? env.metrics.latencyMs : 'Not sampled'), text('Error rate', env.metrics.collected ? `${env.metrics.errorRate}%` : 'Not sampled'), text('Loki log events', env.logs.length), text('Grafana', env.dashboardReady ? 'Sources ready' : 'Awaiting samples')]
-    case 'alerts': return [...common, text('Alertmanager', env.alert, env.alert === 'firing' ? 'bad' : env.alert === 'resolved' ? 'good' : 'neutral'), text('Rule', 'New revision readiness failure'), text('Notification destination', 'Local teaching event history only')]
+    case 'alerts': return [...common, text('Alertmanager', env.alert, env.alert === 'firing' ? 'bad' : env.alert === 'resolved' ? 'good' : 'neutral'), text('Rule', env.operations?.incident ? 'HTTP5xxHigh: request errors > 5%' : env.operations?.recovery ? 'Data integrity failure' : env.operations?.pod ? 'Pod readiness unavailable' : 'New revision readiness failure'), text('Notification destination', 'Local teaching event history only')]
     case 'database': return [...common, text('PostgreSQL', env.data.postgres), text('Valkey', env.data.valkey), text('Simulated records', env.data.records), text('Persistence', 'Model state only; no real database')]
     case 'messaging': return [...common, text('RabbitMQ', env.data.rabbitmq), text('Delivery contract', 'Acknowledge after processing; consumers tolerate redelivery'), text('S3-compatible objects', env.data.objectStorage)]
     case 'recovery': return [...common, text('Latest backup', env.data.backup?.id ?? null), text('Verified snapshot records', env.data.backup?.records ?? 'No snapshot'), text('Restore validation', env.data.restoredBackupId ?? 'Not run'), text('Recovered records', env.data.recoveredRecords ?? 'Not restored'), text('Recovery target', 'Isolated simulated restore; no live traffic changes')]
     default: return common
   }
+}
+
+/** Shared event path for operational scenarios; it uses the same infrastructure event log. */
+export function emitOperation(state: SimulationState, message: string, timestamp: number, environment: EnvironmentId, stationId: string, kind: 'failure' | 'recovery' | 'sync' | 'telemetry' | 'config' = 'config') {
+  emit(state, 'operation', message, timestamp, undefined, environment)
+  const event = state.history.at(-1)!
+  event.visual = { kind, fromStationId: stationId, toStationId: stationId }
+  event.kind = kind; event.fromStationId = stationId; event.toStationId = stationId
 }

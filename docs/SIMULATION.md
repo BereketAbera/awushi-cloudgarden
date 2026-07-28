@@ -9,8 +9,11 @@ The game runs a deterministic, application-agnostic teaching model in the browse
 | `src/simulation/domain.ts` | Serializable infrastructure state, command/event types, scenarios and environment identifiers |
 | `src/simulation/scenario.ts` | Ordered stages, prerequisites described for the visitor, durations and station/event bindings |
 | `src/simulation/engine.ts` | Command validation, pure transitions, dependency guards, failures, rollout calculation, station state selectors |
+| `src/simulation/operations.ts` | Shared Pod faults, drift, incident observations and data recovery transitions |
 | `src/simulation/registry.ts` | Technology explanations, source links, relationships and bindings to the existing 17 stations |
 | `src/components/useSimulation.ts` | React integration and an injected monotonic clock |
+| `src/adventures/engine.ts` | Evidence, guarded learner decisions and objectives around the same infrastructure state |
+| `src/adventures/useAdventures.ts` | Adventure clock, pause/resume, validated command journal and isolated replay |
 | `src/components/SimulationPanels.tsx` | Journey controls and event history |
 | `src/components/TechnologyPanels.tsx` | Technology inspection and the architecture overview |
 | `src/simulation/SimulationEffects.tsx` | Event-driven world presentation; no deployment decisions |
@@ -29,13 +32,14 @@ state = reduceSimulation(state, { type: 'approve' }, 20_001)
 state = tickSimulation(state, 60_000) // Completes the remaining automated stages.
 ```
 
-The UI schedules ticks independently of rendering, approximately every 100 ms. Rendering can pause or change frame rate without bypassing a gate. `clock` freezes at the logical pause, failure or completion timestamp. Particle lifetimes use the renderer's current clock against event timestamps; they must not keep aging from a frozen simulation clock.
+The UI schedules ticks independently of rendering, approximately every 100 ms. Rendering can pause or change frame rate without bypassing a gate. The delivery `clock` freezes at the logical approval, failure or completion timestamp. An active adventure has its own logical session clock and calls both `tickSimulation` and `tickOperations`; infrastructure events retain their due timestamps even when a caller advances in one large step. Paused, hidden and reloaded adventures do not accrue offline progress. Visual interpolation is separate from these clocks and cannot finish a stage. See [persistence and replay](PERSISTENCE.md) for the saved journal and replay contract.
 
 ## State transitions and commands
 
 | Command | Allowed state | Result |
 | --- | --- | --- |
 | `start {environment, scenario?}` | Idle, succeeded, failed, cancelled | Begins a new candidate; retains both environments' deployed state |
+| `promote-existing {environment: 'production', source: 'development', digest}` | Successful development delivery, healthy serving digest, matching published image and passing CI | Opens a separate production proposal for the same artifact, starting at stage 7 without rebuilding |
 | `approve` | Waiting for approval with an open proposal | Records explicit review/merge, then starts the local image copy |
 | `retry` | Failed | Applies the demonstrated repair and repeats the failed stage with its guards |
 | `cancel` | Running, retrying, waiting for approval | Stops future guided work and marks any running CI checks cancelled; retains already applied changes |
@@ -43,7 +47,7 @@ The UI schedules ticks independently of rendering, approximately every 100 ms. R
 | `backup {environment}` | Idle or terminal | Captures the selected environment's simulated record count and deployment revision |
 | `restore {environment}` | Idle or terminal, with a backup | Validates that backup in a separate recovery target; preserves live records and traffic |
 
-Invalid command shapes, unknown environments/scenarios, non-finite timestamps and backward time return the original state unchanged. Commands cannot skip stages or approve automatically. Typed events are constructed only by the engine; there is no external event injection endpoint. Consumers do not mutate state or fabricate completion events.
+Invalid command shapes, unknown environments/scenarios, non-finite timestamps and backward time return the original state unchanged. Commands cannot bypass prerequisites or approve automatically. Existing-artifact promotion deliberately begins at the proposal stage after validating the prior successful delivery; it does not fabricate completed build stages. Typed events are constructed only by the shared delivery/operations layer; there is no external event injection endpoint. Consumers do not mutate state or fabricate completion events.
 
 The seven statuses are `idle`, `running`, `waiting-approval`, `succeeded`, `failed`, `retrying`, and `cancelled`. A retry is visible until the next valid tick. The button says **Apply fix & retry** because the lesson explicitly repairs its seeded cause; it does not imply that repeating a real failing command would fix it. Dependency failures remain blocked if their prerequisite is still absent.
 
@@ -86,7 +90,9 @@ Terraform is already provisioned in the starting model. This journey does not ap
 
 Each environment retains its namespace, application configuration, secret reference/version, desired/applied/mirror revisions, serving digest, Pods, telemetry, alert state and recovery data. Starting a production run does not modify development state. The source runner and registry are shared facilities; one journey runs at a time. Metrics and digest strings are reproducible teaching values, not measurements or hashes of real artifacts.
 
-Each event carries a monotonic ID, run ID, injected timestamp, environment, typed event name, optional stage ID and readable message. Optional visual metadata binds a kind and real source/destination station IDs. Stage entry and completion both have context; effects should consume a single relevant event type to avoid duplicate packets. History retains the most recent 240 events, while sequence numbers remain monotonic. Reset clears history.
+The production adventure first verifies a successful development rollout and captures its serving digest. `promote-existing` preserves that candidate and its successful CI/publication state, changes the target environment and opens a new proposal. A second human approval is required before the existing copy/configuration/GitOps/rollout stages run. Verification checks that production serves exactly the verified development digest and that development's digest and deployment revision remain unchanged. This is immutable artifact promotion, not a new build with a matching version label. Both environments use separate namespaces/configuration in the same illustrated kind cluster.
+
+Each event carries a monotonic ID, run ID, injected timestamp, environment, typed event name, optional stage ID and readable message. Optional visual metadata binds a kind and real source/destination station IDs. Stage entry and completion both have context; effects consume selected event types to avoid duplicate packets. Operational changes use `emitOperation`, which appends to this same log and sequence. History retains the most recent 240 events, while sequence numbers remain monotonic. Reset clears history. Adventure evidence and decision records are separate from infrastructure events: opening an inspector or rendering a selector does not create evidence or complete objectives.
 
 `rollout.targetRevision` tracks the applied Pod template; `deploymentRevision` tracks the last fully healthy revision. An interrupted template still consumes a revision, so these can differ and successful revision numbers can have gaps. The rollout uses an illustrative `maxUnavailable=0`, `maxSurge=1`: the old revision keeps the required ready count while replacements become ready. Argo `Synced` and application `Healthy` remain distinct. The three selectable failures are:
 
@@ -94,12 +100,32 @@ Each event carries a monotonic ID, run ID, injected timestamp, environment, type
 - **Security finding:** blocks delivery for a simulated leaked test credential; explains removal and rotation.
 - **Readiness failure:** new Pods remain unready, old ready endpoints continue, health becomes degraded and the readiness alert fires. Repair resumes rollout and the final alert review records resolution.
 
-Backups hold model metadata and a record count only. Restore stores `recoveredRecords` and `restoredBackupId` without overwriting `data.records`. This demonstrates the distinction between image rollback and data recovery; it is not a backup implementation or evidence of production recoverability.
+The deployment lab's basic backup command holds model metadata and a record count. Its restore command stores `recoveredRecords` and `restoredBackupId` without overwriting `data.records`. The Phase 3 recovery lesson extends this with multiple recovery points, dependent objects and a separate validated cutover, described below. Neither mode performs real database work.
+
+## Shared operational adventures
+
+`EnvironmentState.operations` holds optional cause/configuration records alongside the same Pods, routing, telemetry and data state used by the deployment lab. `seedOperation`, `applyOperation` and `tickOperations` centralize all operational changes. Adventure code captures evidence and enforces learning prerequisites; React panels, facility effects and scenario metadata never apply repairs themselves.
+
+| Operation | State and correction | Required outcome |
+| --- | --- | --- |
+| Transient container crash | One exit with valid configuration and `restartPolicy=Always`; modeled kubelet restart after eight logical seconds | Restart count increases, readiness recovers and the learner verifies endpoints |
+| Image pull failure | `application:missing` cannot be pulled; repair sets the configured reference to the available approved digest | Container becomes ready; repeatedly restarting the bad reference does not repair it |
+| Readiness failure | Running process exposes `/health/ready`, but the probe uses `/ready` | Correct the probe path; the process is not restarted merely for failing readiness |
+| Resource scheduling failure | A 4096Mi request exceeds 1024Mi available capacity; reviewed request is 512Mi for a measured 256Mi working set | Correct the request, then verify scheduling and readiness |
+| Live configuration drift | Git requests two replicas while a live override requests one | Manual sync, or explicitly enabled automated sync plus self-heal, restores the reviewed count; time alone does not fix manual-policy drift |
+| Application incident | Pool limit changes from 8 to 1; correlated logs, 24% request errors and 900ms latency identify acquisition timeouts | Restore the reviewed limit and verify a fresh four-second observation window: 200 responses, zero errors, 42ms latency and resolved alert |
+| Data recovery | Compare snapshot consistency, age, database rows, object inventory and same-host storage | Restore a valid database target and its matching objects, validate their consistency, then resume simulated traffic |
+
+Operational delays and measured values are deterministic lesson data, not production timing guarantees. The incident deliberately retains ready Pods and Argo health while requests fail: readiness alone does not prove application correctness. Wrong choices yield evidence-based explanations and remain recoverable. A live-only replica patch changes actual live state but leaves reviewed Git untouched.
+
+The recovery lesson rejects the newest corrupt snapshot and a consistent twenty-minute snapshot that exceeds its five-minute RPO. The verified two-minute snapshot contains 98 records and matching objects. Database restore stays isolated while live data remains at 40 records and traffic stays paused; object restoration and validation are separate operations. Only successful validation updates live records and enables routing. The summary compares elapsed recovery time with the five-minute RTO target and explains that same-host backups do not protect against host loss.
+
+See [adventure orchestration](ADVENTURES.md) for all six lesson paths, evidence/approval guards, hints, completion summaries and technical source references.
 
 ## Extending and testing
 
 For a new scenario, add its typed ID and explanation in `domain.ts`, define an explicit cause and repair in the engine, and test the prerequisite, state, event and environment invariants. For a new stage, extend `StageId`, the ordered definitions, guards and completion transitions together. Add technology metadata and graph relationships in the registry, binding to an existing station where possible. Keep presentation timing out of those transitions.
 
-Run `node --import tsx --test tests/simulation.test.ts` for the pure suite, or `npm run test:unit` for all unit tests. Tests cover the complete 22-stage sequence, indefinite approval, cadence invariance, runtime command validation, all three failures and retry, gradual rollout capacity, registry/GitOps prerequisites, environment independence, cancellation/reset, recovery, graph consistency and station state. Browser tests exercise the same reducer through the visible controls; they do not use a second deployment implementation.
+Run `node --import tsx --test tests/simulation.test.ts tests/adventures.test.ts tests/replay.test.ts` for delivery, operational adventures and replay, or `npm run test:unit` for all unit tests. Tests cover the complete 22-stage sequence, indefinite approval, cadence invariance, runtime command validation, all three delivery failures, all four Pod causes, drift policy, same-digest promotion, incident correlation, recovery dependencies, wrong decisions, environment independence and cancellation/reset. Browser tests exercise these same reducers through the visible controls; they do not use a second deployment implementation.
 
-Phase 3 can add rollback, stale mirrors, secret synchronization failures, resource pressure, message redelivery and restore verification scenarios. Those should introduce real model state and invariants before adding visual effects. Concurrent releases, persisted event replay, actual Kubernetes/CI execution and arbitrary application topology are intentionally outside this local Phase 2 lesson.
+Further lessons could add stale mirrors, secret synchronization failures or message redelivery. Introduce real model state and invariants before adding visual effects. Concurrent releases, actual Kubernetes/CI execution and arbitrary application topology remain outside this local teaching model. Persisted adventure replay is supported through the same reducers and validated command journal, not by trusting saved infrastructure snapshots.
