@@ -54,3 +54,15 @@ test('event interpolation respects endpoints, has a bounded arc, and reduces mot
   assert.deepEqual(effectPosition(effect, 2, false), end)
   assert.equal(JSON.stringify(input), snapshot)
 })
+
+// Operational recovery follows the same event projection as delivery.
+test('shared operational events produce bounded visual routes without changing infrastructure', () => {
+  const input: SimulationEvent = { ...event(7), type: 'operation', visual: { kind: 'recovery', fromStationId: 'database', toStationId: 'observability' } }
+  const snapshot = JSON.stringify(input)
+  const projected = recentEventEffects([input], 'development')
+  assert.equal(projected.length, 1)
+  assert.equal(projected[0].prototype, 'SignalOrb')
+  assert.equal(projected[0].timestamp, input.timestamp)
+  assert.deepEqual(recentEventEffects([input], 'production'), [])
+  assert.equal(JSON.stringify(input), snapshot)
+})

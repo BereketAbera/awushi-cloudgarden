@@ -9,7 +9,7 @@ import { effectPosition, recentEventEffects, type EventEffect } from './effects'
 
 const ASSET = '/assets/deployment-effects.glb'
 type VisualClock = MutableRefObject<number>
-type Props = { simulation: SimulationState; environment: EnvironmentId; reducedMotion: boolean }
+type Props = { simulation: SimulationState; environment: EnvironmentId; reducedMotion: boolean; paused?: boolean }
 
 function Prototype({ name }: { name: string }) {
   const { scene } = useGLTF(ASSET)
@@ -37,7 +37,7 @@ function EventPacket({ effect, clock, reducedMotion }: { effect: EventEffect; cl
   return <group ref={group} visible={false}><Prototype name={effect.prototype} /></group>
 }
 
-function ActivityIndicator({ simulation, reducedMotion }: Pick<Props, 'simulation' | 'reducedMotion'>) {
+function FacilityIndicator({ stationId, color, active, reducedMotion, clock, until }: { stationId: string | null; color: string; active: boolean; reducedMotion: boolean; clock?: VisualClock; until?: number }) {
   const root = useRef<Group>(null!)
   const { scene } = useGLTF(ASSET)
   const { object, materials } = useMemo(() => {
@@ -54,24 +54,37 @@ function ActivityIndicator({ simulation, reducedMotion }: Pick<Props, 'simulatio
     return { object, materials }
   }, [scene])
   useEffect(() => () => materials.forEach(material => material.dispose()), [materials])
-  const color = simulation.status === 'failed' ? '#ff756d' : simulation.status === 'waiting-approval' ? '#ffd585' : simulation.status === 'retrying' ? '#b5efa4' : '#74ede1'
   useEffect(() => { materials.forEach(material => { material.color.set(color); material.emissive.set(color); material.emissiveIntensity = .35 }) }, [color, materials])
-  const stage = stageById(simulation.stageId)
-  const station = stage ? getStation(stage.stationId) : undefined
-  const active = ['running', 'retrying', 'waiting-approval', 'failed'].includes(simulation.status)
-  useFrame(({ clock }) => {
-    root.current.visible = active && Boolean(station)
+  const station = stationId ? getStation(stationId) : undefined
+  useFrame(({ clock: rendererClock }) => {
+    root.current.visible = active && Boolean(station) && (until === undefined || !clock || clock.current < until)
     if (!station) return
     root.current.position.set(station.position[0], station.position[1] + .025, station.position[2])
-    const pulse = reducedMotion ? 1 : 1 + Math.sin(clock.elapsedTime * 2) * .025
+    const pulse = reducedMotion ? 1 : 1 + Math.sin(rendererClock.elapsedTime * 2) * .025
     root.current.scale.set((station.radius + .22) / .36 * pulse, .4, (station.radius + .22) / .36 * pulse)
-    root.current.rotation.y = reducedMotion ? 0 : clock.elapsedTime * .22
+    root.current.rotation.y = reducedMotion ? 0 : rendererClock.elapsedTime * .22
   })
   return <group ref={root} visible={false}><primitive object={object} dispose={null} /></group>
 }
 
+function ActivityIndicator({ simulation, reducedMotion }: Pick<Props, 'simulation' | 'reducedMotion'>) {
+  const color = simulation.status === 'failed' ? '#ff756d' : simulation.status === 'waiting-approval' ? '#ffd585' : '#74ede1'
+  return <FacilityIndicator stationId={stageById(simulation.stageId)?.stationId ?? null} color={color} active={['running', 'retrying', 'waiting-approval', 'failed'].includes(simulation.status)} reducedMotion={reducedMotion} />
+}
+function OperationalIndicators({ simulation, environment, reducedMotion, clock }: Pick<Props, 'simulation' | 'environment' | 'reducedMotion'> & { clock: VisualClock }) {
+  const env = simulation.infra.environments[environment], ops = env.operations
+  const recent = simulation.history.filter(event => event.environment === environment && event.visual && ['stage-completed', 'operation'].includes(event.type)).at(-1)
+  return <group name="OperationalFacilityFeedback">
+    {ops?.pod && !ops.pod.corrected && <FacilityIndicator stationId="kubernetes" color="#ff8b7e" active reducedMotion={reducedMotion} />}
+    {ops?.drift && !ops.drift.corrected && <FacilityIndicator stationId="gitops" color="#ffd585" active reducedMotion={reducedMotion} />}
+    {env.alert === 'firing' && <FacilityIndicator stationId="alerts" color="#ff8b7e" active reducedMotion={reducedMotion} />}
+    {ops?.recovery && !ops.recovery.validated && <FacilityIndicator stationId={ops.recovery.databaseRestored ? 'recovery' : 'database'} color={ops.recovery.databaseRestored ? '#a8e2cf' : '#ffd585'} active reducedMotion={reducedMotion} />}
+    {recent?.visual && <FacilityIndicator key={recent.id} stationId={recent.visual.toStationId} color={recent.visual.kind === 'failure' ? '#ff8b7e' : '#b7f4df'} active reducedMotion={reducedMotion} clock={clock} until={recent.timestamp + 1400} />}
+  </group>
+}
 function PodPart({ source, simulation, environment }: { source: Mesh; simulation: SimulationState; environment: EnvironmentId }) {
   const instances = useRef<InstancedMesh>(null!)
+  useEffect(() => { const mesh = instances.current; return () => { mesh.dispose() } }, [])
   const dummy = useMemo(() => new Object3D(), [])
   const env = simulation.infra.environments[environment]
   const station = getStation('kubernetes')!
@@ -83,12 +96,12 @@ function PodPart({ source, simulation, environment }: { source: Mesh; simulation
       dummy.position.set(station.position[0] + Math.cos(angle) * .72, station.position[1] + 3.05, station.position[2] + Math.sin(angle) * .72)
       dummy.rotation.y = -angle; dummy.scale.setScalar(.7); dummy.updateMatrix()
       instances.current.setMatrixAt(index, dummy.matrix)
-      instances.current.setColorAt(index, new Color(pod.status === 'old' ? '#8e9ca1' : pod.ready ? '#dcfff4' : '#ffcb72'))
+      instances.current.setColorAt(index, new Color(pod.status === 'old' ? '#8e9ca1' : pod.ready ? '#dcfff4' : env.operations?.pod && !env.operations.pod.corrected ? '#ff8b7e' : '#ffcb72'))
     })
     instances.current.instanceMatrix.needsUpdate = true
     if (instances.current.instanceColor) instances.current.instanceColor.needsUpdate = true
     instances.current.computeBoundingSphere()
-  }, [env.pods, count, dummy, station])
+  }, [env.pods, env.operations?.pod, count, dummy, station])
   return <instancedMesh ref={instances} args={[source.geometry, source.material as Material, 8]} dispose={null} />
 }
 function PodDisplay({ simulation, environment }: Pick<Props, 'simulation' | 'environment'>) {
@@ -109,18 +122,20 @@ function ReadyLink({ from, to, color, visible }: { from: string; to: string; col
 }
 
 /** A presentation-only projection of the engine. Never dispatches commands or completes stages. */
-export function SimulationEffects({ simulation, environment, reducedMotion }: Props) {
+export function SimulationEffects({ simulation, environment, reducedMotion, paused = false }: Props) {
   const visualClock = useRef(simulation.clock)
   const last = useRef({ engine: simulation.clock, renderedAt: 0 })
   const effects = useMemo(() => recentEventEffects(simulation.history, environment), [simulation.history, environment])
   useFrame(({ clock }) => {
+    if (paused) { visualClock.current = simulation.clock; last.current = { engine: simulation.clock, renderedAt: clock.elapsedTime }; return }
     if (last.current.engine !== simulation.clock || last.current.renderedAt === 0) last.current = { engine: simulation.clock, renderedAt: clock.elapsedTime }
     visualClock.current = simulation.clock + Math.max(0, clock.elapsedTime - last.current.renderedAt) * 1000
   })
   const env = simulation.infra.environments[environment]
   return <group name="SimulationEventEffects">
     {effects.map(effect => <EventPacket key={`${simulation.runId}-${effect.id}`} effect={effect} clock={visualClock} reducedMotion={reducedMotion} />)}
-    {simulation.environment === environment && <ActivityIndicator simulation={simulation} reducedMotion={reducedMotion} />}
+    {simulation.environment === environment && <ActivityIndicator simulation={simulation} reducedMotion={reducedMotion || paused} />}
+    <OperationalIndicators simulation={simulation} environment={environment} reducedMotion={reducedMotion || paused} clock={visualClock} />
     <PodDisplay simulation={simulation} environment={environment} />
     <ReadyLink from="kubernetes" to="network" visible={env.serviceReady} color="#8ce6bd" />
     <ReadyLink from="network" to="observability" visible={env.metrics.collected && env.ingressReady} color="#9bcaef" />

@@ -8,7 +8,7 @@ const prototypes = { code: 'CodePacket', image: 'ImagePackage', config: 'ConfigP
 
 /** Only real state-machine events create packets; history is capped by the engine. */
 export function recentEventEffects(history: readonly SimulationEvent[], environment: EnvironmentId): EventEffect[] {
-  return history.filter(event => event.environment === environment && event.visual && ['stage-started', 'approved', 'failed', 'retrying', 'backup-created', 'restore-completed'].includes(event.type))
+  return history.filter(event => event.environment === environment && event.visual && ['stage-started', 'approved', 'failed', 'retrying', 'backup-created', 'restore-completed', 'operation'].includes(event.type))
     .flatMap(event => {
       const visual = event.visual!
       const from = getStation(visual.fromStationId), to = getStation(visual.toStationId)
