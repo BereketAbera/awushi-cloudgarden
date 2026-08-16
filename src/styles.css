@@ -838,3 +838,19 @@ kbd { font-family: inherit; display: inline-flex; align-items: center; justify-c
 .journal-station-row { display: flex; gap: 4px; align-items: stretch; }
 .journal-station-row > button:first-child { flex: 1; min-width: 0; }
 .journal-station-row .journal-locate { flex: 0 0 28px; width: 28px; justify-content: center; padding: 0; color: #b7d4c8; }
+
+/* Architecture lenses derive from the existing registry and deployment stages. */
+.architecture-flow-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 18px 0 12px; }
+.architecture-flow-tabs button { padding: 9px 12px; border: 1px solid #7fa7b540; border-radius: 8px; color: #b8d2d5; font-size: 11px; }
+.architecture-flow-tabs button[aria-pressed=true] { color: #d8fff0; background: #385e64; border-color: #94c5b6; }
+.architecture-boundary { display: grid; gap: 7px; padding: 14px 16px; border-left: 2px solid #98d2c6; background: #0c202b77; margin-bottom: 16px; border-radius: 0 8px 8px 0; }
+.architecture-boundary strong { font-size: 12px; }.architecture-boundary span { color: #b8d1d9; font-size: 11px; overflow-wrap: anywhere; }.architecture-boundary small { color: #8aa7b5; line-height: 1.6; }
+.architecture-flow-details { border-bottom: 1px solid #8fb5bd30; padding: 14px 0; font-size: 12px; }
+.architecture-flow-details summary { cursor: pointer; color: #bcdbd8; }.architecture-flow-details li { padding: 8px 0; color: #b3cdd4; }.architecture-flow-details li span { display: block; color: #88a8b5; line-height: 1.7; margin-top: 4px; }.architecture-flow-details li[aria-current] { color: #ffe0a0; }
+.renderer-notice { position: absolute; z-index: 30; top: 90px; left: 50%; transform: translateX(-50%); width: min(480px, calc(100% - 32px)); padding: 18px; background: #142e3bf5; border: 1px solid #e4be7a; border-radius: 12px; color: #f6e5c4; line-height: 1.6; }
+.renderer-notice button { display: block; margin-top: 10px; text-decoration: underline; }
+.preference-save-notice { position: fixed; z-index: 15; bottom: 44px; left: 20px; width: min(400px, calc(100vw - 40px)); border: 1px solid #c3a56c; background: #16333f; border-radius: 10px; padding: 13px 36px 13px 15px; font-size: 12px; line-height: 1.7; color: #e4d6b9; }
+.preference-save-notice button { position: absolute; right: 10px; top: 12px; }
+.mission-is-open .game-hud .camera-hud, .mission-is-open .game-hud .progress-pill { visibility: hidden; }
+.mission-is-open .game-hud .touch-controls, .mission-is-open .game-hud .touch-celebrate, .mission-is-open .game-hud .game-bottom-center { visibility: hidden; }
+@media(max-width:700px) { .mission-is-open .game-hud { visibility: hidden; } }

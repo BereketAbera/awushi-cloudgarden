@@ -1,10 +1,17 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { Activity, ArrowDown, ArrowLeft, ArrowRight, ArrowUp, BookOpen, Box, Check, ChevronDown, ChevronRight, CircleHelp, Compass, Crosshair, Droplets, Expand, Footprints, Home, Layers3, Map, Moon, Pause, Play, RotateCcw, Settings2, Smile, Sparkles, Sun, X, Zap } from 'lucide-react'
 import { Dialog } from './components/Dialog'
 import { MiniMap } from './components/MiniMap'
 import { SimulationDock, SimulationPanel } from './components/SimulationPanels'
 import { ArchitectureExplorer, StationTechnologyPanel } from './components/TechnologyPanels'
 import { useSimulation } from './components/useSimulation'
+import { AdventureSelection, MissionHUD, MissionPanel, ReplayControls, SaveNoticeBanner } from './components/AdventurePanels'
+import { PortfolioHighlights, EngineeringShowcase } from './components/Portfolio'
+import { useAdventures } from './adventures/useAdventures'
+import { getAdventureView } from './adventures/selectors'
+import type { AdventureCommand, AdventureId, AdventureVariant } from './adventures/domain'
+import { useSound } from './audio/useSound'
+import { normalizeSound, type SoundPreferences } from './audio/sound'
 import type { EnvironmentId, ScenarioId, SimulationCommand } from './simulation/domain'
 import { DISTRICTS, HUB, STATIONS, WORLD_LAYOUT, getDistrict, getStation } from './worldConfig'
 import { STORAGE_KEY, createProgress, discoverStation, enterDistrict, introductoryProgress, parseProgress, resetProgress, type Progress } from './game/progress'
@@ -12,8 +19,8 @@ import type { AssetInfo, CameraMode, Clip, ExpressionName, Lighting, Quality, Re
 
 const Scene = lazy(() => import('./Scene'))
 type Screen = 'welcome' | 'adventure' | 'explore' | 'studio'
-type Modal = 'settings' | 'help' | 'architecture' | 'journal' | 'station' | 'simulation' | null
-type Preferences = { quality: Quality; reducedMotion: boolean; lighting: Lighting; cameraMode: CameraMode }
+type Modal = 'settings' | 'help' | 'architecture' | 'journal' | 'station' | 'simulation' | 'adventures' | 'showcase' | null
+type Preferences = { quality: Quality; reducedMotion: boolean; lighting: Lighting; cameraMode: CameraMode; sound: SoundPreferences }
 const PREFS_KEY = 'awushi-preferences-v2'
 const expressions: ExpressionName[] = ['Neutral', 'Happy', 'Curious', 'Thinking', 'Excited', 'Worried', 'Surprised', 'Determined', 'Celebrating', 'Sleepy']
 const animations: { clip: Clip; icon: typeof Activity; name: string }[] = [
@@ -24,14 +31,14 @@ const views: { id: View; label: string }[] = [{ id: 'three-quarter', label: '¾'
 const cameraModes: { id: CameraMode; name: string; icon: typeof Compass }[] = [{ id: 'third-person', name: 'Follow', icon: Footprints }, { id: 'first-person', name: 'First person', icon: Crosshair }, { id: 'overview', name: 'Overview', icon: Map }, { id: 'isometric', name: 'Isometric', icon: Layers3 }]
 const cameraHints: Record<CameraMode, string> = { 'third-person': 'W/S move · A/D turn · Drag to look', 'first-person': 'W/S move · A/D turn · Drag to look', overview: 'Every district, one connected world.', isometric: 'A steady miniature view · C changes view' }
 const movementKeys = new Set(['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'ShiftLeft', 'ShiftRight'])
-const initialTelemetry: Telemetry = { position: WORLD_LAYOUT.spawn, districtId: 'hub', nearbyId: null, expression: 'Neutral', fps: 0, drawCalls: 0, triangles: 0 }
+const initialTelemetry: Telemetry = { position: WORLD_LAYOUT.spawn, districtId: 'hub', nearbyId: null, expression: 'Neutral', fps: 0, drawCalls: 0, triangles: 0, geometries: 0, textures: 0 }
 
 function readProgress(): Progress { try { return parseProgress(localStorage.getItem(STORAGE_KEY)) } catch { return createProgress() } }
 function readPreferences(): Preferences {
-  const initial: Preferences = { quality: 'balanced', reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches, lighting: 'daylight', cameraMode: 'third-person' }
+  const initial: Preferences = { quality: 'balanced', reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches, lighting: 'daylight', cameraMode: 'third-person', sound: { muted: true, volume: .35 } }
   try {
     const saved = JSON.parse(localStorage.getItem(PREFS_KEY) ?? '{}') as Partial<Preferences>
-    return { quality: ['low', 'balanced', 'high'].includes(saved.quality ?? '') ? saved.quality! : initial.quality, reducedMotion: typeof saved.reducedMotion === 'boolean' ? saved.reducedMotion : initial.reducedMotion, lighting: ['daylight', 'moonlight', 'studio'].includes(saved.lighting ?? '') ? saved.lighting! : initial.lighting, cameraMode: cameraModes.some(item => item.id === saved.cameraMode) ? saved.cameraMode! : initial.cameraMode }
+    return { quality: ['low', 'balanced', 'high'].includes(saved.quality ?? '') ? saved.quality! : initial.quality, reducedMotion: typeof saved.reducedMotion === 'boolean' ? saved.reducedMotion : initial.reducedMotion, lighting: ['daylight', 'moonlight', 'studio'].includes(saved.lighting ?? '') ? saved.lighting! : initial.lighting, cameraMode: cameraModes.some(item => item.id === saved.cameraMode) ? saved.cameraMode! : initial.cameraMode, sound: normalizeSound(saved.sound ?? {}) }
   } catch { return initial }
 }
 function BrandMark() {
@@ -58,7 +65,23 @@ export default function App() {
   const [navigationTarget, setNavigationTarget] = useState<string | null>(null)
   const [environment, setEnvironment] = useState<EnvironmentId>('development')
   const [scenario, setScenario] = useState<ScenarioId>('healthy')
-  const { state: simulation, dispatch: dispatchSimulation } = useSimulation()
+  const { state: labSimulation, dispatch: dispatchSimulation } = useSimulation()
+  const adventures = useAdventures()
+  const { pause: pauseAdventure, leave: leaveAdventure } = adventures
+  const missionSession = screen === 'adventure' ? adventures.session : null
+  const missionView = useMemo(() => missionSession ? getAdventureView(missionSession) : null, [missionSession])
+  const missionId = missionSession?.id
+  const missionEnvironment = missionSession?.simulation.environment
+  const simulation = missionSession?.simulation ?? labSimulation
+  const sound = useSound(preferences.sound)
+  const [missionOpen, setMissionOpen] = useState(false)
+  const [rendererNoticeDismissed, setRendererNoticeDismissed] = useState(false)
+  const [rendererIssue, setRendererIssue] = useState<string | null>(null)
+  const [preferenceIssue, setPreferenceIssue] = useState<string | null>(null)
+  const previousAdventureEvent = useRef('')
+  const previousSoundEvent = useRef({ run: '', sequence: 0 })
+  const previousStep = useRef(initialTelemetry.position)
+  const onRendererStatus = useCallback((message: string | null) => { setRendererIssue(message); setRendererNoticeDismissed(false); if (message) pauseAdventure() }, [pauseAdventure])
   const previousSimulationStatus = useRef(simulation.status)
   const [reset, setReset] = useState(0)
   const [reaction, setReaction] = useState<Reaction>(null)
@@ -91,7 +114,7 @@ export default function App() {
   const onTelemetry = useCallback((value: Telemetry) => setTelemetry(value), [])
 
   useEffect(() => {
-    if (previousSimulationStatus.current === simulation.status) return
+    if (missionSession || previousSimulationStatus.current === simulation.status) return
     previousSimulationStatus.current = simulation.status
     if (simulation.status === 'failed') { react('Worried'); notify('A check caught a problem. Open the lab to inspect it.') }
     if (simulation.status === 'retrying') react('Determined')
@@ -101,10 +124,44 @@ export default function App() {
       if (inGame) { setClip('Celebrate'); setPlaying(true) }
       notify('A healthy release, from code to telemetry.', 'discovery')
     }
-  }, [simulation.status, inGame, react, notify])
+  }, [simulation.status, inGame, react, notify, missionSession])
 
-  useEffect(() => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)) } catch { /* Exploring still works with browser storage disabled. */ } }, [progress])
-  useEffect(() => { try { localStorage.setItem(PREFS_KEY, JSON.stringify(preferences)) } catch { /* Preferences remain effective for this visit. */ } }, [preferences])
+  useEffect(() => {
+    if (!missionSession || !missionView) return
+    const key = `${adventures.activeRecord?.id}:${adventures.replay?.recordId ?? 'live'}:${missionSession.eventSequence}`
+    if (key === previousAdventureEvent.current) return
+    previousAdventureEvent.current = key
+    react(missionView.reaction)
+    if (missionSession.status === 'completed' && !adventures.replay) { setClip('Celebrate'); setPlaying(true); setMissionOpen(true) }
+    if (!adventures.replay && missionSession.feedback.tone === 'bad') sound.play('error')
+    else if (!adventures.replay && missionSession.feedback.tone === 'warning') sound.play('warning')
+  }, [missionSession, missionView, adventures.activeRecord?.id, adventures.replay, react, sound])
+  useEffect(() => {
+    const previous = previousSoundEvent.current
+    const identity = `${missionSession ? adventures.activeRecord?.id : 'lab'}:${simulation.runId}`
+    if (previous.run !== identity) previous.sequence = 0
+    if (!adventures.replay) for (const event of simulation.history.filter(item => item.id > previous.sequence)) {
+      if (event.type === 'stage-completed' && event.stageId === 'build') sound.play('build')
+      if (event.type === 'succeeded') sound.play('success')
+      if (event.type === 'failed') sound.play('error')
+      if (event.type === 'approval-required') sound.play('warning')
+    }
+    previousSoundEvent.current = { run: identity, sequence: simulation.eventSequence }
+  }, [simulation.history, simulation.eventSequence, simulation.runId, adventures.replay, adventures.activeRecord?.id, missionSession, sound])
+  useEffect(() => {
+    const distance = Math.hypot(telemetry.position[0] - previousStep.current[0], telemetry.position[2] - previousStep.current[2])
+    previousStep.current = telemetry.position
+    if (inGame && !modal && !missionOpen && distance > .06 && distance < 2) sound.play('step')
+  }, [telemetry.position, inGame, modal, missionOpen, sound])
+  useEffect(() => {
+    if (missionId) setNavigationTarget(missionView?.stationId ?? null)
+  }, [missionId, missionView?.objective?.id, missionView?.stationId])
+  useEffect(() => {
+    if (missionEnvironment) setEnvironment(missionEnvironment)
+  }, [missionEnvironment])
+  useEffect(() => { if (clip === 'Celebrate' && !adventures.replay) sound.play('celebration') }, [clip, adventures.replay, sound])
+  useEffect(() => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)) } catch { setPreferenceIssue('Browser storage is unavailable. Your discoveries work for this visit but cannot be saved.') } }, [progress])
+  useEffect(() => { try { localStorage.setItem(PREFS_KEY, JSON.stringify(preferences)) } catch { setPreferenceIssue('Browser storage is unavailable. Preferences apply for this visit only.') } }, [preferences])
   useEffect(() => {
     if (!notice) return
     const timeout = window.setTimeout(() => setNotice(null), 4300)
@@ -118,7 +175,7 @@ export default function App() {
     setProgress(previous => enterDistrict(previous, district.id))
     notify(`Welcome to ${district.label}`, 'discovery')
   }, [telemetry.districtId, inGame, notify])
-  useEffect(() => { if (modal || screen === 'welcome') input.current.clear() }, [modal, screen])
+  useEffect(() => { if (modal || missionOpen || screen === 'welcome') input.current.clear() }, [modal, missionOpen, screen])
 
   const recover = useCallback(() => {
     input.current.clear(); setReset(value => value + 1); setClip('Idle'); setPlaying(true)
@@ -126,11 +183,12 @@ export default function App() {
     react('Determined')
   }, [react])
   const start = useCallback((next: Screen) => {
-    setScreen(next); setModal(null); setSelectedStation(null); recover()
+    if (next !== 'adventure') leaveAdventure()
+    setMissionOpen(false); setScreen(next); setModal(null); setSelectedStation(null); recover()
     if (next === 'studio') { setView('three-quarter'); setExpression('Neutral'); setExpressionIntensity(1); setRotation(0) }
-    if (next === 'adventure') notify('Follow the bridges. Every district has a story.')
+    if (next === 'adventure') setNotice(null)
     if (next === 'explore') notify('No itinerary. Follow whatever catches your eye.')
-  }, [notify, recover])
+  }, [notify, recover, leaveAdventure])
   const closeModal = useCallback(() => {
     const wasStation = modal === 'station'
     setModal(null); setSelectedStation(null); input.current.clear()
@@ -146,16 +204,16 @@ export default function App() {
     const target = getStation(telemetry.nearbyId)
     if (!target) return
     lastInteraction.current = performance.now()
-    input.current.clear(); setPlaying(true); setClip('Interact'); setSelectedStation(target.id)
+    sound.play('interaction'); input.current.clear(); setPlaying(true); setClip('Interact'); setSelectedStation(target.id)
     const next = discoverStation(progress, target.id)
     pendingCelebration.current = introductoryProgress(progress) < 6 && introductoryProgress(next) === 6
     setProgress(next); setModal('station')
     if (!progress.stations.includes(target.id)) notify(`${target.name} added to your field notes.`, 'discovery')
-  }, [inGame, modal, telemetry.nearbyId, progress, notify])
+  }, [inGame, modal, telemetry.nearbyId, progress, notify, sound])
 
   useEffect(() => {
     const down = (event: KeyboardEvent) => {
-      if (modal || screen === 'welcome') return
+      if (modal || missionOpen || screen === 'welcome' || rendererIssue) return
       if (event.target instanceof HTMLElement && (['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName) || event.target.isContentEditable)) return
       if (movementKeys.has(event.code)) { event.preventDefault(); input.current.add(event.code); if (inGame) setPlaying(true) }
       if (event.repeat) return
@@ -171,7 +229,7 @@ export default function App() {
     window.addEventListener('keydown', down); window.addEventListener('keyup', up); window.addEventListener('blur', clear)
     document.addEventListener('visibilitychange', clear)
     return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up); window.removeEventListener('blur', clear); document.removeEventListener('visibilitychange', clear) }
-  }, [modal, screen, inGame, interact, react, recover, notify, cameraMode, setCameraMode])
+  }, [modal, missionOpen, rendererIssue, screen, inGame, interact, react, recover, notify, cameraMode, setCameraMode])
 
   const chooseClip = (value: Clip) => { setClip(value); setPlaying(true) }
   const setPreference = <K extends keyof Preferences>(key: K, value: Preferences[K]) => setPreferences(previous => ({ ...previous, [key]: value }))
@@ -187,18 +245,35 @@ export default function App() {
     notify(`Follow the gold marker to ${destination.name}.`)
   }
   const commandSimulation = (command: SimulationCommand) => {
+    if (missionSession) { setModal(null); setMissionOpen(true); return }
     dispatchSimulation(command)
     if (command.type === 'backup') { react('Happy'); notify('A simulated backup was saved for this environment.') }
     if (command.type === 'restore') { react('Determined'); notify('The snapshot was restored into a simulated recovery target.') }
   }
 
-  return <div className={`app phase-one screen-${screen} ${preferences.reducedMotion ? 'reduce-motion' : ''}`} ref={container} style={style}>
+  const openAdventures = () => { pauseAdventure(); adventures.pauseReplay(); setMissionOpen(false); setModal('adventures'); input.current.clear() }
+  const launchAdventure = (id: AdventureId, variant?: AdventureVariant) => { adventures.launch(id, variant); start('adventure'); setMissionOpen(true); setEnvironment('development'); sound.play('interaction') }
+  const resumeAdventure = (id?: AdventureId) => { adventures.resume(id); start('adventure'); setMissionOpen(true) }
+  const restartAdventure = (id?: AdventureId, variant?: AdventureVariant) => { adventures.restart(id, variant); start('adventure'); setMissionOpen(true) }
+  const replayAdventure = (recordId: string) => { adventures.startReplay(recordId); start('adventure'); setMissionOpen(true) }
+  const commandAdventure = (command: AdventureCommand) => {
+    if (command.type === 'set-hints') adventures.setHintsEnabled(command.enabled)
+    else adventures.dispatch(command)
+    if (command.type === 'action') sound.play('interaction')
+  }
+  const exportSave = () => {
+    const url = URL.createObjectURL(new Blob([adventures.exportSave()], { type: 'application/json' }))
+    const link = document.createElement('a'); link.href = url; link.download = 'awushi-adventures.json'; link.click(); URL.revokeObjectURL(url)
+  }
+  const replayControls = adventures.replay ? <ReplayControls replay={adventures.replay} onPause={adventures.pauseReplay} onResume={adventures.resumeReplay} onRestart={adventures.restartReplay} onStop={adventures.stopReplay} onSpeed={adventures.setReplaySpeed} /> : undefined
+
+  return <div className={`app phase-three ${missionSession ? 'has-mission' : ''} ${missionOpen ? 'mission-is-open' : ''} screen-${screen} ${preferences.reducedMotion ? 'reduce-motion' : ''}`} ref={container} style={style}>
     <div className="app-shell">
       <header className="topbar">
-        <button className="brand" aria-label="Awushi home" onClick={() => { setScreen('welcome'); setModal(null); input.current.clear() }}><BrandMark /><span><strong>awushi<span>.</span></strong><small>DEVOPS WORLD</small></span></button>
+        <button className="brand" aria-label="Awushi home" onClick={() => { leaveAdventure(); setMissionOpen(false); setScreen('welcome'); setModal(null); input.current.clear() }}><BrandMark /><span><strong>awushi<span>.</span></strong><small>DEVOPS WORLD</small></span></button>
         <nav className="top-navigation" aria-label="World navigation">
-          {screen !== 'welcome' && <button className={inGame ? 'active' : ''} onClick={() => start('adventure')} aria-label="Play Adventure"><Compass size={16} /><span>Adventure</span></button>}
-          <button className={screen === 'studio' ? 'active' : ''} onClick={() => start('studio')} data-testid="enter-studio"><Box size={16} /><span>Character studio</span></button>
+          {screen !== 'welcome' && <button className={inGame ? 'active' : ''} onClick={openAdventures} aria-label="Play Adventure"><Compass size={16} /><span>Adventure</span></button>}
+          <button className={screen === 'studio' ? 'active' : ''} onClick={() => start('studio')} aria-label="Character studio" data-testid="enter-studio"><Box size={16} /><span>Character studio</span></button>
           <button onClick={() => setModal('architecture')} aria-label="View Architecture"><Layers3 size={16} /><span>Architecture</span></button>
         </nav>
         <div className="header-tools"><span className="local-label"><i />A local little universe</span><button className="icon-button" onClick={() => setModal('help')} aria-label="Open controls and help"><CircleHelp size={18} /></button><button className="icon-button" onClick={() => setModal('settings')} aria-label="Open settings"><Settings2 size={18} /></button></div>
@@ -210,33 +285,37 @@ export default function App() {
             <Scene clip={clip} playing={playing} speed={mode === 'studio' ? speed : 1} mode={mode} view={view} reset={reset} input={input} onClip={onClip} onReady={onReady}
               cameraMode={screen === 'welcome' ? 'overview' : cameraMode} expression={mode === 'world' ? 'Auto' : expression} expressionIntensity={mode === 'world' ? 1 : expressionIntensity}
               lighting={preferences.lighting} rotation={mode === 'studio' ? rotation : 0} quality={preferences.quality} reducedMotion={preferences.reducedMotion}
-              activeStation={modal === 'station' ? selectedStation : null} reaction={reaction} inputEnabled={screen !== 'welcome' && modal === null} onTelemetry={onTelemetry} targetStation={navigationTarget} simulation={simulation} simulationEnvironment={environment} />
+              activeStation={modal === 'station' ? selectedStation : missionOpen ? missionView?.stationId ?? null : null} reaction={reaction} inputEnabled={screen !== 'welcome' && modal === null && !missionOpen && !rendererIssue} onTelemetry={onTelemetry} targetStation={navigationTarget} simulation={simulation} simulationEnvironment={missionSession?.simulation.environment ?? environment} effectsPaused={Boolean(missionSession && (adventures.replay ? !adventures.replay.playing : !adventures.running))} onRendererStatus={onRendererStatus} />
           </Suspense>
         </div>
+        {rendererIssue && !rendererNoticeDismissed && <div className="renderer-notice" role="alert" data-testid="renderer-notice">{rendererIssue}<button onClick={() => window.location.reload()}>Reload saved adventure</button><button data-testid="dismiss-renderer-notice" onClick={() => setRendererNoticeDismissed(true)}>Continue with field notes</button></div>}
         <div className="scene-vignette" aria-hidden="true" />{inGame && cameraMode === 'first-person' && <span className="first-person-reticle" aria-hidden="true" />}
 
         {screen === 'welcome' && <section className="welcome" data-testid="screen-welcome">
-          <div className="welcome-story"><div className="eyebrow"><span className="tiny-spark">✦</span> AN ADVENTURE IN THE MAKING</div><h1>A little world.<br /><em>A big adventure.</em></h1><p>Meet Awushi. Follow a curious little splash across six floating districts, and bring a code change to life through a working DevOps simulation.</p>
-            <div className="welcome-actions"><button className="primary-button" onClick={() => start('adventure')} data-testid="play-adventure"><Play size={16} fill="currentColor" />Play Adventure<ArrowRight size={17} /></button><button className="secondary-button" onClick={() => start('explore')} data-testid="free-explore"><Compass size={17} />Free Explore</button></div>
+          <div className="welcome-story"><div className="eyebrow"><span className="tiny-spark">✦</span> SIX ADVENTURES. ONE CURIOUS COMPANION.</div><h1>A little world.<br /><em>A big adventure.</em></h1><p>Ship a release. Solve an incident. Bring a little cloud back to life. Explore with Awushi and learn the engineering behind every decision.</p>
+            <div className="welcome-actions"><button className="primary-button" onClick={openAdventures} data-testid="play-adventure"><Play size={16} fill="currentColor" />Play Adventure<ArrowRight size={17} /></button><button className="secondary-button" onClick={() => start('explore')} data-testid="free-explore"><Compass size={17} />Free Explore</button></div>
             <button className="text-button architecture-link" onClick={() => setModal('architecture')} data-testid="view-architecture">View Architecture<ArrowRight size={14} /></button>
+            {adventures.resumable.length > 0 && <button className="text-button" data-testid="resume-adventure-welcome" onClick={() => resumeAdventure(adventures.resumable.find(record => record.adventureId === adventures.selectedId)?.adventureId ?? adventures.resumable[0]?.adventureId)}>Resume your adventure<ArrowRight size={14} /></button>}
+            <PortfolioHighlights onShowcase={() => setModal('showcase')} />
             <div className="welcome-facts"><span><b>06</b> connected districts</span><span><b>{STATIONS.length}</b> places to discover</span><span><b>01</b> very curious companion</span></div>
           </div>
           <div className="welcome-map-caption"><span className="caption-line" /><span>A WORLD BUILT WITH CARE<small>Every bridge leads to a new perspective.</small></span></div>
-          <div className="welcome-footer"><span><Footprints size={14} />Explore at your own pace. No precise gaming skills needed.</span><span>PHASE 02 / DELIVERY</span></div>
+          <div className="welcome-footer"><span><Footprints size={14} />Explore at your own pace. No precise gaming skills needed.</span><span>PHASE 03 / ADVENTURES</span></div>
         </section>}
 
         {inGame && <div className="game-hud">
           <section className="district-heading" aria-label="Current district"><div className="eyebrow"><span className="district-dot" />{currentDistrict ? `DISTRICT 0${currentDistrict.order}` : telemetry.districtId === 'skyway' ? 'BETWEEN WORLDS' : 'YOUR ADVENTURE STARTS HERE'}</div><h1 data-testid="district-name">{currentDistrictName}</h1><p>{currentDistrict?.name ?? (telemetry.districtId === 'skyway' ? 'A small bridge. A new perspective.' : 'Six directions. Follow your curiosity.')}</p></section>
           <button className="progress-pill" onClick={() => setModal('journal')} aria-label="Open exploration journal" data-testid="exploration-progress"><BookOpen size={15} /><span><b>{progress.stations.length}</b> / {STATIONS.length} discoveries</span><span className="progress-mini"><i style={{ width: `${progress.stations.length / STATIONS.length * 100}%` }} /></span></button>
-          {targetStation ? <div className="objective-pill navigation-target" data-testid="navigation-target"><Compass size={15} /><span>FOLLOW THE GOLD MARKER<small>{targetStation.name}<span>{targetDistance} m away · {getDistrict(targetStation.districtId)?.label}</span></small></span><button className="icon-button" aria-label="Clear navigation target" onClick={() => setNavigationTarget(null)}><X size={13} /></button></div> : screen === 'adventure' && <div className="objective-pill"><Sparkles size={14} /><span>{objective ? <>NEXT LITTLE STEP<small>Discover {objective.label}</small></> : <>FIRST JOURNEY COMPLETE<small>Keep exploring the stories you missed.</small></>}</span><b>{introCount}/6</b></div>}
+          {targetStation ? <div className="objective-pill navigation-target" data-testid="navigation-target"><Compass size={15} /><span>FOLLOW THE GOLD MARKER<small>{targetStation.name}<span>{targetDistance} m away · {getDistrict(targetStation.districtId)?.label}</span></small></span><button className="icon-button" aria-label="Clear navigation target" onClick={() => setNavigationTarget(null)}><X size={13} /></button></div> : screen === 'adventure' && !missionSession && <div className="objective-pill"><Sparkles size={14} /><span>{objective ? <>NEXT LITTLE STEP<small>Discover {objective.label}</small></> : <>FIRST JOURNEY COMPLETE<small>Keep exploring the stories you missed.</small></>}</span><b>{introCount}/6</b></div>}
           <button className="minimap" onClick={() => setModal('journal')} aria-label="Open world map and journal" data-testid="world-minimap"><div className="map-label"><Map size={12} /><span>THE LITTLE WORLD</span><kbd>M</kbd></div><MiniMap position={telemetry.position} districtId={telemetry.districtId} progress={progress} targetId={targetStation?.districtId ?? (screen === 'adventure' ? objective?.id : undefined)} targetStationId={navigationTarget} /><span className="map-footer">{progress.districts.length} of 6 districts visited<ChevronRight size={12} /></span></button>
           <div className="game-bottom-center"><button className={`interaction-prompt ${nearbyStation ? 'available' : ''}`} onClick={interact} disabled={!nearbyStation} data-testid="nearby-interaction"><kbd>E</kbd><span>{nearbyStation ? <><small>TAKE A CLOSER LOOK</small>{nearbyStation.name}</> : 'Follow a path to discover something new'}</span>{nearbyStation && <ArrowRight size={16} />}</button><div className="keyboard-hint"><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>{immersive ? 'Move / turn' : 'Move'}</span><span><kbd>Shift</kbd>Run</span><span><kbd>Space</kbd>Celebrate</span></div></div>
           <div className="camera-hud"><span className="eyebrow">YOUR VIEW OF THE WORLD</span><div className="camera-modes" aria-label="Camera mode">{cameraModes.map(item => <button key={item.id} onClick={() => setCameraMode(item.id)} className={cameraMode === item.id ? 'active' : ''} aria-pressed={cameraMode === item.id} data-testid={`camera-${item.id}`}><item.icon size={15} /><span>{item.name}</span></button>)}</div><div className="camera-help">{cameraHints[cameraMode]}<button className="icon-button" onClick={() => { recover(); notify('Back at the Common. Your discoveries are safe.') }} aria-label="Return to central hub" data-testid="return-to-hub"><Home size={14} /></button></div></div>
-          <SimulationDock state={simulation} environment={environment} onEnvironment={setEnvironment} onCommand={commandSimulation} onOpen={() => setModal('simulation')} onLocate={locateStation} />
+          {!missionSession && <SimulationDock state={simulation} environment={environment} onEnvironment={setEnvironment} onCommand={commandSimulation} onOpen={() => setModal('simulation')} onLocate={locateStation} />}
+          {missionSession && !missionOpen && <MissionHUD session={missionSession} onOpen={() => setMissionOpen(true)} onLocate={locateStation} onSelect={openAdventures} paused={adventures.paused} replaying={Boolean(adventures.replay)} />}
           <div className="character-mood"><span className="status-dot" />Awushi is feeling <b>{telemetry.expression.toLowerCase()}</b></div>
           <div className="touch-controls" aria-label="Movement controls">{[{ key: 'KeyW', label: 'Move forward', Icon: ArrowUp }, { key: 'KeyA', label: immersive ? 'Turn left' : 'Move left', Icon: ArrowLeft }, { key: 'KeyS', label: 'Move backward', Icon: ArrowDown }, { key: 'KeyD', label: immersive ? 'Turn right' : 'Move right', Icon: ArrowRight }].map(({ key, label, Icon }) => <button key={key} aria-label={label} onPointerDown={event => { event.currentTarget.setPointerCapture(event.pointerId); input.current.add(key); setPlaying(true) }} onPointerUp={() => input.current.delete(key)} onPointerCancel={() => input.current.delete(key)} onLostPointerCapture={() => input.current.delete(key)}><Icon size={20} /></button>)}<button className="touch-run" aria-label="Run while moving" onPointerDown={event => { event.currentTarget.setPointerCapture(event.pointerId); input.current.add('ShiftLeft') }} onPointerUp={() => input.current.delete('ShiftLeft')} onPointerCancel={() => input.current.delete('ShiftLeft')} onLostPointerCapture={() => input.current.delete('ShiftLeft')}><Zap size={18} /></button></div>
           <button className="touch-celebrate" onClick={() => { chooseClip('Celebrate'); react('Celebrating') }} aria-label="Celebrate"><Sparkles size={20} /></button>
-          <output className="sr-only" data-testid="world-position" data-position={telemetry.position.join(',')} data-expression={telemetry.expression} data-fps={telemetry.fps} data-draw-calls={telemetry.drawCalls} data-triangles={telemetry.triangles}>{telemetry.position.map(value => value.toFixed(2)).join(', ')}</output>
+          <output className="sr-only" data-testid="world-position" data-position={telemetry.position.join(',')} data-expression={telemetry.expression} data-fps={telemetry.fps} data-draw-calls={telemetry.drawCalls} data-triangles={telemetry.triangles} data-geometries={telemetry.geometries} data-textures={telemetry.textures}>{telemetry.position.map(value => value.toFixed(2)).join(', ')}</output>
         </div>}
 
         {screen === 'studio' && <>
@@ -248,16 +327,21 @@ export default function App() {
           <div className="studio-mood"><span className="status-dot" /><span>{expression === 'Auto' ? telemetry.expression : expression} · {clip}</span></div>
           <section className="animation-dock" aria-label="Character animations"><div className="dock-heading"><span>BRING AWUSHI TO LIFE</span><button className="playback-toggle" onClick={() => setPlaying(!playing)} aria-label={playing ? 'Pause animation' : 'Play animation'}>{playing ? <Pause size={13} /> : <Play size={13} />}{playing ? 'Pause' : 'Play'}</button></div><div className="animation-options">{animations.map((item, index) => <button key={item.clip} className={`animation-option ${clip === item.clip ? 'selected' : ''}`} aria-pressed={clip === item.clip} onClick={() => chooseClip(item.clip)} data-testid={`animation-${item.clip.toLowerCase()}`}><span className="animation-number">0{index + 1}</span><item.icon size={22} strokeWidth={1.5} /><span>{item.name}<small>{item.clip === 'Interact' ? 'Interaction' : item.clip === 'Celebrate' ? 'Celebration' : item.clip}</small></span><i /></button>)}</div></section>
         </>}
+        {missionSession && missionOpen && <MissionPanel session={missionSession} onCommand={commandAdventure} onLocate={id => { locateStation(id); setMissionOpen(false) }} onClose={() => setMissionOpen(false)} onSelect={openAdventures} onRestart={() => restartAdventure()} onReplay={adventures.activeRecord?.completedAt !== null && adventures.activeRecord ? () => replayAdventure(adventures.activeRecord!.id) : undefined} paused={adventures.paused} onPause={pauseAdventure} onResume={() => adventures.resume()} readOnly={Boolean(adventures.replay)} replayControls={replayControls} />}
         {notice && screen !== 'welcome' && <div className={`toast ${notice.type}`} role="status" aria-live="polite" key={notice.id}><span>{notice.type === 'discovery' ? <Sparkles size={16} /> : <Compass size={16} />}</span>{notice.text}</div>}
       </main>
-      <footer className="footer"><span>A tiny universe, made from scratch.</span><span>{screen === 'studio' ? 'A LITTLE DIGITAL LIFE' : 'PHASE 02 / DELIVERY'}<i />LOCAL & YOURS</span></footer>
+      <footer className="footer"><span>A tiny universe, made from scratch.</span><span>{screen === 'studio' ? 'A LITTLE DIGITAL LIFE' : 'PHASE 03 / ADVENTURES'}<i />LOCAL & YOURS</span></footer>
     </div>
 
-    {modal === 'station' && station && <Dialog title={station.name} eyebrow={`${getDistrict(station.districtId)?.label ?? 'The world'} / TECHNOLOGY STATION`} onClose={closeModal} className="discovery-dialog" testId="discovery-panel"><div className="discovery-badge"><Check size={13} />{progress.stations.includes(station.id) ? 'Discovered with Awushi' : 'Explore the architecture'}</div><StationTechnologyPanel key={station.id} stationId={station.id} state={simulation} environment={environment} onEnvironment={setEnvironment} onCommand={commandSimulation} onLocate={locateStation} onOpenSimulation={() => setModal('simulation')} /></Dialog>}
+    {adventures.notice && <SaveNoticeBanner notice={adventures.notice} onExport={exportSave} onReset={adventures.resetSave} onDismiss={adventures.dismissNotice} onRetry={adventures.retrySave} />}
+    {preferenceIssue && <div className="preference-save-notice" role="status">{preferenceIssue}<button onClick={() => setPreferenceIssue(null)} aria-label="Dismiss storage notice"><X size={14} /></button></div>}
+    {modal === 'adventures' && <Dialog title="Where will curiosity take you?" eyebrow="CHOOSE YOUR NEXT ADVENTURE" onClose={closeModal} wide className="adventure-dialog adventure-selection-dialog"><AdventureSelection session={adventures.liveSession} completed={adventures.completed} resumable={adventures.resumable} onStart={launchAdventure} onResume={resumeAdventure} onRestart={restartAdventure} onReplay={replayAdventure} onFreeExplore={() => start('explore')} /></Dialog>}
+    {modal === 'showcase' && <Dialog title="A little world, engineered with care." eyebrow="BEHIND THE ADVENTURE" onClose={closeModal} wide className="showcase-dialog"><EngineeringShowcase onPlay={openAdventures} onArchitecture={() => setModal('architecture')} /></Dialog>}
+    {modal === 'station'  && station && <Dialog title={station.name} eyebrow={`${getDistrict(station.districtId)?.label ?? 'The world'} / TECHNOLOGY STATION`} onClose={closeModal} className="discovery-dialog" testId="discovery-panel"><div className="discovery-badge"><Check size={13} />{progress.stations.includes(station.id) ? 'Discovered with Awushi' : 'Explore the architecture'}</div><StationTechnologyPanel key={station.id} stationId={station.id} state={simulation} environment={environment} onEnvironment={setEnvironment} onCommand={commandSimulation} onLocate={locateStation} onOpenSimulation={() => { if (missionSession) { setModal(null); setMissionOpen(true) } else setModal('simulation') }} readOnly={Boolean(missionSession)} /></Dialog>}
 
     {modal === 'simulation' && <Dialog title="From a small change to a healthy release." eyebrow="THE DEPLOYMENT LAB / SIMULATED" onClose={closeModal} wide className="simulation-dialog"><SimulationPanel state={simulation} environment={environment} onEnvironment={setEnvironment} onCommand={commandSimulation} onLocate={locateStation} scenario={scenario} onScenario={setScenario} /></Dialog>}
 
-    {modal === 'settings' && <Dialog title="Make yourself at home." eyebrow="A FEW LITTLE PREFERENCES" onClose={closeModal} className="settings-dialog"><p className="dialog-intro">Find the view and pace that feel right for you.</p><label className="settings-row"><span><strong>Visual quality</strong><small>Choose Low for smaller devices or a lighter view.</small></span><select value={preferences.quality} onChange={event => setPreference('quality', event.target.value as Quality)} aria-label="Visual quality" data-testid="quality-select"><option value="low">Low</option><option value="balanced">Balanced</option><option value="high">High</option></select></label><label className="settings-row"><span><strong>Reduced motion</strong><small>Quieter camera transitions and decorative movement.</small></span><input type="checkbox" checked={preferences.reducedMotion} onChange={event => setPreference('reducedMotion', event.target.checked)} data-testid="reduced-motion" /></label><label className="settings-row"><span><strong>World lighting</strong><small>A different atmosphere, the same little world.</small></span><select value={preferences.lighting} onChange={event => setPreference('lighting', event.target.value as Lighting)} aria-label="World lighting"><option value="daylight">Daylight</option><option value="moonlight">Moonlight</option><option value="studio">Studio</option></select></label><div className="performance-card" data-testid="performance-stats"><Activity size={16} /><div><strong>{telemetry.fps > 0 ? `${Math.round(telemetry.fps)} FPS` : 'Measuring…'}</strong><span>Live frame rate · {telemetry.drawCalls} draw calls · {Math.round(telemetry.triangles / 1000)}k triangles</span></div></div><div className="settings-actions"><button className="secondary-button" onClick={() => { setModal(null); if (!inGame) start('adventure'); else recover(); notify('Back at the Common. Your discoveries are safe.') }}><Home size={15} />Return to central hub</button><button className="text-button" data-testid="reset-progress" onClick={() => { setProgress(resetProgress()); pendingCelebration.current = false; start('adventure'); notify('A fresh notebook. Your new journey starts here.') }}><RotateCcw size={14} />Reset exploration progress</button><small>Discoveries and preferences are saved in this browser when local storage is available.</small></div></Dialog>}
+    {modal === 'settings' && <Dialog title="Make yourself at home." eyebrow="A FEW LITTLE PREFERENCES" onClose={closeModal} className="settings-dialog"><p className="dialog-intro">Find the view and pace that feel right for you.</p><label className="settings-row"><span><strong>Visual quality</strong><small>Choose Low for smaller devices or a lighter view.</small></span><select value={preferences.quality} onChange={event => setPreference('quality', event.target.value as Quality)} aria-label="Visual quality" data-testid="quality-select"><option value="low">Low</option><option value="balanced">Balanced</option><option value="high">High</option></select></label><label className="settings-row"><span><strong>Reduced motion</strong><small>Quieter camera transitions and decorative movement.</small></span><input type="checkbox" checked={preferences.reducedMotion} onChange={event => setPreference('reducedMotion', event.target.checked)} data-testid="reduced-motion" /></label><label className="settings-row"><span><strong>World lighting</strong><small>A different atmosphere, the same little world.</small></span><select value={preferences.lighting} onChange={event => setPreference('lighting', event.target.value as Lighting)} aria-label="World lighting"><option value="daylight">Daylight</option><option value="moonlight">Moonlight</option><option value="studio">Studio</option></select></label><label className="settings-row"><span><strong>Sound effects</strong><small>Original, locally synthesized sounds. Starts only after your interaction.</small></span><input type="checkbox" checked={!preferences.sound.muted} data-testid="sound-enabled" onChange={event => { const value = { ...preferences.sound, muted: !event.target.checked }; setPreference('sound', value); sound.configure(value); void sound.unlock().then(() => sound.play('interaction')) }} /></label><label className="settings-row"><span><strong>Volume</strong><small data-testid="audio-status" data-cues-played={sound.played} data-active-voices={sound.voiceCount}>{sound.status}</small></span><input type="range" aria-label="Sound volume" min="0" max="1" step=".05" value={preferences.sound.volume} onChange={event => setPreference('sound', { ...preferences.sound, volume: Number(event.target.value) })} /></label><label className="settings-row"><span><strong>Adventure hints</strong><small>Four levels, from a nudge to a suggested fix.</small></span><input type="checkbox" aria-label="Enable adventure hints" checked={adventures.hintsEnabled} onChange={event => adventures.setHintsEnabled(event.target.checked)} /></label><div className="performance-card" data-testid="performance-stats"><Activity size={16} /><div><strong>{telemetry.fps > 0 ? `${Math.round(telemetry.fps)} FPS` : 'Measuring…'}</strong><span>Live frame rate · {telemetry.drawCalls} draw calls · {Math.round(telemetry.triangles / 1000)}k triangles</span></div></div><div className="settings-actions"><button className="secondary-button" onClick={() => { setModal(null); if (!inGame) start('adventure'); else recover(); notify('Back at the Common. Your discoveries are safe.') }}><Home size={15} />Return to central hub</button><button className="text-button" data-testid="reset-progress" onClick={() => { setProgress(resetProgress()); pendingCelebration.current = false; start('adventure'); notify('A fresh notebook. Your new journey starts here.') }}><RotateCcw size={14} />Reset exploration progress</button><small>Discoveries and preferences are saved in this browser when local storage is available.</small></div></Dialog>}
 
     {modal === 'help' && <Dialog title="Curiosity is all you need." eyebrow="YOUR LITTLE ADVENTURE GUIDE" onClose={closeModal}><p className="dialog-intro">Follow the bridges between districts. Walk near a landmark, then take a closer look. Every place has a story.</p><div className="help-controls"><div><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><small>or arrow keys</small></span><strong>W/S move · A/D turn in Follow and First person</strong></div><div><kbd>Shift</kbd><strong>Run while moving</strong></div><div><kbd>C</kbd><strong>Switch camera perspective</strong></div><div><kbd>E</kbd><strong>Discover a nearby landmark</strong></div><div><kbd>Space</kbd><strong>Make a happy splash</strong></div><div><kbd>M</kbd><strong>Open your map & journal</strong></div><div><kbd>R</kbd><strong>{mode === 'studio' ? 'Reset animation' : 'Return to the central hub'}</strong></div><div><kbd>Esc</kbd><strong>Close a panel / open settings</strong></div></div><p className="help-touch">On a touch screen, hold up/down to move and left/right to turn in Follow or First person; hold the lightning control with another finger to run and tap the nearby landmark prompt to interact. Drag the world to look around in Follow or First person. Use C or the camera buttons to change perspective.</p><button className="primary-button" onClick={closeModal}>Let’s make a splash<ArrowRight size={16} /></button></Dialog>}
 

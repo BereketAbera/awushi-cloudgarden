@@ -8,7 +8,7 @@ export type ExpressionName = 'Neutral' | 'Happy' | 'Curious' | 'Thinking' | 'Exc
 export type Quality = 'low' | 'balanced' | 'high'
 export type Lighting = 'daylight' | 'moonlight' | 'studio'
 export type AssetInfo = { clips: string[]; triangles: number; meshes: number; expressions?: string[] }
-export type Telemetry = { position: [number, number, number]; districtId: string; nearbyId: string | null; expression: ExpressionName; fps: number; drawCalls: number; triangles: number }
+export type Telemetry = { position: [number, number, number]; districtId: string; nearbyId: string | null; expression: ExpressionName; fps: number; drawCalls: number; triangles: number; geometries: number; textures: number }
 export type Reaction = { id: number; expression: ExpressionName } | null
 export type SceneProps = {
   clip: Clip; playing: boolean; speed: number; mode: Mode; view: View; reset: number
@@ -18,4 +18,6 @@ export type SceneProps = {
   activeStation: string | null; reaction: Reaction; inputEnabled: boolean
   onTelemetry: (value: Telemetry) => void
   targetStation?: string | null; simulation?: SimulationState; simulationEnvironment?: EnvironmentId
+  onRendererStatus?: (message: string | null) => void
+  effectsPaused?: boolean
 }

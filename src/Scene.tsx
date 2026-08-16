@@ -1,7 +1,7 @@
-import { Component, Suspense, useEffect, useMemo, useRef, type ErrorInfo, type MutableRefObject, type ReactNode } from 'react'
+import { Component, Suspense, memo, useEffect, useMemo, useRef, type ErrorInfo, type MutableRefObject, type ReactNode } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { ContactShadows, Environment, Lightformer, OrbitControls, PerspectiveCamera as PerspectiveLens, OrthographicCamera as OrthographicLens, useAnimations, useGLTF } from '@react-three/drei'
-import { NeutralToneMapping, Group, LoopOnce, LoopRepeat, Mesh, Vector3, PerspectiveCamera, OrthographicCamera, DirectionalLight, InstancedMesh, Object3D, Color, type AnimationAction } from 'three'
+import { NeutralToneMapping, Group, LoopOnce, LoopRepeat, Mesh, SkinnedMesh, Vector3, PerspectiveCamera, OrthographicCamera, DirectionalLight, InstancedMesh, Object3D, Color, type AnimationAction } from 'three'
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js'
 import type { OrbitControls as OrbitControlsType } from 'three-stdlib'
 import { DISTRICTS, HUB, STATIONS, WORLD_LAYOUT, type Point3 } from './worldConfig'
@@ -16,19 +16,57 @@ type LiveWorld = { position: Vector3; azimuth: number; viewYaw: number; movement
 type LiveRef = MutableRefObject<LiveWorld>
 const emptyKeys = new Set<string>()
 
-class SceneBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+class SceneBoundary extends Component<{ children: ReactNode; onStatus?: (message: string | null) => void }, { failed: boolean }> {
   state = { failed: false }
   static getDerivedStateFromError() { return { failed: true } }
-  componentDidCatch(error: Error, info: ErrorInfo) { console.error('Awushi scene failed to load', error, info.componentStack) }
-  render() {
-    return this.state.failed ? <div className="scene-error"><span>Something interrupted the little splash.</span><p>Check that the local assets have been generated, then reload the page.</p><button onClick={() => window.location.reload()}>Try again</button></div> : this.props.children
+  componentDidCatch(error: Error, info: ErrorInfo) { console.error('Awushi scene failed to load', error, info.componentStack); this.props.onStatus?.('A local model could not load. Your adventure is paused; its saved progress is safe.') }
+  retry = () => {
+    for (const path of ['/assets/awushi.glb', '/assets/world-hub.glb', '/assets/deployment-effects.glb', ...DISTRICTS.map(district => district.asset)]) useGLTF.clear(path)
+    this.props.onStatus?.(null); this.setState({ failed: false })
   }
+  render() {
+    return this.state.failed ? <div className="scene-error" role="alert" data-testid="scene-error"><span>Something interrupted the little splash.</span><p>A local model could not load. Restore the generated assets and retry. Your adventure progress stays saved.</p><button onClick={this.retry} data-testid="retry-scene">Retry local assets</button></div> : this.props.children
+  }
+}
+
+function RendererRecovery({ onStatus }: { onStatus?: (message: string | null) => void }) {
+  const { gl } = useThree()
+  useEffect(() => {
+    const canvas = gl.domElement
+    const lost = (event: Event) => { event.preventDefault(); onStatus?.('The 3D renderer was interrupted. Your adventure is paused. Wait for recovery or reload the saved adventure.') }
+    const restored = () => onStatus?.(null)
+    canvas.addEventListener('webglcontextlost', lost); canvas.addEventListener('webglcontextrestored', restored)
+    return () => { canvas.removeEventListener('webglcontextlost', lost); canvas.removeEventListener('webglcontextrestored', restored) }
+  }, [gl, onStatus])
+  return null
+}
+
+/** Snapshot the previous completed frame, including shadow/transmission/offscreen passes. */
+function useRendererCounters() {
+  const { gl } = useThree()
+  const frame = useRef({ drawCalls: 0, triangles: 0, geometries: 0, textures: 0 })
+  const ready = useRef(false)
+  useEffect(() => {
+    const previous = gl.info.autoReset
+    gl.info.autoReset = false; gl.info.reset(); ready.current = false
+    return () => { gl.info.autoReset = previous; gl.info.reset() }
+  }, [gl])
+  useFrame(() => {
+    if (ready.current) frame.current = { drawCalls: gl.info.render.calls, triangles: gl.info.render.triangles, geometries: gl.info.memory.geometries, textures: gl.info.memory.textures }
+    ready.current = true; gl.info.reset()
+  }, -1000)
+  return frame
 }
 
 function Awushi(props: SceneProps & { live: LiveRef }) {
   const { clip, playing, speed, input, reset, mode, onClip, onReady, live, quality, inputEnabled, reducedMotion } = props
   const source = useGLTF('/assets/awushi.glb')
   const scene = useMemo(() => clone(source.scene), [source.scene])
+  useEffect(() => () => {
+    const skeletons = new Set<SkinnedMesh['skeleton']>()
+    scene.traverse(node => { if (node instanceof SkinnedMesh) skeletons.add(node.skeleton) })
+    skeletons.forEach(skeleton => skeleton.dispose())
+  }, [scene])
   const mover = useRef<Group>(null!)
   const { actions, mixer } = useAnimations(source.animations, scene)
   const moving = useRef(false)
@@ -36,6 +74,7 @@ function Awushi(props: SceneProps & { live: LiveRef }) {
   const targetRotation = useRef(0)
   const behavior = useRef(createBehavior())
   const reaction = useRef<{ expression: ExpressionName; remaining: number } | null>(null)
+  const rendererCounters = useRendererCounters()
   const stats = useRef({ elapsed: 0, frames: 0, fps: 0, publish: 0 })
 
   useEffect(() => {
@@ -84,7 +123,7 @@ function Awushi(props: SceneProps & { live: LiveRef }) {
   }, [reset, mode, live, scene])
   useEffect(() => { reaction.current = props.reaction ? { expression: props.reaction.expression, remaining: 2.2 } : null }, [props.reaction])
 
-  useFrame(({ gl }, delta) => {
+  useFrame((_, delta) => {
     const dt = Math.min(delta, 0.1)
     const keys = inputEnabled && playing ? input.current : emptyKeys
     const immersive = mode === 'world' && isImmersive(props.cameraMode)
@@ -131,7 +170,7 @@ function Awushi(props: SceneProps & { live: LiveRef }) {
     if (sample.elapsed >= 1) { sample.fps = Math.round(sample.frames / sample.elapsed); sample.frames = 0; sample.elapsed = 0 }
     if (sample.publish >= 0.2) {
       sample.publish = 0
-      props.onTelemetry({ position, districtId: surfaceAt(position[0], position[2])?.districtId ?? 'hub', nearbyId: live.current.nearby, expression: face, fps: sample.fps, drawCalls: gl.info.render.calls, triangles: gl.info.render.triangles })
+      props.onTelemetry({ position, districtId: surfaceAt(position[0], position[2])?.districtId ?? 'hub', nearbyId: live.current.nearby, expression: face, fps: sample.fps, ...rendererCounters.current })
     }
   })
   return <group ref={mover} scale={mode === 'world' ? WORLD_CHARACTER_SCALE : 1}><primitive object={scene} /></group>
@@ -193,7 +232,7 @@ function Stage({ mode, quality, live, reducedMotion, targetStation }: Pick<Scene
   return <group>
     <mesh receiveShadow position={[0, -0.18, 0]}><cylinderGeometry args={[3.4, 3.55, 0.32, 96]} /><meshStandardMaterial color="#152d3c" roughness={0.3} metalness={0.45} /></mesh>
     <mesh position={[0, -0.006, 0]} rotation={[-Math.PI / 2, 0, 0]}><ringGeometry args={[3.32, 3.34, 128]} /><meshBasicMaterial color="#43d7e7" transparent opacity={0.55} /></mesh>
-    {quality !== 'low' && <ContactShadows position={[0, 0.005, 0]} opacity={0.65} scale={16} blur={2.2} far={7} resolution={512} color="#02080e" />}
+
   </group>
 }
 
@@ -300,6 +339,19 @@ function CameraRig({ view, reset, mode, cameraMode, reducedMotion, inputEnabled,
   return <><PerspectiveLens makeDefault={immersive} position={[5, 3, 5]} near={.08} far={180} fov={58} /><OrthographicLens makeDefault={!immersive} position={[14, 14, 18]} near={.08} far={180} /><OrbitControls ref={controls} enablePan={false} minZoom={.18} maxZoom={6} minPolarAngle={.3} maxPolarAngle={Math.PI / 2 + .05} enableDamping={!reducedMotion} dampingFactor={.12} enabled={false} /></>
 }
 
+// Stable children prevent rebuilding the static environment map on every telemetry update.
+const ReflectionLighting = memo(function ReflectionLighting({ lighting, quality }: Pick<SceneProps, 'lighting' | 'quality'>) {
+  const night = lighting === 'moonlight'
+  return (
+    <Environment resolution={quality === 'low' ? 128 : 256} environmentIntensity={lighting === 'studio' ? 1.8 : night ? 1 : 1.4}>
+      <Lightformer form="rect" intensity={4} color="#e8feff" scale={[4, 7, 1]} position={[-4, 4, 4]} rotation={[0, Math.PI / 4, 0]} />
+      <Lightformer form="rect" intensity={3} color="#75eaff" scale={[3, 8, 1]} position={[4, 4, -4]} rotation={[0, -Math.PI / 2, 0]} />
+      <Lightformer form="circle" intensity={4} color="#ffffff" scale={[4, 4, 1]} position={[0, 7, 1]} rotation={[Math.PI / 2, 0, 0]} />
+      <Lightformer form="rect" intensity={0.5} color="#9dc9da" scale={[20, 20, 1]} position={[0, 0, -12]} />
+    </Environment>
+  )
+})
+
 function Lighting({ lighting, quality, live, mode }: Pick<SceneProps, 'lighting' | 'quality' | 'mode'> & { live: LiveRef }) {
   const light = useRef<DirectionalLight>(null!)
   const night = lighting === 'moonlight'
@@ -312,22 +364,20 @@ function Lighting({ lighting, quality, live, mode }: Pick<SceneProps, 'lighting'
     <ambientLight intensity={night ? 0.8 : 1.5} />
     <directionalLight ref={light} intensity={night ? 2 : 3.6} color={night ? '#84c3ff' : '#e4fff7'} castShadow={quality !== 'low'} shadow-mapSize={quality === 'high' ? [2048, 2048] : [1024, 1024]} shadow-camera-left={-12} shadow-camera-right={12} shadow-camera-top={12} shadow-camera-bottom={-12} shadow-camera-far={40} shadow-bias={-0.0005} shadow-normalBias={0.03} />
     <directionalLight position={[-5, 3, -3]} intensity={night ? 2 : 2.6} color="#2ce3ff" />
-    <Environment resolution={quality === 'low' ? 128 : 256} environmentIntensity={lighting === 'studio' ? 1.8 : night ? 1 : 1.4}>
-      <Lightformer form="rect" intensity={4} color="#e8feff" scale={[4, 7, 1]} position={[-4, 4, 4]} rotation={[0, Math.PI / 4, 0]} />
-      <Lightformer form="rect" intensity={3} color="#75eaff" scale={[3, 8, 1]} position={[4, 4, -4]} rotation={[0, -Math.PI / 2, 0]} />
-      <Lightformer form="circle" intensity={4} color="#ffffff" scale={[4, 4, 1]} position={[0, 7, 1]} rotation={[Math.PI / 2, 0, 0]} />
-      <Lightformer form="rect" intensity={0.5} color="#9dc9da" scale={[20, 20, 1]} position={[0, 0, -12]} />
-    </Environment>
+    <ReflectionLighting lighting={lighting} quality={quality} />
   </>
 }
 function SceneContents(props: SceneProps) {
   const live = useRef<LiveWorld>({ position: new Vector3(...WORLD_LAYOUT.spawn), azimuth: FOLLOW_AZIMUTH, viewYaw: INITIAL_HEADING, movementYaw: INITIAL_HEADING, heading: INITIAL_HEADING, bodyVisible: true, nearby: null })
   return <>
+    <RendererRecovery onStatus={props.onRendererStatus} />
+    {/* Keep one shadow resource set per Canvas; switching modes never allocates another. */}
+    <group visible={props.mode === 'studio' && props.quality !== 'low'}><ContactShadows frames={props.mode === 'studio' && props.quality !== 'low' ? Infinity : 0} position={[0, 0.005, 0]} opacity={0.65} scale={16} blur={2.2} far={7} resolution={512} color="#02080e" /></group>
     <Lighting {...props} live={live} />
-    <Suspense fallback={null}><Awushi {...props} live={live} /><Stage {...props} live={live} />{props.mode === 'world' && props.simulation && <SimulationEffects simulation={props.simulation} environment={props.simulationEnvironment ?? props.simulation.environment} reducedMotion={props.reducedMotion} />}</Suspense>
+    <Suspense fallback={null}><Awushi {...props} live={live} /><Stage {...props} live={live} />{props.mode === 'world' && props.simulation && <SimulationEffects simulation={props.simulation} environment={props.simulationEnvironment ?? props.simulation.environment} reducedMotion={props.reducedMotion} paused={props.effectsPaused} />}</Suspense>
     <CameraRig {...props} live={live} />
   </>
 }
 export default function Scene(props: SceneProps) {
-  return <SceneBoundary><Canvas fallback={<div className="scene-error">Interactive 3D needs WebGL. Try a browser with hardware acceleration enabled.</div>} data-testid="awushi-canvas" shadows={props.quality !== 'low'} camera={{ position: [14, 14, 18], near: 0.1, far: 180, zoom: 1 }} dpr={[1, props.quality === 'low' ? 1 : props.quality === 'high' ? 1.75 : 1.5]} gl={{ antialias: true, alpha: true, toneMapping: NeutralToneMapping, toneMappingExposure: 1 }}><SceneContents {...props} /></Canvas></SceneBoundary>
+  return <SceneBoundary onStatus={props.onRendererStatus}><Canvas fallback={<div className="scene-error">Interactive 3D needs WebGL. Try a browser with hardware acceleration enabled. Adventure consoles and saved progress remain available.</div>} data-testid="awushi-canvas" shadows={props.quality !== 'low'} camera={{ position: [14, 14, 18], near: 0.1, far: 180, zoom: 1 }} dpr={[1, props.quality === 'low' ? 1 : props.quality === 'high' ? 1.75 : 1.5]} gl={{ antialias: true, alpha: true, toneMapping: NeutralToneMapping, toneMappingExposure: 1 }}><SceneContents {...props} /></Canvas></SceneBoundary>
 }

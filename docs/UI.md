@@ -1,6 +1,6 @@
-# Phase 2 interface
+# Phase 3 interface
 
-The existing interface now surrounds an immersive world and a deterministic local deployment lab. Adventure, Free Explore, the Character Studio, discovery progress, the journal and all accessibility settings remain available. The world and architecture inspector use the same station/technology registry.
+The interface surrounds the existing immersive world with six optional engineering adventures. Play Adventure opens the adventure collection; Free Explore retains the independent deployment lab and discovery experience. The Character Studio, journal, ten expressions, five animations and four cameras remain available. The world, architecture inspector and adventures consume shared infrastructure definitions.
 
 ## Camera and movement controls
 
@@ -12,6 +12,18 @@ The existing interface now surrounds an immersive world and a deterministic loca
 - Opening a panel clears held input and stops player movement. Simulation time continues independently. Blur and visibility changes also clear movement keys.
 
 See `CAMERA.md` for framing, obstruction and transition details. The studio still offers all ten expressions, five clips, expression intensity, playback speed, lighting, rotation, camera presets and reset controls. Studio speed does not change world movement or gait speed.
+
+## Adventure collection and field notebook
+
+`components/AdventurePanels.tsx` renders the catalog from `adventures/catalog.ts`. Six cards show difficulty, estimated duration, learning objectives, selectable variations where relevant, completion and the best recorded result. The order is a recommendation, never an unlock requirement. Each adventure can retain a resumable attempt, so switching does not silently discard another checkpoint. Restart is explicit. Completed records expose deterministic replay.
+
+A compact Mission HUD shows the current objective and actual completed-objective count. Find in world uses the existing station marker. The expandable field notebook is a nonmodal side panel on desktop and a readable full-height workspace on narrow screens. The world remains rendered. It shows explicit inspection/actions, observed evidence with timestamps, decision consequences, progressive hints, completed steps and the completion summary. Opening a panel never advances a mission: the engine checks infrastructure and records evidence when the visitor chooses an action. Remote investigation through the field console is intentional, so walking skill is not a prerequisite for learning.
+
+The four hint levels become more specific, from broad guidance to a corrective action. Visitors can disable hints. Wrong decisions produce explanatory, recoverable feedback; unavailable prerequisites are disabled with a reason. Completion reports what happened, the cause, why the fix worked, relevant technologies and optional engineering detail. Decisions remain available for reflection. A best result favors fewer rejected decisions and fewer requested hints; elapsed time is shown during replay but is not a speed competition.
+
+The mission panel receives presentation callbacks and `getAdventureView`; it does not mutate infrastructure itself. A live region announces meaningful feedback and status changes. Escape closes the notebook and restores focus. Gameplay input is disabled while the workspace is open; the logical clock continues until Pause is explicitly selected. Replay controls have separate pause/play, restart, speed and leave actions. Replay is read-only and cannot alter the original completed record.
+
+The latest inspected observation is expanded above the action list, with earlier snapshots in the evidence notebook. Choosing an action returns the scroll position to the objective and consequence, so a decision made below the fold cannot hide its feedback. Completion moves focus back to the workspace when the verification control disappears. The header, pause/replay controls and footer stay available while the evidence scrolls.
 
 ## Deployment lab
 
@@ -35,8 +47,18 @@ The graph is horizontally scrollable on narrow screens, with keyboard-operable f
 
 `components/Dialog.tsx` traps focus, handles Escape and backdrop dismissal, restores the opener and makes the background inert. Focus is captured before applying inert, so browser blur cannot erase the opener. All icon controls have labels and visible focus styling. System reduced motion is respected initially and remains configurable alongside quality and lighting.
 
-Exploration uses the validated `awushi-exploration-v2` local record; preferences including camera use `awushi-preferences-v2`. Unavailable or invalid local storage never prevents play. Simulation state is in memory for the current visit and continues across interface modes; reloading or resetting the simulation starts fresh infrastructure state.
+Exploration uses the validated `awushi-exploration-v2` local record; preferences including camera use `awushi-preferences-v2`. Unavailable or invalid local storage never prevents play. Adventure sessions use versioned local command journals, from which the shared reducer reconstructs infrastructure, progress and evidence. Interrupted sessions resume with their logical clock rather than the new page’s performance clock. Recovery notices explain corrupt, incompatible or unavailable storage and expose export/fresh-start controls where appropriate. The free-exploration lab remains separate from adventure mutations. See `PERSISTENCE.md` for bounds, validation, migration and replay semantics.
 
 Add educational technologies and graph relationships in `simulation/registry.ts`, associate them with a world station, and implement any new domain capability in the engine. The interface consumes those definitions. Do not add independent infrastructure behavior to a 3D mesh or duplicate registry content in the architecture graph.
 
 `tests/browser/simulation.spec.ts` covers the complete timed journey, a genuine human approval wait, environment separation, telemetry, reset, failure repair/cancel and architecture-to-world guidance. Existing exploration, camera, studio, keyboard and touch coverage remains in the other browser suites.
+
+## Portfolio entry and engineering showcase
+
+`components/Portfolio.tsx` adds a concise engineering invitation alongside the playable world. Its interactive four-layer diagram explains local procedural authoring, the typed state/event model, React/Three.js presentation and verification/persistence. Selecting a layer reveals responsibilities, boundaries and repository source references. It does not invent production traffic or claim a frame rate. The architecture view remains available without starting an adventure. See `SHOWCASE.md` for the presentation contract.
+
+Adventure styling is isolated in `adventures/adventures.css`, sharing the existing mint/navy palette and system typography. No external fonts, downloaded art or remote runtime requests are introduced.
+
+Manual Chrome review covered desktop, a 1280×720 laptop viewport and a 390×844 phone viewport. The readiness adventure was checked through an incorrect restart, the corrective probe-path change, verification, summary, hints and read-only replay controls. Short laptop layouts compact the portfolio invitation and omit redundant welcome counts to prevent footer clipping. Phone dimensions are browser emulation, not a claim of physical-device testing.
+
+A renderer interruption pauses the lesson and offers reload or **Continue with field notes**. Continuing dismisses the warning so narrow screens can still reach adventure controls; it does not restart movement or pretend the renderer recovered. A missing-model scene also retains its independent retry button.
