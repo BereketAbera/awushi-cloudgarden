@@ -1,0 +1,25 @@
+{
+  "resources": [
+    {
+      "geometries": 150,
+      "textures": 19
+    },
+    {
+      "geometries": 150,
+      "textures": 19
+    },
+    {
+      "geometries": 150,
+      "textures": 19
+    },
+    {
+      "geometries": 150,
+      "textures": 19
+    },
+    {
+      "geometries": 150,
+      "textures": 19
+    }
+  ],
+  "note": "Renderer resource counts after five real studio/world transitions; not a byte-accurate GPU-memory or long-duration soak measurement."
+}

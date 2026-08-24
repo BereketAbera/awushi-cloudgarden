@@ -41,7 +41,7 @@ test('welcome, architecture map, camera modes, settings, focus and recovery', as
   expect(await page.getByRole('dialog').evaluate(node => node.contains(document.activeElement))).toBeTruthy()
   await page.getByTestId('close-dialog').click()
   await expect(page.getByTestId('view-architecture')).toBeFocused()
-  await page.getByTestId('play-adventure').click()
+  await page.getByTestId('free-explore').click()
   await expect(page.getByTestId('district-name')).toHaveText('The Common')
   await expect(page.getByTestId('camera-third-person')).toHaveAttribute('aria-pressed', 'true')
   for (const mode of ['first-person', 'overview', 'isometric', 'third-person']) {
@@ -59,7 +59,7 @@ test('welcome, architecture map, camera modes, settings, focus and recovery', as
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1)
   expect(overflow).toBeFalsy()
   mkdirSync(previews, { recursive: true })
-  await page.screenshot({ path: `${previews}/phase2-world-${info.project.name}.png` })
+  await page.screenshot({ path: `${previews}/phase3-world-${info.project.name}.png` })
   expect(errors).toEqual([])
 })
 
@@ -79,12 +79,12 @@ test('studio blends every expression while locomotion remains selected', async (
   await page.getByRole('button', { name: 'Front', exact: true }).click()
   await page.getByRole('button', { name: 'Pause animation', exact: true }).click()
   await expect(page.getByRole('button', { name: 'Play animation', exact: true })).toBeVisible()
-  await page.screenshot({ path: `${previews}/phase2-studio-${info.project.name}.png` })
+  await page.screenshot({ path: `${previews}/phase3-studio-${info.project.name}.png` })
 })
 
 test('optional isometric camera tracks actual keyboard movement with stable orientation', async ({ page }, info) => {
   test.skip(info.project.name !== 'desktop', 'Camera movement is shared across input types.')
-  await page.getByTestId('play-adventure').click()
+  await page.getByTestId('free-explore').click()
   await page.getByTestId('camera-isometric').click()
   const canvas = page.locator('canvas')
   await expect(canvas).toHaveAttribute('data-camera-mode', 'isometric')
@@ -113,7 +113,7 @@ test('optional isometric camera tracks actual keyboard movement with stable orie
 test('all six introductions are reachable through real keyboard movement and persist', async ({ page }, info) => {
   test.skip(info.project.name !== 'desktop', 'Long route traversal runs on desktop; mobile controls and layout have separate coverage.')
   test.setTimeout(300_000)
-  await page.getByTestId('play-adventure').click()
+  await page.getByTestId('free-explore').click()
   await page.getByTestId('camera-isometric').click()
   await page.getByRole('button', { name: 'Open settings', exact: true }).click()
   await page.getByTestId('quality-select').selectOption('low')
@@ -134,7 +134,7 @@ test('all six introductions are reachable through real keyboard movement and per
     await expect(page.getByTestId('discovery-panel')).toContainText(station.name)
     await page.keyboard.press('e') // Held/repeated interaction cannot create another panel.
     await expect(page.getByRole('dialog')).toHaveCount(1)
-    if (district.id === 'development') await page.screenshot({ path: `${previews}/phase2-discovery-desktop.png` })
+    if (district.id === 'development') await page.screenshot({ path: `${previews}/phase3-discovery-desktop.png` })
     await page.getByTestId('close-dialog').click()
   }
   await expect(page.getByTestId('exploration-progress')).toContainText('6 / 17')
@@ -151,7 +151,7 @@ test('measures rendered frame rate and captures the full overview', async ({ pag
   await page.getByTestId('free-explore').click()
   await page.getByTestId('camera-overview').click()
   await page.waitForTimeout(1500)
-  await page.screenshot({ path: `${previews}/phase2-overview-${info.project.name}.png` })
+  await page.screenshot({ path: `${previews}/phase3-overview-${info.project.name}.png` })
   await page.getByRole('button', { name: 'Open settings', exact: true }).click()
   const samples: number[] = []
   for (let i = 0; i < 15; i++) {
@@ -162,6 +162,6 @@ test('measures rendered frame rate and captures the full overview', async ({ pag
   }
   expect(samples.length).toBeGreaterThan(10)
   const report = { browser: 'installed Chrome, headless WebGL', project: info.project.name, viewport: page.viewportSize(), quality: 'balanced', view: 'overview', samples, mean: samples.reduce((a, b) => a + b, 0) / samples.length, minimum: Math.min(...samples), maximum: Math.max(...samples), note: 'Observed local test environment; not a universal frame-rate guarantee.' }
-  writeFileSync(`assets/phase2-idle-performance-${info.project.name}.json`, `${JSON.stringify(report, null, 2)}\n`)
+  writeFileSync(`assets/phase3-idle-performance-${info.project.name}.json`, `${JSON.stringify(report, null, 2)}\n`)
   await info.attach('performance', { body: JSON.stringify(report), contentType: 'application/json' })
 })

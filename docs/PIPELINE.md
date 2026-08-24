@@ -18,7 +18,7 @@ npm run build
 npm run dev
 ```
 
-`npm run verify` runs lint, type checking, pipeline/runtime/game/expression tests, validates all exports, builds the production game, and runs Playwright. Browser tests use installed Google Chrome and port 5176. `npm run assets:build` regenerates all assets and previews, then validates them. The latter includes the environment now that the character milestone has passed review.
+`npm run verify` runs lint, type checking, pipeline/runtime/unit tests, validates all exports, builds the production game, and runs Playwright. Unit tests include navigation, expressions, infrastructure, adventures, audio, persistence and replay. Browser tests use installed Google Chrome plus Playwright Firefox/WebKit and a production preview on port 5176. Install the latter binaries once with `npx playwright install firefox webkit`; browser installation needs network access, gameplay does not. `npm run assets:build` regenerates all assets and previews, then validates them. The latter includes the environment now that the character milestone has passed review.
 
 The default generator builds the first milestone: Awushi's GLB, editable `.blend`, manifest, and four rendered views. It starts from Blender factory settings and runs a fresh Blender process per generator. Explicit Python errors produce a nonzero process exit; the wrapper also fails on process crashes. A partial output left by a failed run is not proof of success.
 
@@ -161,3 +161,13 @@ These links are documentation only; the asset pipeline and running game do not f
 ## Phase 2 deployment visuals
 
 `generate_effects.py` runs after the world generator for `--environment` and `--all`. It creates six small origin-centered packet, image, configuration, Pod, signal and sync-ring prototypes in one GLB, plus `assets/source/effects.blend`, a manifest and three rendered views when previews are enabled. A separate isolated regeneration audit using `scripts/compare-glb.mjs` produced `assets/source/effects-reproducibility.json`; generation itself does not write that audit. The prototypes are reused by typed runtime event projections rather than exported as an autonomous deployment animation. See `EFFECTS.md` for names and customization.
+
+## Phase 3 adventures and local presentation
+
+The six adventures reuse the existing character, districts and deployment-effect GLBs. Scenario catalog text, evidence rules, infrastructure operations, persistence and replay are TypeScript changes; they do not require Blender regeneration unless their geometry or materials change. `src/adventures/engine.ts` orchestrates the shared infrastructure reducers, while selectors expose objectives and evidence. The scene and interface render their resulting state. Rendering an effect or playing an animation never completes a deployment stage or approves a change.
+
+Adventure feedback drives Awushi's existing expression and animation layers. Timed world effects follow the live or replay logical clock and stop with that timeline. Original footsteps, interaction, build, success, warning, error and celebration cues are synthesized by Web Audio in `src/audio/sound.ts`; no audio files or asset downloads are required. Sound is muted initially and requires an explicit user interaction after opt-in. See [adventures](ADVENTURES.md), [audio](AUDIO.md) and [persistence/replay](PERSISTENCE.md) for customization and domain contracts.
+
+Browser verification now includes all six visible lessons, wrong decisions and recovery, reload/resume, replay controls, audio preferences and model/renderer failures. The Chrome desktop/mobile projects run the full suite; Firefox/WebKit run adventures, compatibility and resilience. Tests use `dist/` through a local production preview, so rebuild before running `npm run test:browser` directly. Keep captured browser views separate from Blender previews: one proves exported runtime presentation, the other records the authored render. Historical [character](VALIDATION.md), [Phase 1](PHASE1-VALIDATION.md) and [Phase 2](PHASE2-VALIDATION.md) evidence remains applicable to its documented revisions and is not a new Phase 3 performance claim.
+
+Production output is a self-contained static site. Blender sources and reference images remain in the repository; Vite copies runtime assets from `public/` into `dist/`. The deployed game neither invokes Blender nor runs a modeling service. Follow [deployment preparation](DEPLOYMENT.md) for root-relative asset paths, cache behavior and browser-local save implications.

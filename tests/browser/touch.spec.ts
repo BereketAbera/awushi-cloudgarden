@@ -8,7 +8,7 @@ const distance = (a: number[], b: number[]) => Math.hypot(a[0] - b[0], a[2] - b[
 test('mobile movement releases cleanly, panels pause input, and recovery is one tap away', async ({ page }, info) => {
   test.skip(info.project.name !== 'mobile', 'Pointer pad is shown for touch and narrow screens.')
   await page.goto('/')
-  await page.getByTestId('play-adventure').click()
+  await page.getByTestId('free-explore').click()
   await expect(page.locator('canvas')).toBeVisible()
   const forward = page.getByRole('button', { name: 'Move forward', exact: true })
   await expect(forward).toBeVisible()

@@ -61,7 +61,7 @@ The memoized `ReflectionLighting` subtree changes only with lighting or quality.
 | Procedural stage/link geometry | Declarative R3F children follow their parent component's disposal lifecycle. |
 | Environment and contact-shadow targets | The environment dependency disposes its cube target; contact-shadow resources are bounded to one set per Canvas and released with the renderer/context lifetime. |
 
-These ownership rules describe the implementation. Repeated mode/quality changes and renderer recovery still need browser validation on the rebuilt application; resource counts alone cannot establish the absence of every GPU allocation leak.
+The final browser checks exercised studio expressions, quality changes, renderer recovery and five warmed studio/world switches. Both desktop and phone emulation held at 150 geometries and 19 textures across those switches. Resource counts alone cannot establish the absence of every GPU allocation leak; see `PHASE3-VALIDATION.md` for the measured scope.
 
 ## Awushi reactions and local sound
 

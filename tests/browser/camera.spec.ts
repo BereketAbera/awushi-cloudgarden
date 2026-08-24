@@ -24,7 +24,7 @@ async function walkTo(page: Page, target: Point3) {
 }
 
 test('third-person framing, turning, first-person look, projection switching and persistence', async ({ page }, info) => {
-  await page.goto('/'); await page.getByTestId('play-adventure').click()
+  await page.goto('/'); await page.getByTestId('free-explore').click()
   const canvas = page.locator('canvas')
   await expect(canvas).toHaveAttribute('data-camera-mode', 'third-person')
   await expect(canvas).toHaveAttribute('data-camera-projection', 'perspective')
@@ -41,7 +41,7 @@ test('third-person framing, turning, first-person look, projection switching and
   await page.keyboard.down('d'); await page.waitForTimeout(500); await page.keyboard.up('d'); await page.waitForTimeout(300)
   expect(angle(yaw, await heading(page))).toBeLessThan(-.5)
   mkdirSync('assets/previews', { recursive: true })
-  await page.screenshot({ path: `assets/previews/phase2-third-person-${info.project.name}.png` })
+  await page.screenshot({ path: `assets/previews/phase3-third-person-${info.project.name}.png` })
   await page.getByTestId('camera-first-person').click(); await page.waitForTimeout(1000)
   await expect(canvas).toHaveAttribute('data-character-visible', 'false')
   const p = await position(page), eye = (await canvas.getAttribute('data-camera-position'))!.split(',').map(Number)
@@ -60,7 +60,7 @@ test('third-person framing, turning, first-person look, projection switching and
   }
   await page.waitForTimeout(350)
   expect(Math.abs(angle(beforeLook, await heading(page)))).toBeGreaterThan(.25)
-  await page.screenshot({ path: `assets/previews/phase2-first-person-${info.project.name}.png` })
+  await page.screenshot({ path: `assets/previews/phase3-first-person-${info.project.name}.png` })
   await page.keyboard.press('c'); await expect(canvas).toHaveAttribute('data-camera-mode', 'overview')
   await expect(canvas).toHaveAttribute('data-camera-projection', 'orthographic')
   await page.getByTestId('camera-isometric').click(); await expect(canvas).toHaveAttribute('data-camera-mode', 'isometric')
@@ -74,7 +74,7 @@ test('immersive camera and steering cross a real bridge and interact at the work
   test.skip(info.project.name !== 'desktop', 'Keyboard route is shared; mobile framing/look is covered above.')
   test.setTimeout(150_000)
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message))
-  await page.goto('/'); await page.getByTestId('play-adventure').click()
+  await page.goto('/'); await page.getByTestId('free-explore').click()
   await expect(page.locator('canvas')).toHaveAttribute('data-camera-mode', 'third-person')
   await page.waitForTimeout(1000)
   await walkTo(page, [0, 0, 0])
@@ -82,7 +82,7 @@ test('immersive camera and steering cross a real bridge and interact at the work
   for (const point of bridge.points.filter((_, index) => index % 4 === 0)) await walkTo(page, point)
   await walkTo(page, DISTRICTS[0].center)
   await expect(page.getByTestId('district-name')).toHaveText('Maker Village')
-  await page.screenshot({ path: 'assets/previews/phase2-bridge-arrival.png' })
+  await page.screenshot({ path: 'assets/previews/phase3-bridge-arrival.png' })
   // First-person can use the same proximity system without a visible hero mesh.
   await page.getByTestId('camera-first-person').click()
   const station = WORLD_LAYOUT.stations.find(item => item.id === 'github')!

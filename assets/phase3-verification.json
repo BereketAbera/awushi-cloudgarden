@@ -1,0 +1,1790 @@
+{
+  "date": "2026-11-06",
+  "timezone": "Africa/Addis_Ababa",
+  "node": "v24.13.0",
+  "baseCommit": "0546da5",
+  "result": "passed",
+  "gates": {
+    "eslint": "passed",
+    "typescript": "passed",
+    "productionBuild": "passed",
+    "diffCheck": "passed"
+  },
+  "suites": {
+    "pipeline": 20,
+    "runtime": 19,
+    "unit": 92,
+    "browserPassed": 73,
+    "browserSkipped": 7,
+    "browserFailed": 0,
+    "totalPassed": 204
+  },
+  "browserVersions": {
+    "Chromium / installed Google Chrome": "156.0.8078.80",
+    "Firefox / Playwright": "159.0",
+    "WebKit / Playwright desktop": "27.2"
+  },
+  "browserRuns": [
+    {
+      "purpose": "Full six-adventure and existing-game regression matrix; one mobile error-overlay issue found and corrected in final focused run.",
+      "stats": {
+        "startTime": "2026-11-05T23:53:53.720Z",
+        "duration": 950990.473,
+        "expected": 70,
+        "skipped": 7,
+        "unexpected": 1,
+        "flaky": 0
+      }
+    },
+    {
+      "purpose": "Final renderer, studio, mobile/touch, compatibility, recovery, performance and resource-lifecycle verification after fixes.",
+      "stats": {
+        "startTime": "2026-11-06T00:10:22.783Z",
+        "duration": 169849.219,
+        "expected": 30,
+        "skipped": 2,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    }
+  ],
+  "browserTests": [
+    {
+      "name": "welcome, architecture map, camera modes, settings, focus and recovery",
+      "file": "adventure.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 3639
+    },
+    {
+      "name": "welcome, architecture map, camera modes, settings, focus and recovery",
+      "file": "adventure.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 3010
+    },
+    {
+      "name": "studio blends every expression while locomotion remains selected",
+      "file": "adventure.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2126
+    },
+    {
+      "name": "studio blends every expression while locomotion remains selected",
+      "file": "adventure.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1749
+    },
+    {
+      "name": "optional isometric camera tracks actual keyboard movement with stable orientation",
+      "file": "adventure.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 5179
+    },
+    {
+      "name": "optional isometric camera tracks actual keyboard movement with stable orientation",
+      "file": "adventure.spec.ts",
+      "project": "mobile",
+      "status": "skipped",
+      "expectedStatus": "skipped",
+      "durationMs": 892
+    },
+    {
+      "name": "all six introductions are reachable through real keyboard movement and persist",
+      "file": "adventure.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 76328
+    },
+    {
+      "name": "all six introductions are reachable through real keyboard movement and persist",
+      "file": "adventure.spec.ts",
+      "project": "mobile",
+      "status": "skipped",
+      "expectedStatus": "skipped",
+      "durationMs": 932
+    },
+    {
+      "name": "measures rendered frame rate and captures the full overview",
+      "file": "adventure.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 17887
+    },
+    {
+      "name": "measures rendered frame rate and captures the full overview",
+      "file": "adventure.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 17949
+    },
+    {
+      "name": "Ship a New Release: failed checks block approval until inspected, repaired and verified",
+      "file": "adventures.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 34976
+    },
+    {
+      "name": "Ship a New Release: failed checks block approval until inspected, repaired and verified",
+      "file": "adventures.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 32529
+    },
+    {
+      "name": "Ship a New Release: failed checks block approval until inspected, repaired and verified",
+      "file": "adventures.spec.ts",
+      "project": "firefox",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 37252
+    },
+    {
+      "name": "Ship a New Release: failed checks block approval until inspected, repaired and verified",
+      "file": "adventures.spec.ts",
+      "project": "webkit",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 40634
+    },
+    {
+      "name": "Recover a Failed Pod: four causes distinguish controller recovery from configuration repair",
+      "file": "adventures.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 15579
+    },
+    {
+      "name": "Recover a Failed Pod: four causes distinguish controller recovery from configuration repair",
+      "file": "adventures.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 13080
+    },
+    {
+      "name": "Recover a Failed Pod: four causes distinguish controller recovery from configuration repair",
+      "file": "adventures.spec.ts",
+      "project": "firefox",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 17180
+    },
+    {
+      "name": "Recover a Failed Pod: four causes distinguish controller recovery from configuration repair",
+      "file": "adventures.spec.ts",
+      "project": "webkit",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 14235
+    },
+    {
+      "name": "Fix Configuration Drift: waiting without self-heal fails, manual and automatic modes converge",
+      "file": "adventures.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 14454
+    },
+    {
+      "name": "Fix Configuration Drift: waiting without self-heal fails, manual and automatic modes converge",
+      "file": "adventures.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 13365
+    },
+    {
+      "name": "Fix Configuration Drift: waiting without self-heal fails, manual and automatic modes converge",
+      "file": "adventures.spec.ts",
+      "project": "firefox",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 16036
+    },
+    {
+      "name": "Fix Configuration Drift: waiting without self-heal fails, manual and automatic modes converge",
+      "file": "adventures.spec.ts",
+      "project": "webkit",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 13683
+    },
+    {
+      "name": "Promote to Production: explicit review promotes the exact development digest independently",
+      "file": "adventures.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 52162
+    },
+    {
+      "name": "Promote to Production: explicit review promotes the exact development digest independently",
+      "file": "adventures.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 50464
+    },
+    {
+      "name": "Promote to Production: explicit review promotes the exact development digest independently",
+      "file": "adventures.spec.ts",
+      "project": "firefox",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 51859
+    },
+    {
+      "name": "Promote to Production: explicit review promotes the exact development digest independently",
+      "file": "adventures.spec.ts",
+      "project": "webkit",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 51259
+    },
+    {
+      "name": "Investigate an Incident: correlated telemetry rejects unrelated diagnoses and image rollback",
+      "file": "adventures.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 7196
+    },
+    {
+      "name": "Investigate an Incident: correlated telemetry rejects unrelated diagnoses and image rollback",
+      "file": "adventures.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 6576
+    },
+    {
+      "name": "Investigate an Incident: correlated telemetry rejects unrelated diagnoses and image rollback",
+      "file": "adventures.spec.ts",
+      "project": "firefox",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 7279
+    },
+    {
+      "name": "Investigate an Incident: correlated telemetry rejects unrelated diagnoses and image rollback",
+      "file": "adventures.spec.ts",
+      "project": "webkit",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 7191
+    },
+    {
+      "name": "Restore from Backup: snapshot consistency and object dependencies guard safe cutover",
+      "file": "adventures.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2376
+    },
+    {
+      "name": "Restore from Backup: snapshot consistency and object dependencies guard safe cutover",
+      "file": "adventures.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1655
+    },
+    {
+      "name": "Restore from Backup: snapshot consistency and object dependencies guard safe cutover",
+      "file": "adventures.spec.ts",
+      "project": "firefox",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2944
+    },
+    {
+      "name": "Restore from Backup: snapshot consistency and object dependencies guard safe cutover",
+      "file": "adventures.spec.ts",
+      "project": "webkit",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2520
+    },
+    {
+      "name": "reload resumes a saved reconciliation, and replay controls keep the completed record immutable",
+      "file": "adventures.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 6827
+    },
+    {
+      "name": "reload resumes a saved reconciliation, and replay controls keep the completed record immutable",
+      "file": "adventures.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 6080
+    },
+    {
+      "name": "reload resumes a saved reconciliation, and replay controls keep the completed record immutable",
+      "file": "adventures.spec.ts",
+      "project": "firefox",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 7076
+    },
+    {
+      "name": "reload resumes a saved reconciliation, and replay controls keep the completed record immutable",
+      "file": "adventures.spec.ts",
+      "project": "webkit",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 6125
+    },
+    {
+      "name": "third-person framing, turning, first-person look, projection switching and persistence",
+      "file": "camera.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 7394
+    },
+    {
+      "name": "third-person framing, turning, first-person look, projection switching and persistence",
+      "file": "camera.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 7359
+    },
+    {
+      "name": "immersive camera and steering cross a real bridge and interact at the workshop",
+      "file": "camera.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 17252
+    },
+    {
+      "name": "immersive camera and steering cross a real bridge and interact at the workshop",
+      "file": "camera.spec.ts",
+      "project": "mobile",
+      "status": "skipped",
+      "expectedStatus": "skipped",
+      "durationMs": 240
+    },
+    {
+      "name": "portfolio, shared architecture lenses and immersive controls work across browsers",
+      "file": "compatibility.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 3437
+    },
+    {
+      "name": "portfolio, shared architecture lenses and immersive controls work across browsers",
+      "file": "compatibility.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 3316
+    },
+    {
+      "name": "portfolio, shared architecture lenses and immersive controls work across browsers",
+      "file": "compatibility.spec.ts",
+      "project": "firefox",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 5572
+    },
+    {
+      "name": "portfolio, shared architecture lenses and immersive controls work across browsers",
+      "file": "compatibility.spec.ts",
+      "project": "webkit",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 5029
+    },
+    {
+      "name": "original local audio is opt-in, respects mute and releases finished voices",
+      "file": "compatibility.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1249
+    },
+    {
+      "name": "original local audio is opt-in, respects mute and releases finished voices",
+      "file": "compatibility.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1336
+    },
+    {
+      "name": "original local audio is opt-in, respects mute and releases finished voices",
+      "file": "compatibility.spec.ts",
+      "project": "firefox",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1844
+    },
+    {
+      "name": "original local audio is opt-in, respects mute and releases finished voices",
+      "file": "compatibility.spec.ts",
+      "project": "webkit",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1593
+    },
+    {
+      "name": "measures active third-person adventure delivery with the real renderer",
+      "file": "performance.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 29748
+    },
+    {
+      "name": "measures active third-person adventure delivery with the real renderer",
+      "file": "performance.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 29744
+    },
+    {
+      "name": "corrupt saves remain recoverable and are never silently overwritten",
+      "file": "resilience.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1079
+    },
+    {
+      "name": "corrupt saves remain recoverable and are never silently overwritten",
+      "file": "resilience.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1158
+    },
+    {
+      "name": "corrupt saves remain recoverable and are never silently overwritten",
+      "file": "resilience.spec.ts",
+      "project": "firefox",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1717
+    },
+    {
+      "name": "corrupt saves remain recoverable and are never silently overwritten",
+      "file": "resilience.spec.ts",
+      "project": "webkit",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1558
+    },
+    {
+      "name": "a missing local model can be retried without losing adventure state",
+      "file": "resilience.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2509
+    },
+    {
+      "name": "a missing local model can be retried without losing adventure state",
+      "file": "resilience.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2485
+    },
+    {
+      "name": "a missing local model can be retried without losing adventure state",
+      "file": "resilience.spec.ts",
+      "project": "firefox",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2521
+    },
+    {
+      "name": "a missing local model can be retried without losing adventure state",
+      "file": "resilience.spec.ts",
+      "project": "webkit",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2490
+    },
+    {
+      "name": "real WebGL context loss pauses the adventure and retains the notebook",
+      "file": "resilience.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1574
+    },
+    {
+      "name": "real WebGL context loss pauses the adventure and retains the notebook",
+      "file": "resilience.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2003
+    },
+    {
+      "name": "real WebGL context loss pauses the adventure and retains the notebook",
+      "file": "resilience.spec.ts",
+      "project": "firefox",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2720
+    },
+    {
+      "name": "real WebGL context loss pauses the adventure and retains the notebook",
+      "file": "resilience.spec.ts",
+      "project": "webkit",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1858
+    },
+    {
+      "name": "complete deployment waits for a person, reconciles the chosen environment and exposes telemetry",
+      "file": "simulation.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 32088
+    },
+    {
+      "name": "complete deployment waits for a person, reconciles the chosen environment and exposes telemetry",
+      "file": "simulation.spec.ts",
+      "project": "mobile",
+      "status": "skipped",
+      "expectedStatus": "skipped",
+      "durationMs": 209
+    },
+    {
+      "name": "a failed check can be repaired, and cancellation keeps a clear terminal state",
+      "file": "simulation.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 12154
+    },
+    {
+      "name": "a failed check can be repaired, and cancellation keeps a clear terminal state",
+      "file": "simulation.spec.ts",
+      "project": "mobile",
+      "status": "skipped",
+      "expectedStatus": "skipped",
+      "durationMs": 225
+    },
+    {
+      "name": "architecture supports technology inspection and location guidance without prior discovery",
+      "file": "simulation.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1508
+    },
+    {
+      "name": "architecture supports technology inspection and location guidance without prior discovery",
+      "file": "simulation.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1526
+    },
+    {
+      "name": "deployment controls and close remain usable after scrolling on each viewport",
+      "file": "simulation.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1545
+    },
+    {
+      "name": "deployment controls and close remain usable after scrolling on each viewport",
+      "file": "simulation.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1484
+    },
+    {
+      "name": "keyboard users can open event history and receive pipeline status inside the modal",
+      "file": "simulation.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1330
+    },
+    {
+      "name": "keyboard users can open event history and receive pipeline status inside the modal",
+      "file": "simulation.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1129
+    },
+    {
+      "name": "mobile movement releases cleanly, panels pause input, and recovery is one tap away",
+      "file": "touch.spec.ts",
+      "project": "desktop",
+      "status": "skipped",
+      "expectedStatus": "skipped",
+      "durationMs": 159
+    },
+    {
+      "name": "mobile movement releases cleanly, panels pause input, and recovery is one tap away",
+      "file": "touch.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 3522
+    },
+    {
+      "name": "350px studio controls and discovery map stay inside the viewport",
+      "file": "touch.spec.ts",
+      "project": "desktop",
+      "status": "skipped",
+      "expectedStatus": "skipped",
+      "durationMs": 166
+    },
+    {
+      "name": "350px studio controls and discovery map stay inside the viewport",
+      "file": "touch.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1368
+    },
+    {
+      "name": "renderer resources remain bounded when switching repeatedly between studio and world",
+      "file": "performance.spec.ts",
+      "project": "desktop",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 7030
+    },
+    {
+      "name": "renderer resources remain bounded when switching repeatedly between studio and world",
+      "file": "performance.spec.ts",
+      "project": "mobile",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 7060
+    }
+  ],
+  "assets": [
+    {
+      "file": "awushi.glb",
+      "bytes": 2704328,
+      "sha256": "58b66c832421f4ec456333d3f62e3717dda64f127e0ee7eec112799b8892ae70",
+      "triangles": 52332,
+      "validation": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 6,
+        "truncated": false,
+        "messages": [
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/0/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/1/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/2/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/1/primitives/0/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/1/primitives/2/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/1/primitives/3/attributes/TEXCOORD_0"
+          }
+        ]
+      }
+    },
+    {
+      "file": "ci-factory.glb",
+      "bytes": 788672,
+      "sha256": "4e107556014db5d1aca2ccf9d60b0619f44579f02568fd205bd58bf1f89bc622",
+      "triangles": 17312,
+      "validation": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 8,
+        "truncated": false,
+        "messages": [
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/0/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/1/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/2/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/3/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/4/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/5/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/6/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/7/attributes/TEXCOORD_0"
+          }
+        ]
+      }
+    },
+    {
+      "file": "deployment-effects.glb",
+      "bytes": 209460,
+      "sha256": "d34b21a25c822a4178c22cc1ffca9da8202a62f95498854ac7ae63e5964bb98c",
+      "triangles": 6280,
+      "validation": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 0,
+        "truncated": false,
+        "messages": []
+      }
+    },
+    {
+      "file": "district-data.glb",
+      "bytes": 594080,
+      "sha256": "cdd3ace7d08204c40a6fe4a5df4f9c7b82e3c48f71112bad71ad57cdfeced6c3",
+      "triangles": 23118,
+      "validation": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 0,
+        "truncated": false,
+        "messages": []
+      }
+    },
+    {
+      "file": "district-development.glb",
+      "bytes": 1326632,
+      "sha256": "14d34b6547a3a8fe4d23d19fa4533adbc57f60311ccf5767f58fc1eaa372f4d6",
+      "triangles": 44202,
+      "validation": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 0,
+        "truncated": false,
+        "messages": []
+      }
+    },
+    {
+      "file": "district-infrastructure.glb",
+      "bytes": 684400,
+      "sha256": "41321e48b0bc71081bae277ebccf90fef9b2d82c6d1bc36618212d8402237cc5",
+      "triangles": 21342,
+      "validation": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 0,
+        "truncated": false,
+        "messages": []
+      }
+    },
+    {
+      "file": "district-observability.glb",
+      "bytes": 555760,
+      "sha256": "a96a886e1c435581ad169901f8c9f30786038a0eb4cb4b25bbc55f09fe7520ca",
+      "triangles": 20982,
+      "validation": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 0,
+        "truncated": false,
+        "messages": []
+      }
+    },
+    {
+      "file": "district-orchestration.glb",
+      "bytes": 1222304,
+      "sha256": "4f2ff166e1e28b2fc69caaadc1694f993ff2cb4041a8ee330fbd69e9bf041a95",
+      "triangles": 43634,
+      "validation": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 0,
+        "truncated": false,
+        "messages": []
+      }
+    },
+    {
+      "file": "district-security.glb",
+      "bytes": 612420,
+      "sha256": "9939442f0f679053def425b582e32a28e876716352e864c079662113acdfce09",
+      "triangles": 20754,
+      "validation": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 0,
+        "truncated": false,
+        "messages": []
+      }
+    },
+    {
+      "file": "github-workshop.glb",
+      "bytes": 497688,
+      "sha256": "1083311fbcf2e95b4a87eb3cf92638c5f5c4b8e2980e552fe5a29084ef38a214",
+      "triangles": 13060,
+      "validation": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 7,
+        "truncated": false,
+        "messages": [
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/0/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/1/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/2/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/3/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/4/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/5/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/6/attributes/TEXCOORD_0"
+          }
+        ]
+      }
+    },
+    {
+      "file": "island.glb",
+      "bytes": 416948,
+      "sha256": "107c061e6337cbee1c9f919cc33809eadbb1e558f536ef4247bdd7da5ad0c404",
+      "triangles": 8964,
+      "validation": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 10,
+        "truncated": false,
+        "messages": [
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/0/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/1/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/2/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/3/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/4/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/5/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/6/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/7/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/8/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/9/attributes/TEXCOORD_0"
+          }
+        ]
+      }
+    },
+    {
+      "file": "kubernetes-cluster.glb",
+      "bytes": 944112,
+      "sha256": "d287b4a8eea6765df7705e457bb6459fcfeafc60443ccaf9189cbae76c4a08e6",
+      "triangles": 21548,
+      "validation": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 7,
+        "truncated": false,
+        "messages": [
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/0/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/1/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/2/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/3/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/4/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/5/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/6/attributes/TEXCOORD_0"
+          }
+        ]
+      }
+    },
+    {
+      "file": "props.glb",
+      "bytes": 600332,
+      "sha256": "4e647e620c28e02f5cd2d2342f2c4537d9c5b538e5aae361022be6ab0b3f1791",
+      "triangles": 18588,
+      "validation": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 8,
+        "truncated": false,
+        "messages": [
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/0/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/1/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/2/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/3/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/4/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/5/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/6/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/7/attributes/TEXCOORD_0"
+          }
+        ]
+      }
+    },
+    {
+      "file": "world-hub.glb",
+      "bytes": 1296328,
+      "sha256": "5f1a3c2df745287431cfe0b680863c656e131b906f1901fbabfb737da84c27b5",
+      "triangles": 42648,
+      "validation": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 0,
+        "truncated": false,
+        "messages": []
+      }
+    }
+  ],
+  "performance": {
+    "desktop": {
+      "active": {
+        "date": "2026-11-06",
+        "project": "desktop",
+        "browser": "Installed Chrome, headless WebGL",
+        "mode": "third-person",
+        "quality": "balanced",
+        "scenario": "Active promotion adventure, development delivery: 10 seconds before approval and 18 seconds after approval",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "samples": [
+          {
+            "fps": 49,
+            "drawCalls": 235,
+            "triangles": 525704,
+            "geometries": 155,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 235,
+            "triangles": 525704,
+            "geometries": 155,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 231,
+            "triangles": 522296,
+            "geometries": 155,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 227,
+            "triangles": 518888,
+            "geometries": 155,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 231,
+            "triangles": 522296,
+            "geometries": 155,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 231,
+            "triangles": 522296,
+            "geometries": 155,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 239,
+            "triangles": 525200,
+            "geometries": 159,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 243,
+            "triangles": 527000,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 243,
+            "triangles": 527000,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 235,
+            "triangles": 525704,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 234,
+            "triangles": 525576,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 226,
+            "triangles": 518760,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 226,
+            "triangles": 518760,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 226,
+            "triangles": 518760,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 226,
+            "triangles": 518760,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 226,
+            "triangles": 518760,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 226,
+            "triangles": 518760,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 226,
+            "triangles": 518760,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 226,
+            "triangles": 518760,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 226,
+            "triangles": 518760,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 226,
+            "triangles": 518760,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 226,
+            "triangles": 518760,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 226,
+            "triangles": 518760,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 226,
+            "triangles": 518760,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 226,
+            "triangles": 518760,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 227,
+            "triangles": 519144,
+            "geometries": 164,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 227,
+            "triangles": 519144,
+            "geometries": 164,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 227,
+            "triangles": 519144,
+            "geometries": 164,
+            "textures": 17
+          }
+        ],
+        "meanFps": 59.607142857142854,
+        "minimumFps": 49,
+        "maximumFps": 60,
+        "note": "Phone profile is desktop browser emulation; no physical-mobile or universal frame-rate claim."
+      },
+      "overview": {
+        "browser": "installed Chrome, headless WebGL",
+        "project": "desktop",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "quality": "balanced",
+        "view": "overview",
+        "samples": [
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60
+        ],
+        "mean": 60,
+        "minimum": 60,
+        "maximum": 60,
+        "note": "Observed local test environment; not a universal frame-rate guarantee."
+      },
+      "resources": {
+        "resources": [
+          {
+            "geometries": 150,
+            "textures": 19
+          },
+          {
+            "geometries": 150,
+            "textures": 19
+          },
+          {
+            "geometries": 150,
+            "textures": 19
+          },
+          {
+            "geometries": 150,
+            "textures": 19
+          },
+          {
+            "geometries": 150,
+            "textures": 19
+          }
+        ],
+        "note": "Renderer resource counts after five real studio/world transitions; not a byte-accurate GPU-memory or long-duration soak measurement."
+      }
+    },
+    "mobile": {
+      "active": {
+        "date": "2026-11-06",
+        "project": "mobile",
+        "browser": "Installed Chrome, headless WebGL",
+        "mode": "third-person",
+        "quality": "balanced",
+        "scenario": "Active promotion adventure, development delivery: 10 seconds before approval and 18 seconds after approval",
+        "viewport": {
+          "width": 390,
+          "height": 664
+        },
+        "samples": [
+          {
+            "fps": 48,
+            "drawCalls": 189,
+            "triangles": 457952,
+            "geometries": 155,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 189,
+            "triangles": 457952,
+            "geometries": 155,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 185,
+            "triangles": 454544,
+            "geometries": 155,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 187,
+            "triangles": 451632,
+            "geometries": 155,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 185,
+            "triangles": 454544,
+            "geometries": 155,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 185,
+            "triangles": 454544,
+            "geometries": 155,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 187,
+            "triangles": 453824,
+            "geometries": 159,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 185,
+            "triangles": 454544,
+            "geometries": 159,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 197,
+            "triangles": 459248,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 189,
+            "triangles": 457952,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 180,
+            "triangles": 451008,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 180,
+            "triangles": 451008,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 180,
+            "triangles": 451008,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 180,
+            "triangles": 451008,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 180,
+            "triangles": 451008,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 180,
+            "triangles": 451008,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 180,
+            "triangles": 451008,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 180,
+            "triangles": 451008,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 180,
+            "triangles": 451008,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 180,
+            "triangles": 451008,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 180,
+            "triangles": 451008,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 180,
+            "triangles": 451008,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 180,
+            "triangles": 451008,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 180,
+            "triangles": 451008,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 180,
+            "triangles": 451008,
+            "geometries": 163,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 181,
+            "triangles": 451392,
+            "geometries": 164,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 181,
+            "triangles": 451392,
+            "geometries": 164,
+            "textures": 17
+          },
+          {
+            "fps": 60,
+            "drawCalls": 181,
+            "triangles": 451392,
+            "geometries": 164,
+            "textures": 17
+          }
+        ],
+        "meanFps": 59.57142857142857,
+        "minimumFps": 48,
+        "maximumFps": 60,
+        "note": "Phone profile is desktop browser emulation; no physical-mobile or universal frame-rate claim."
+      },
+      "overview": {
+        "browser": "installed Chrome, headless WebGL",
+        "project": "mobile",
+        "viewport": {
+          "width": 390,
+          "height": 664
+        },
+        "quality": "balanced",
+        "view": "overview",
+        "samples": [
+          55,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60
+        ],
+        "mean": 59.666666666666664,
+        "minimum": 55,
+        "maximum": 60,
+        "note": "Observed local test environment; not a universal frame-rate guarantee."
+      },
+      "resources": {
+        "resources": [
+          {
+            "geometries": 150,
+            "textures": 19
+          },
+          {
+            "geometries": 150,
+            "textures": 19
+          },
+          {
+            "geometries": 150,
+            "textures": 19
+          },
+          {
+            "geometries": 150,
+            "textures": 19
+          },
+          {
+            "geometries": 150,
+            "textures": 19
+          }
+        ],
+        "note": "Renderer resource counts after five real studio/world transitions; not a byte-accurate GPU-memory or long-duration soak measurement."
+      }
+    }
+  },
+  "bundles": [
+    {
+      "file": "dist/assets/Scene-axIaiq5X.js",
+      "bytes": 1064262,
+      "gzipBytes": 295839
+    },
+    {
+      "file": "dist/assets/index-CmYiKrFS.js",
+      "bytes": 460780,
+      "gzipBytes": 142448
+    },
+    {
+      "file": "dist/assets/index-i3Qg55nd.css",
+      "bytes": 81370,
+      "gzipBytes": 17392
+    }
+  ],
+  "sourceSha256": {
+    "index.html": "46b90cc28eabad4fb1714fcd4e062793eb0779d8b1b662e6d948880d6d511a64",
+    "package-lock.json": "d53fa3f5b8b86c0202b81b853e9c660c2c2d7b5e016f6308c6e0146bddad6cda",
+    "package.json": "8975bcd910466eac0dae08f18dad4c7d97782635e1ca1b43b4fba7120d877e43",
+    "playwright.config.ts": "c8409ee70fc99b21a2e063a4c3b62f449f2233b39882a6fcfdcb71d3df423921",
+    "src/App.tsx": "1aaa9ab01d5b778610c64bea7eb821bb9476ca59ddec1f09fd6a53597a79fa1c",
+    "src/Scene.tsx": "8a65951efcbb1973b53c4835e77d64408f2a03473d2f07601fe7c35b4006d3eb",
+    "src/adventures/adventures.css": "4ce444604af675df958139a53176fed0a4e476b34366eacee630b07c82ff5c62",
+    "src/adventures/catalog.ts": "cfa2afde2d387821f9f4a6a39c88a6613a2b0b82fee81e2f15a70d0523a8e47a",
+    "src/adventures/domain.ts": "e2b55dce7a889e170aeb8565a4043dd401c63392f52e245ebb1f8a760225f51f",
+    "src/adventures/engine.ts": "079a22afc62296bcde6333f340cb92e7b49addafaaf804d180759ad926934917",
+    "src/adventures/persistence.ts": "b09d060d91a1a8846da63a497143735f86536717235753c49d3fffbca237b036",
+    "src/adventures/replay.ts": "04b35ad470d7aaa384e0eee5bce2ebf51ae7e8e08638d4bc133beea45bfb01a4",
+    "src/adventures/selectors.ts": "244ab0e5451318a97167f191297af73c44554d0cd3e5fbafdd9c7e480f62a450",
+    "src/adventures/useAdventures.ts": "484232e6ad0540253a4eba017c2bf60dc2e73aa0685416daae0b81bfdb88632d",
+    "src/audio/sound.ts": "0dd5d490a22c5e7d30ecc8f9ee02ab6d59cb10b9d748cacf24cdf041cb12a0a8",
+    "src/audio/useSound.ts": "6f01c3cdd4360e5a48721b4078da7b4d683b2721d76c5d30b48a2cda180bdad2",
+    "src/character/expressions.ts": "d46543b1ee2aaa7e79dfbdfa691672944823de860388e1127a5efd613c15906c",
+    "src/components/AdventurePanels.tsx": "9053f712a11e7cc6b10df150e6490e3cdb995495b4a008706de33b5da5a82884",
+    "src/components/Dialog.tsx": "306197d2a0396dc9156211b6419254ad738b6e0f25405d9d9dbf52241d3213f6",
+    "src/components/MiniMap.tsx": "d8c31a4f190ef9bc3836683ff3b5d14d7a26e3394a00ebfcda03e105a073e8c7",
+    "src/components/Portfolio.tsx": "34b99ddf2d7d8404dba3c6fda40685fdf01b0c0434cc3de7b2b8fd46a0d392d4",
+    "src/components/SimulationPanels.tsx": "15fdd80057df2ca0976bd10169267f2abd9c328a745abc7f767307dc0f0866a9",
+    "src/components/TechnologyPanels.tsx": "9c41c065e57cebac9992c28025962c985a5ff64c2bc05e3cc860e39013536e05",
+    "src/components/useSimulation.ts": "5e942cf8f2bfc40fac6ee2485ff15c906cb1fd3afb171294475bc67dcebf62c7",
+    "src/data/world-layout.json": "678bc4b037b1be0db6086beb30188efd611b7d1a713adcefe6038a58211057b8",
+    "src/game/behavior.ts": "edc4f332936a147ce80a65a639864f0818336c0c0d50bd064d65991161506a60",
+    "src/game/camera.ts": "4bcad3b0d49ff137accf8d03a04571ff3a8c20c31f92b07697aced1bde40d82c",
+    "src/game/navigation.ts": "035727d167ce71d2b577e2477234bd55de14ddb5d57e50da421d104907d1a8db",
+    "src/game/progress.ts": "4617318a313c7e595c529d09c69505c68d2b174f5c3226f462fe8f00dee9392e",
+    "src/game/types.ts": "522ceba8e2fedbc0abef1e8bb9041771216b174f5bbbeb5244ece762e92ec5ec",
+    "src/main.tsx": "449360d409ecbdd6aa7fb603226836ba7a6f3ed5cdcbb1a814397e7deb96a9bb",
+    "src/simulation/SimulationEffects.tsx": "55f2a95254d13c26aa90985161c887cc96281488863541d52ce8ffc10d4b123d",
+    "src/simulation/domain.ts": "673e6b691c3dfaddd11069e357595107bf4ca5ae47ed5b27df37f4741837cce3",
+    "src/simulation/effects.ts": "0fb9b92afa4a00db9330a05993ab163366b7034ed1caea593079dc0acf5c611d",
+    "src/simulation/engine.ts": "33a3de8c50e6e931b5d26925200a3bfb55c06935652da145f36ee44a1f1598d0",
+    "src/simulation/operations.ts": "eff2af8b62d41655da62f40ff3cd64d5336bc2df250a939784a8d744d8c8d8f2",
+    "src/simulation/registry.ts": "fb1e0b9c29ca46b92147b02d8763cac30e8db3bbf837e5c355c6fdfec33b2bb0",
+    "src/simulation/scenario.ts": "629450f359d31af7ace9438d6a24c8e0b7423ec9f9ac02eecd85e6d6b896ffdb",
+    "src/styles.css": "ef3d7dfefbbaadd977d92304b2c5dd810e6542678887afbee38def07d50e6efc",
+    "src/worldConfig.ts": "5079bc09a4d8f81a7c261b335b2d69055ff78b07b4e2d41991276983dd8e6bc0",
+    "tests/adventures.test.ts": "74d5278caea953a2c9f1818e4e0902d42d4f035564bea5d75204a72e8d1b72d9",
+    "tests/audio.test.ts": "e9ed80ea2ccc0425d02305504c98ba7f96331a6a45326bac301f8dffc5cf2bf9",
+    "tests/browser/adventure.spec.ts": "efc093d9ccab05d47f64315932848649d39a2cbea1c438d786ddcb786966ae15",
+    "tests/browser/adventures.spec.ts": "dbe880c4a9042aca306cb92ce9d0cf9ab0793a0fc9a598a89102f31997b74874",
+    "tests/browser/camera.spec.ts": "2a89f23a1d198141c910570f4ff150a1c4257a9b3b4ff2af9f8a1740590bd953",
+    "tests/browser/compatibility.spec.ts": "b0dcd799c5f98c0dc24127dd1e80de8e0f9c43b23eb9c1bf228f9ec4721b6fc1",
+    "tests/browser/fixtures.ts": "328b6e0539c56e54bd77b33a39db3c986e8867e1207647c46c99db923e8cecb0",
+    "tests/browser/performance.spec.ts": "1f1dfbd888a63e2d23895591abb919bc2f8637e758b9caee00ab140e615fe0df",
+    "tests/browser/resilience.spec.ts": "ca15a7e47fc6374eb88095906166353ad27af55fa0c673728f8e8bc79bac7840",
+    "tests/browser/simulation.spec.ts": "7557688cb65581ff6dbb4b4557b9370f16a79ab95eb255c406d106508d7bca29",
+    "tests/browser/touch.spec.ts": "7d395271e260b710dd57f0172e3966813a39859f0d29c0517469cdb2671a5d8d",
+    "tests/camera.test.ts": "28de744bc82cab7b65918c83fd84955116e4d619665fde26e2ad5cd64a92541e",
+    "tests/effects.test.ts": "1dd9619fbeb035045a95558886379821593b5d7ea142d89ceab381864adac1f0",
+    "tests/expressions.test.ts": "7013d72e42cca5dc770a8225dae998afe89571d70c19206032906fb5f792d5fb",
+    "tests/game.test.ts": "a9bfca64c0392f07ce250bdf3d4517459e969ba37cb04916b5d8773d10a75d92",
+    "tests/persistence.test.ts": "7e2ea29f49b394a031edf9b8dd671ee9ed8491e9bcea39e755a09e5f86ab1ae1",
+    "tests/replay.test.ts": "50d082c3d407392c82c30135ade51dce0dd500b7a35dc258334f47a2d9977a34",
+    "tests/simulation.test.ts": "ff8ad00b73144be2d95df40361ad415d9562df8b296e34763a075dff39afd90a",
+    "vite.config.ts": "d9964cb2a330b11c273223df483543cb6685ec1209ce1444dda760880b398aaa"
+  },
+  "limits": [
+    "Phone profile is desktop Chromium emulation; no physical phone or Safari validation.",
+    "Resource counts are not GPU bytes or a long-duration memory soak.",
+    "The runtime is a local teaching model without real infrastructure integration.",
+    "Vite reports the existing lazy scene chunk over 500 kB.",
+    "The full matrix preceded presentation-only renderer resource optimizations; the final focused run covers those changes in all four projects."
+  ]
+}
