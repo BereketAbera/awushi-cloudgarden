@@ -1,0 +1,174 @@
+{
+  "url": "https://awushi-devops-world.vercel.app",
+  "deploymentId": "dpl_4tu2tgf4hYtvVqEMadAZ9a1KKQe2",
+  "date": "2026-11-06",
+  "target": "production",
+  "publicUnauthenticatedAccess": true,
+  "missingAssetStatus": 404,
+  "files": [
+    {
+      "path": "/assets/Scene-axIaiq5X.js",
+      "status": 200,
+      "bytes": 1064262,
+      "sha256": "1b9ddfc2d8be59fdd2c98df6661fca2dee2d89d12006d9852653f6c6f522d2cf",
+      "contentType": "application/javascript; charset=utf-8",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/assets/awushi.glb",
+      "status": 200,
+      "bytes": 2704328,
+      "sha256": "58b66c832421f4ec456333d3f62e3717dda64f127e0ee7eec112799b8892ae70",
+      "contentType": "model/gltf-binary",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/assets/ci-factory.glb",
+      "status": 200,
+      "bytes": 788672,
+      "sha256": "4e107556014db5d1aca2ccf9d60b0619f44579f02568fd205bd58bf1f89bc622",
+      "contentType": "model/gltf-binary",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/assets/deployment-effects.glb",
+      "status": 200,
+      "bytes": 209460,
+      "sha256": "d34b21a25c822a4178c22cc1ffca9da8202a62f95498854ac7ae63e5964bb98c",
+      "contentType": "model/gltf-binary",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/assets/district-data.glb",
+      "status": 200,
+      "bytes": 594080,
+      "sha256": "cdd3ace7d08204c40a6fe4a5df4f9c7b82e3c48f71112bad71ad57cdfeced6c3",
+      "contentType": "model/gltf-binary",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/assets/district-development.glb",
+      "status": 200,
+      "bytes": 1326632,
+      "sha256": "14d34b6547a3a8fe4d23d19fa4533adbc57f60311ccf5767f58fc1eaa372f4d6",
+      "contentType": "model/gltf-binary",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/assets/district-infrastructure.glb",
+      "status": 200,
+      "bytes": 684400,
+      "sha256": "41321e48b0bc71081bae277ebccf90fef9b2d82c6d1bc36618212d8402237cc5",
+      "contentType": "model/gltf-binary",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/assets/district-observability.glb",
+      "status": 200,
+      "bytes": 555760,
+      "sha256": "a96a886e1c435581ad169901f8c9f30786038a0eb4cb4b25bbc55f09fe7520ca",
+      "contentType": "model/gltf-binary",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/assets/district-orchestration.glb",
+      "status": 200,
+      "bytes": 1222304,
+      "sha256": "4f2ff166e1e28b2fc69caaadc1694f993ff2cb4041a8ee330fbd69e9bf041a95",
+      "contentType": "model/gltf-binary",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/assets/district-security.glb",
+      "status": 200,
+      "bytes": 612420,
+      "sha256": "9939442f0f679053def425b582e32a28e876716352e864c079662113acdfce09",
+      "contentType": "model/gltf-binary",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/assets/github-workshop.glb",
+      "status": 200,
+      "bytes": 497688,
+      "sha256": "1083311fbcf2e95b4a87eb3cf92638c5f5c4b8e2980e552fe5a29084ef38a214",
+      "contentType": "model/gltf-binary",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/assets/index-CmYiKrFS.js",
+      "status": 200,
+      "bytes": 460780,
+      "sha256": "577e869b6f53c469401f0622ab2696d249a69b3754f099fc8ed623ca720c6181",
+      "contentType": "application/javascript; charset=utf-8",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/assets/index-i3Qg55nd.css",
+      "status": 200,
+      "bytes": 81370,
+      "sha256": "14190ef2e3559b292a53f62702a4ec4bfabf91b6cf2127070a7a297956475805",
+      "contentType": "text/css; charset=utf-8",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/assets/island.glb",
+      "status": 200,
+      "bytes": 416948,
+      "sha256": "107c061e6337cbee1c9f919cc33809eadbb1e558f536ef4247bdd7da5ad0c404",
+      "contentType": "model/gltf-binary",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/assets/kubernetes-cluster.glb",
+      "status": 200,
+      "bytes": 944112,
+      "sha256": "d287b4a8eea6765df7705e457bb6459fcfeafc60443ccaf9189cbae76c4a08e6",
+      "contentType": "model/gltf-binary",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/assets/props.glb",
+      "status": 200,
+      "bytes": 600332,
+      "sha256": "4e647e620c28e02f5cd2d2342f2c4537d9c5b538e5aae361022be6ab0b3f1791",
+      "contentType": "model/gltf-binary",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/assets/world-hub.glb",
+      "status": 200,
+      "bytes": 1296328,
+      "sha256": "5f1a3c2df745287431cfe0b680863c656e131b906f1901fbabfb737da84c27b5",
+      "contentType": "model/gltf-binary",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/index.html",
+      "status": 200,
+      "bytes": 1036,
+      "sha256": "68ac6c4fd258d1bd8c8a2fdd8952b55d7a09e4d7ae4b1d98a5eda44b872f3b7b",
+      "contentType": "text/html; charset=utf-8",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    }
+  ],
+  "browserSmoke": {
+    "browser": "156.0.8078.80",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "renderer": "WebGL canvas loaded",
+    "adventure": "Recover a Failed Pod / readiness: inspect, rejected restart, correct repair, completion",
+    "persistence": "Completed adventure retained after reload",
+    "pageAndConsoleErrors": []
+  },
+  "visualReview": {
+    "method": "In-app browser screenshot reviewed after models finished loading",
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "result": "Landing page renders the connected floating districts, facilities, bridges and Awushi",
+    "screenshot": "assets/previews/vercel-live.png"
+  }
+}

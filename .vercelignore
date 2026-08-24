@@ -1,0 +1,12 @@
+# Source deployments need only application code and public runtime assets.
+# The normal release workflow uses --prebuilt and uploads static output only.
+assets/
+docs/
+scripts/
+tests/
+.cache/
+test-results/
+playwright-report/
+*.blend
+*.blend1
+.env*

@@ -2,9 +2,11 @@
 
 A local, procedural Blender → glTF → React Three Fiber adventure. Explore six connected floating districts with a cyan jelly companion, ten blendable expressions, five skeletal animations, and 17 technology facilities. Phase 3 adds six hands-on DevOps adventures with evidence, recoverable wrong decisions, optional hints, learning summaries, saved progress and deterministic replay. The adventures reuse the shared infrastructure model introduced in Phase 2.
 
+**Play the live site:** [Awushi’s DevOps World](https://awushi-devops-world.vercel.app). The Vercel release serves the same static game; simulation and saves run in your browser. Localhost and the public site keep separate notebooks.
+
 ## Run
 
-Use Node 22.13+ or Node 24 and npm. Blender 5.1.1 is required only to regenerate assets; generated models are committed.
+Use Node 24 and npm; `package.json` pins the supported deployment runtime to `24.x`. Blender 5.1.1 is required only to regenerate assets; generated models are committed.
 
 ```sh
 npm ci
@@ -49,7 +51,9 @@ npm run verify                                 # lint, types, unit/runtime/pipel
 
 `BLENDER_BIN` can point to a local Blender executable. The runner detects the standard macOS application. Headless Blender can require host execution permission in restricted sandboxes because Metal initializes before Python. Browser tests use installed Google Chrome plus Playwright Firefox/WebKit and a production preview on port 5176. Install the additional browser binaries once with `npx playwright install firefox webkit`. The desktop/mobile Chrome projects exercise the full browser suite; Firefox/WebKit cover adventures, compatibility and resilience. Mobile is browser emulation, not a physical-device claim.
 
-For a static production build, run `npm run build`, review with `npm run preview`, and serve the resulting `dist/` at an origin root. See [deployment preparation](docs/DEPLOYMENT.md) for asset paths, caching and local-save boundaries. No hosting account or deployment service is required for local use.
+For a static production build, run `npm run build` and review with `npm run preview`. The live Vercel project is `bereketaberas-projects/awushi-devops-world`, configured to serve `dist/` at the origin root. See the [deployment guide](docs/DEPLOYMENT.md) for repeat release commands, asset caching and local-save boundaries. No Git remote or automatic Git deployment is configured; releases currently use the authenticated Vercel CLI. Local use requires no hosting account.
+
+The [deployment verification report](assets/vercel-deployment.json) records 18 publicly accessible files matching the local build hashes, including all 14 GLB models, plus a live browser check that completed Recover a Failed Pod and retained the result after reload.
 
 ## Repository map
 
@@ -69,7 +73,7 @@ For a static production build, run `npm run build`, review with `npm run preview
 | `assets/previews/` | Actual Blender renders and browser screenshots |
 | `scripts/test-*.mjs`, `tests/` | Pipeline, real Three.js loader, pure game logic and Playwright checks |
 
-Read [adventure orchestration](docs/ADVENTURES.md), [local persistence and replay](docs/PERSISTENCE.md), [local sound](docs/AUDIO.md), [engineering showcase](docs/SHOWCASE.md), [deployment preparation](docs/DEPLOYMENT.md), [world architecture](docs/ARCHITECTURE.md), [world generation](docs/WORLD.md), [expressions](docs/EXPRESSIONS.md), [camera and navigation](docs/CAMERA.md), [local pipeline](docs/PIPELINE.md), [UI and accessibility](docs/UI.md), [simulation events](docs/SIMULATION.md), [infrastructure and environments](docs/INFRASTRUCTURE.md), and [deployment effects](docs/EFFECTS.md). Current results are in [Phase 3 verification](docs/PHASE3-VALIDATION.md) and [performance methodology](docs/PERFORMANCE.md): 204 passing checks across the validated case set, including 73 browser cases, with seven intentional platform skips. Historical evidence remains in the [character validation](docs/VALIDATION.md), [Phase 1 verification](docs/PHASE1-VALIDATION.md) and [Phase 2 verification](docs/PHASE2-VALIDATION.md) reports; those measurements describe their recorded revisions.
+Read [adventure orchestration](docs/ADVENTURES.md), [local persistence and replay](docs/PERSISTENCE.md), [local sound](docs/AUDIO.md), [engineering showcase](docs/SHOWCASE.md), [deployment guide](docs/DEPLOYMENT.md), [world architecture](docs/ARCHITECTURE.md), [world generation](docs/WORLD.md), [expressions](docs/EXPRESSIONS.md), [camera and navigation](docs/CAMERA.md), [local pipeline](docs/PIPELINE.md), [UI and accessibility](docs/UI.md), [simulation events](docs/SIMULATION.md), [infrastructure and environments](docs/INFRASTRUCTURE.md), and [deployment effects](docs/EFFECTS.md). Current results are in [Phase 3 verification](docs/PHASE3-VALIDATION.md) and [performance methodology](docs/PERFORMANCE.md): 204 passing checks across the validated case set, including 73 browser cases, with seven intentional platform skips. Historical evidence remains in the [character validation](docs/VALIDATION.md), [Phase 1 verification](docs/PHASE1-VALIDATION.md) and [Phase 2 verification](docs/PHASE2-VALIDATION.md) reports; those measurements describe their recorded revisions.
 
 Open `assets/source/awushi.blend` in Blender to inspect the character and its actions. `assets/source/world.blend` contains the generated world review scene. Reopen/revert after generation to see new output; Python and layout data are authoritative, so manual `.blend` edits are replaced on regeneration.
 
