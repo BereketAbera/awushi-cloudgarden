@@ -23,10 +23,12 @@ export function createAdventureRecord(id: string, adventureId: AdventureId, vari
 }
 
 /** Seeking is pure: never mutate the supplied recording, save store or a live session. */
-export function replayAdventure(record: AdventureRecord, positionMs = record.elapsedMs): AdventureSession {
+export function replayAdventure(record: AdventureRecord, positionMs = record.elapsedMs, options: { commandCount?: number } = {}): AdventureSession {
   const end = Math.max(0, Math.min(record.elapsedMs, Number.isFinite(positionMs) ? positionMs : 0))
+  // Stage review can stop between two decisions sharing the same logical timestamp.
+  const count = options.commandCount === undefined ? record.commands.length : Math.max(0, Math.min(record.commands.length, Number.isFinite(options.commandCount) ? Math.floor(options.commandCount) : 0))
   let session = createAdventureRecord(record.id, record.adventureId, record.variant, record.initialHintsEnabled).session
-  for (const item of record.commands) {
+  for (const item of record.commands.slice(0, count)) {
     if (item.at > end) break
     session = tickAdventure(session, item.at)
     session = reduceAdventure(session, item.command, item.at)
@@ -41,7 +43,8 @@ export function recordSession(record: AdventureRecord, session: AdventureSession
 export function isBetterResult(candidate: AdventureRecord, previous: AdventureRecord): boolean {
   if (!candidate.result) return false
   if (!previous.result) return true
-  return candidate.result.mistakes < previous.result.mistakes || (candidate.result.mistakes === previous.result.mistakes && candidate.result.hintsUsed < previous.result.hintsUsed)
+  // Assistance is a learning preference, never a penalty. Keep the first equally successful result.
+  return candidate.result.mistakes < previous.result.mistakes
 }
 
 export function advanceReplay(view: ReplayView, elapsedMs: number): ReplayView {

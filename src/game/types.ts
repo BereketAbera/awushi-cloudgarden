@@ -1,4 +1,5 @@
 import type { MutableRefObject } from 'react'
+import type { CinematicView } from './cinematic'
 import type { EnvironmentId, SimulationState } from '../simulation/domain'
 export type Clip = 'Idle' | 'Walk' | 'Run' | 'Interact' | 'Celebrate'
 export type View = 'three-quarter' | 'front' | 'side' | 'back'
@@ -20,4 +21,7 @@ export type SceneProps = {
   targetStation?: string | null; simulation?: SimulationState; simulationEnvironment?: EnvironmentId
   onRendererStatus?: (message: string | null) => void
   effectsPaused?: boolean
+  cinematic?: CinematicView
+  onCameraOverride?: () => void
+  onCameraSettled?: (owner: 'cinematic' | 'player') => void
 }

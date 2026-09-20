@@ -291,3 +291,76 @@
 @media (prefers-reduced-motion: reduce) {
   .adventure-card *, .mission-workspace *, .mission-hud *, .engineering-showcase *, .portfolio-highlights * { transition: none !important; }
 }
+
+/* Phase 4: one clear next step, then optional detail. */
+.mission-panel-header { padding: 18px 19px 14px; }
+.mission-panel-progress { margin-bottom: 18px; }
+.mission-guide-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.mission-guide-row .secondary-button { min-height: 38px; padding: 9px 12px; font-size: 11px; gap: 7px; }
+.mission-current .mission-guide-reason { font-size: 10px; line-height: 1.65; color: #a1c2c3; margin: 8px 0 0; }
+.mission-feedback > div { min-width: 0; }
+.mission-feedback strong { display: block; font-size: 10px; margin-bottom: 4px; color: inherit; }
+.mission-feedback.tone-bad { color: #f4c3be; border-color: #eea59c; background: #d5625c0e; }
+.mission-briefing { border: 1px solid #81aaa33c; border-radius: 9px; padding: 12px; color: #b8ced1; font-size: 11px; line-height: 1.75; }
+.mission-briefing summary { cursor: pointer; color: #d3e8de; font-size: 12px; }
+.mission-briefing p { margin: 10px 0 0; }
+.mission-briefing strong { color: #d4e7d9; font-weight: 500; }
+.mission-briefing ul { padding-left: 18px; margin: 9px 0; }
+.briefing-tools { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 11px; }
+.briefing-tools span { padding: 3px 6px; border-radius: 4px; background: #2a4650; color: #bed2cf; font-size: 9px; }
+.briefing-tools span:first-child { flex-basis: 100%; padding: 0; margin-bottom: 3px; background: transparent; color: #8eafb6; }
+.mission-view-choice { display: flex; flex-wrap: wrap; gap: 9px 14px; align-items: center; margin: 14px 0; }
+.mission-view-choice .primary-button { font-size: 11px; min-height: 39px; gap: 6px; padding: 9px 11px; }
+.mission-view-choice .primary-button small { font-size: 8px; opacity: .8; padding-left: 5px; }
+.mission-view-choice .text-button { font-size: 10px; min-height: 36px; }
+.guidance-select { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; color: #9ebcc2; font-size: 10px; }
+.guidance-select select { max-width: 72%; padding: 8px 24px 8px 8px; font-size: 11px; }
+.investigation-checklist .mission-section-heading { margin-bottom: 10px; }
+.investigation-checklist ol { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 10px; padding: 0; margin: 0; list-style: none; }
+.investigation-checklist li { display: flex; align-items: flex-start; gap: 6px; color: #94b0b9; font-size: 10px; line-height: 1.55; }
+.investigation-checklist li > span:first-child { display: grid; place-items: center; border: 1px solid #728e9b; border-radius: 4px; width: 16px; height: 16px; flex: 0 0 16px; }
+.investigation-checklist li.current { color: #dce8c4; }
+.investigation-checklist li.current > span:first-child { border-color: #c9d99b; }
+.investigation-checklist li.done { color: #acd6bb; }
+.investigation-checklist li.done > span:first-child { border-color: #9bd1b4; background: #285345; }
+.mission-action-group .mission-section-heading { margin-top: 20px; }
+.mission-action-row.suggested-tool .mission-action { border-color: #a0d6cc; box-shadow: inset 3px 0 #a0d6cc; }
+.mission-action-reason { color: #b8c6cb; }
+.evidence-concepts { border-top: 1px solid #658e9840; padding: 7px 12px 12px; }
+.evidence-concepts .text-button { font-size: 10px; min-height: 30px; }
+.evidence-concepts p { font-size: 10px; line-height: 1.75; color: #afc8ca; margin: 8px 0 0; }
+.evidence-concepts strong { font-weight: 500; color: #d0e4dc; }
+.mission-hints li strong { display: block; color: #dce5be; font-size: 10px; }
+.mission-hints li span { display: block; }
+.hint-reassurance { display: block; font-size: 9px; line-height: 1.7; color: #92b2ad; margin-top: 10px; }
+.attempt-options { margin-left: auto; color: #9fb7bf; font-size: 10px; }
+.attempt-options summary { cursor: pointer; padding: 10px 0; }
+.attempt-options[open] { flex-basis: 100%; }
+.mission-hud-actions button { min-height: 36px; font-size: 10px; }
+.mission-hud-actions .hud-guide-action { color: #d6ecdc; padding: 6px 9px; border: 1px solid #9bc7b36b; border-radius: 6px; }
+@media (max-width: 700px) {
+  .mission-hud-actions { display: flex; margin-top: 7px; gap: 10px; }
+  .mission-hud-actions button { min-height: 36px; font-size: 10px; }
+  .mission-panel-header { padding: 13px 15px 11px; }
+  .mission-current .mission-guide-reason { font-size: 11px; }
+  .mission-guide-row .secondary-button { min-height: 42px; }
+  .mission-view-choice .primary-button, .mission-view-choice .text-button { min-height: 42px; }
+  .guidance-select select { min-height: 40px; }
+  .investigation-checklist li { font-size: 11px; }
+  .mission-briefing { font-size: 12px; }
+  .mission-feedback strong { font-size: 11px; }
+  .evidence-concepts .text-button { min-height: 38px; }
+  .mission-action-reason { font-size: 10px; }
+}
+.mission-current .mission-opening-summary { margin: 0 0 15px; padding-bottom: 13px; border-bottom: 1px solid #7b9b9c35; color: #abc8ce; font-size: 11px; line-height: 1.7; }
+.mission-current > .mission-action-row { margin: 13px 0 10px; }
+.mission-current > .mission-action-row .mission-action small { display: none; }
+.mission-current > .mission-action-row .mission-action { align-items: center; min-height: 43px; background: #254e4e; }
+.investigation-checklist ol { grid-template-columns: 1fr; gap: 7px; }
+.investigation-checklist .checklist-toggle { font-size: 10px; min-height: 32px; margin-top: 6px; }
+@media (max-width: 700px) { .mission-current .mission-opening-summary { font-size: 11px; margin-bottom: 12px; padding-bottom: 10px; } .mission-current > .mission-action-row .mission-action { min-height: 44px; } .investigation-checklist .checklist-toggle { min-height: 38px; } }
+.evidence-card dl > div[hidden] { display: none; }
+.evidence-expand { margin: 0 12px 10px; min-height: 34px; font-size: 10px; }
+.actions-jump { min-height: 40px; margin-bottom: 10px; padding: 9px 12px; font-size: 11px; gap: 7px; }
+.mission-actions:focus { outline: none; }
+@media (max-width: 700px) { .evidence-expand, .actions-jump { min-height: 42px; } }

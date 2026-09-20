@@ -1,0 +1,616 @@
+{
+  "date": "2026-11-06",
+  "profile": "mobile",
+  "viewport": {
+    "width": 390,
+    "height": 664
+  },
+  "quality": "balanced",
+  "playback": "Watch Flow automatic,2×,explicit human approval",
+  "samples": [
+    {
+      "stage": "push",
+      "fps": 0,
+      "drawCalls": 213,
+      "triangles": 546872,
+      "geometries": 123,
+      "textures": 17
+    },
+    {
+      "stage": "push",
+      "fps": 50,
+      "drawCalls": 181,
+      "triangles": 502308,
+      "geometries": 123,
+      "textures": 17
+    },
+    {
+      "stage": "ci-start",
+      "fps": 50,
+      "drawCalls": 163,
+      "triangles": 480740,
+      "geometries": 123,
+      "textures": 17
+    },
+    {
+      "stage": "ci-start",
+      "fps": 60,
+      "drawCalls": 157,
+      "triangles": 479732,
+      "geometries": 123,
+      "textures": 17
+    },
+    {
+      "stage": "ci-start",
+      "fps": 60,
+      "drawCalls": 157,
+      "triangles": 479732,
+      "geometries": 123,
+      "textures": 17
+    },
+    {
+      "stage": "quality",
+      "fps": 60,
+      "drawCalls": 157,
+      "triangles": 479732,
+      "geometries": 123,
+      "textures": 17
+    },
+    {
+      "stage": "quality",
+      "fps": 60,
+      "drawCalls": 148,
+      "triangles": 478736,
+      "geometries": 123,
+      "textures": 17
+    },
+    {
+      "stage": "quality",
+      "fps": 60,
+      "drawCalls": 148,
+      "triangles": 478736,
+      "geometries": 123,
+      "textures": 17
+    },
+    {
+      "stage": "quality",
+      "fps": 60,
+      "drawCalls": 148,
+      "triangles": 478736,
+      "geometries": 123,
+      "textures": 17
+    },
+    {
+      "stage": "security",
+      "fps": 60,
+      "drawCalls": 185,
+      "triangles": 467956,
+      "geometries": 125,
+      "textures": 17
+    },
+    {
+      "stage": "security",
+      "fps": 60,
+      "drawCalls": 141,
+      "triangles": 384780,
+      "geometries": 127,
+      "textures": 17
+    },
+    {
+      "stage": "security",
+      "fps": 60,
+      "drawCalls": 135,
+      "triangles": 367840,
+      "geometries": 131,
+      "textures": 17
+    },
+    {
+      "stage": "build",
+      "fps": 60,
+      "drawCalls": 141,
+      "triangles": 368336,
+      "geometries": 131,
+      "textures": 17
+    },
+    {
+      "stage": "build",
+      "fps": 60,
+      "drawCalls": 175,
+      "triangles": 457732,
+      "geometries": 130,
+      "textures": 17
+    },
+    {
+      "stage": "build",
+      "fps": 60,
+      "drawCalls": 148,
+      "triangles": 478736,
+      "geometries": 130,
+      "textures": 17
+    },
+    {
+      "stage": "build",
+      "fps": 60,
+      "drawCalls": 148,
+      "triangles": 478736,
+      "geometries": 130,
+      "textures": 17
+    },
+    {
+      "stage": "publish",
+      "fps": 59,
+      "drawCalls": 159,
+      "triangles": 428204,
+      "geometries": 137,
+      "textures": 17
+    },
+    {
+      "stage": "publish",
+      "fps": 59,
+      "drawCalls": 137,
+      "triangles": 376508,
+      "geometries": 144,
+      "textures": 17
+    },
+    {
+      "stage": "publish",
+      "fps": 60,
+      "drawCalls": 141,
+      "triangles": 378980,
+      "geometries": 144,
+      "textures": 17
+    },
+    {
+      "stage": "pull-request",
+      "fps": 60,
+      "drawCalls": 141,
+      "triangles": 366336,
+      "geometries": 148,
+      "textures": 17
+    },
+    {
+      "stage": "pull-request",
+      "fps": 60,
+      "drawCalls": 147,
+      "triangles": 410456,
+      "geometries": 151,
+      "textures": 17
+    },
+    {
+      "stage": "pull-request",
+      "fps": 60,
+      "drawCalls": 143,
+      "triangles": 409328,
+      "geometries": 151,
+      "textures": 17
+    },
+    {
+      "stage": "pull-request",
+      "fps": 60,
+      "drawCalls": 145,
+      "triangles": 409544,
+      "geometries": 151,
+      "textures": 17
+    },
+    {
+      "stage": "approval",
+      "fps": 60,
+      "drawCalls": 145,
+      "triangles": 409904,
+      "geometries": 153,
+      "textures": 17
+    },
+    {
+      "stage": "promote",
+      "fps": 60,
+      "drawCalls": 156,
+      "triangles": 408676,
+      "geometries": 149,
+      "textures": 17
+    },
+    {
+      "stage": "promote",
+      "fps": 60,
+      "drawCalls": 151,
+      "triangles": 379532,
+      "geometries": 157,
+      "textures": 17
+    },
+    {
+      "stage": "promote",
+      "fps": 60,
+      "drawCalls": 167,
+      "triangles": 382124,
+      "geometries": 157,
+      "textures": 17
+    },
+    {
+      "stage": "configuration",
+      "fps": 60,
+      "drawCalls": 153,
+      "triangles": 374500,
+      "geometries": 164,
+      "textures": 17
+    },
+    {
+      "stage": "configuration",
+      "fps": 60,
+      "drawCalls": 153,
+      "triangles": 374500,
+      "geometries": 164,
+      "textures": 17
+    },
+    {
+      "stage": "configuration",
+      "fps": 60,
+      "drawCalls": 153,
+      "triangles": 374500,
+      "geometries": 164,
+      "textures": 17
+    },
+    {
+      "stage": "render-manifests",
+      "fps": 60,
+      "drawCalls": 151,
+      "triangles": 373924,
+      "geometries": 164,
+      "textures": 17
+    },
+    {
+      "stage": "render-manifests",
+      "fps": 60,
+      "drawCalls": 143,
+      "triangles": 373108,
+      "geometries": 163,
+      "textures": 17
+    },
+    {
+      "stage": "render-manifests",
+      "fps": 60,
+      "drawCalls": 143,
+      "triangles": 373108,
+      "geometries": 163,
+      "textures": 17
+    },
+    {
+      "stage": "render-manifests",
+      "fps": 60,
+      "drawCalls": 136,
+      "triangles": 372688,
+      "geometries": 163,
+      "textures": 17
+    },
+    {
+      "stage": "gitops-commit",
+      "fps": 60,
+      "drawCalls": 147,
+      "triangles": 385020,
+      "geometries": 164,
+      "textures": 17
+    },
+    {
+      "stage": "gitops-commit",
+      "fps": 60,
+      "drawCalls": 158,
+      "triangles": 433228,
+      "geometries": 190,
+      "textures": 17
+    },
+    {
+      "stage": "gitops-commit",
+      "fps": 60,
+      "drawCalls": 158,
+      "triangles": 433228,
+      "geometries": 190,
+      "textures": 17
+    },
+    {
+      "stage": "detect",
+      "fps": 60,
+      "drawCalls": 166,
+      "triangles": 434524,
+      "geometries": 190,
+      "textures": 17
+    },
+    {
+      "stage": "detect",
+      "fps": 60,
+      "drawCalls": 160,
+      "triangles": 433804,
+      "geometries": 189,
+      "textures": 17
+    },
+    {
+      "stage": "detect",
+      "fps": 60,
+      "drawCalls": 160,
+      "triangles": 433804,
+      "geometries": 189,
+      "textures": 17
+    },
+    {
+      "stage": "detect",
+      "fps": 60,
+      "drawCalls": 157,
+      "triangles": 433408,
+      "geometries": 189,
+      "textures": 17
+    },
+    {
+      "stage": "sync",
+      "fps": 60,
+      "drawCalls": 175,
+      "triangles": 435040,
+      "geometries": 188,
+      "textures": 17
+    },
+    {
+      "stage": "sync",
+      "fps": 60,
+      "drawCalls": 183,
+      "triangles": 436060,
+      "geometries": 189,
+      "textures": 17
+    },
+    {
+      "stage": "sync",
+      "fps": 60,
+      "drawCalls": 189,
+      "triangles": 449572,
+      "geometries": 191,
+      "textures": 17
+    },
+    {
+      "stage": "rollout",
+      "fps": 60,
+      "drawCalls": 175,
+      "triangles": 504804,
+      "geometries": 191,
+      "textures": 17
+    },
+    {
+      "stage": "rollout",
+      "fps": 58,
+      "drawCalls": 155,
+      "triangles": 502392,
+      "geometries": 191,
+      "textures": 17
+    },
+    {
+      "stage": "rollout",
+      "fps": 60,
+      "drawCalls": 155,
+      "triangles": 502392,
+      "geometries": 191,
+      "textures": 17
+    },
+    {
+      "stage": "ready",
+      "fps": 60,
+      "drawCalls": 155,
+      "triangles": 502392,
+      "geometries": 191,
+      "textures": 17
+    },
+    {
+      "stage": "ready",
+      "fps": 59,
+      "drawCalls": 155,
+      "triangles": 499584,
+      "geometries": 191,
+      "textures": 17
+    },
+    {
+      "stage": "ready",
+      "fps": 59,
+      "drawCalls": 155,
+      "triangles": 499584,
+      "geometries": 191,
+      "textures": 17
+    },
+    {
+      "stage": "ready",
+      "fps": 60,
+      "drawCalls": 155,
+      "triangles": 499584,
+      "geometries": 191,
+      "textures": 17
+    },
+    {
+      "stage": "service",
+      "fps": 60,
+      "drawCalls": 168,
+      "triangles": 431820,
+      "geometries": 198,
+      "textures": 17
+    },
+    {
+      "stage": "service",
+      "fps": 60,
+      "drawCalls": 168,
+      "triangles": 431820,
+      "geometries": 198,
+      "textures": 17
+    },
+    {
+      "stage": "service",
+      "fps": 60,
+      "drawCalls": 168,
+      "triangles": 431820,
+      "geometries": 198,
+      "textures": 17
+    },
+    {
+      "stage": "ingress",
+      "fps": 60,
+      "drawCalls": 164,
+      "triangles": 431796,
+      "geometries": 196,
+      "textures": 17
+    },
+    {
+      "stage": "ingress",
+      "fps": 60,
+      "drawCalls": 162,
+      "triangles": 423404,
+      "geometries": 197,
+      "textures": 17
+    },
+    {
+      "stage": "ingress",
+      "fps": 60,
+      "drawCalls": 156,
+      "triangles": 417700,
+      "geometries": 197,
+      "textures": 17
+    },
+    {
+      "stage": "ingress",
+      "fps": 60,
+      "drawCalls": 149,
+      "triangles": 417280,
+      "geometries": 197,
+      "textures": 17
+    },
+    {
+      "stage": "metrics",
+      "fps": 60,
+      "drawCalls": 151,
+      "triangles": 404752,
+      "geometries": 201,
+      "textures": 17
+    },
+    {
+      "stage": "metrics",
+      "fps": 60,
+      "drawCalls": 137,
+      "triangles": 376760,
+      "geometries": 209,
+      "textures": 17
+    },
+    {
+      "stage": "metrics",
+      "fps": 60,
+      "drawCalls": 137,
+      "triangles": 376760,
+      "geometries": 209,
+      "textures": 17
+    },
+    {
+      "stage": "logs",
+      "fps": 60,
+      "drawCalls": 140,
+      "triangles": 377720,
+      "geometries": 209,
+      "textures": 17
+    },
+    {
+      "stage": "logs",
+      "fps": 60,
+      "drawCalls": 140,
+      "triangles": 377720,
+      "geometries": 209,
+      "textures": 17
+    },
+    {
+      "stage": "logs",
+      "fps": 60,
+      "drawCalls": 140,
+      "triangles": 377720,
+      "geometries": 209,
+      "textures": 17
+    },
+    {
+      "stage": "dashboard",
+      "fps": 60,
+      "drawCalls": 140,
+      "triangles": 377720,
+      "geometries": 213,
+      "textures": 17
+    },
+    {
+      "stage": "dashboard",
+      "fps": 58,
+      "drawCalls": 140,
+      "triangles": 377720,
+      "geometries": 213,
+      "textures": 17
+    },
+    {
+      "stage": "dashboard",
+      "fps": 58,
+      "drawCalls": 140,
+      "triangles": 377720,
+      "geometries": 213,
+      "textures": 17
+    },
+    {
+      "stage": "dashboard",
+      "fps": 60,
+      "drawCalls": 140,
+      "triangles": 377720,
+      "geometries": 213,
+      "textures": 17
+    },
+    {
+      "stage": "alerts",
+      "fps": 60,
+      "drawCalls": 150,
+      "triangles": 382108,
+      "geometries": 217,
+      "textures": 17
+    },
+    {
+      "stage": "alerts",
+      "fps": 60,
+      "drawCalls": 150,
+      "triangles": 382108,
+      "geometries": 217,
+      "textures": 17
+    },
+    {
+      "stage": "alerts",
+      "fps": 60,
+      "drawCalls": 156,
+      "triangles": 383116,
+      "geometries": 217,
+      "textures": 17
+    },
+    {
+      "stage": "alerts",
+      "fps": 60,
+      "drawCalls": 156,
+      "triangles": 383676,
+      "geometries": 218,
+      "textures": 17
+    }
+  ],
+  "meanFps": 59.57746478873239,
+  "minimumFps": 50,
+  "maximumFps": 60,
+  "observedStages": [
+    "push",
+    "ci-start",
+    "quality",
+    "security",
+    "build",
+    "publish",
+    "pull-request",
+    "approval",
+    "promote",
+    "configuration",
+    "render-manifests",
+    "gitops-commit",
+    "detect",
+    "sync",
+    "rollout",
+    "ready",
+    "service",
+    "ingress",
+    "metrics",
+    "logs",
+    "dashboard",
+    "alerts"
+  ],
+  "note": "Local headless desktop Chrome with real WebGL. Phone profile is viewport/touch emulation, not a physical device. Counters include shadow/transmission passes."
+}

@@ -3,14 +3,15 @@ import type { AdventureCommand, AdventureId, AdventureSession, AdventureVariant 
 import { reduceAdventure, tickAdventure } from './engine'
 import { MAX_ADVENTURE_DURATION_MS, MAX_RECORDED_COMMANDS, emptyAdventureSave, loadAdventureSave, resetAdventureStorage, writeAdventureSave, type AdventureSave, type SaveLoad, type SaveNotice, type StorageLike } from './persistence'
 import { advanceReplay, createAdventureRecord, isBetterResult, recordSession, replayAdventure, type AdventureRecord, type ReplaySpeed, type ReplayView } from './replay'
+import { DEFAULT_PLAYBACK, crossedStage, playbackDelta, type PlaybackPolicy } from '../cinematic/playback'
 
 type Controller = SaveLoad & {
-  liveSession: AdventureSession | null; running: boolean; revision: number
+  liveSession: AdventureSession | null; running: boolean; revision: number; stepHeld: boolean
   replayRecord: AdventureRecord | null; replay: ReplayView | null; replaySession: AdventureSession | null
 }
 function availableStorage(): StorageLike | null { try { return window.localStorage } catch { return null } }
 function controllerFrom(load: SaveLoad): Controller {
-  return { ...load, liveSession: load.save.active ? replayAdventure(load.save.active) : null, running: false, revision: 0, replayRecord: null, replay: null, replaySession: null }
+  return { ...load, liveSession: load.save.active ? replayAdventure(load.save.active) : null, running: false, revision: 0, stepHeld: false, replayRecord: null, replay: null, replaySession: null }
 }
 
 /** Selecting another lesson keeps the current unfinished attempt in the bounded notebook. */
@@ -41,7 +42,9 @@ function updateLive(current: Controller, session: AdventureSession, record: Adve
 }
 
 /** Saves event boundaries; WebGL frames never drive this clock or persistence. */
-export function useAdventures() {
+export function useAdventures(playback: PlaybackPolicy = DEFAULT_PLAYBACK) {
+  const playbackRef = useRef(playback)
+  playbackRef.current = playback
   const [storage] = useState(availableStorage)
   const [controller, setController] = useState(() => controllerFrom(loadAdventureSave(storage)))
   const latest = useRef(controller)
@@ -82,9 +85,13 @@ export function useAdventures() {
           return { ...previous, replay, replaySession: replayAdventure(previous.replayRecord, replay.positionMs) }
         }
         if (!previous.running || !previous.liveSession || !previous.save.active) return previous
+        const policy = playbackRef.current
+        if (policy.enabled && policy.mode === 'step' && previous.stepHeld) return previous
         if (previous.liveSession.clock + elapsed > MAX_ADVENTURE_DURATION_MS) return { ...previous, running: false, notice: { kind: 'limit', message: 'This attempt reached the supported clock limit. Export the notebook and restart this lesson; other adventures remain saved.', recoverable: true } }
-        const session = tickAdventure(previous.liveSession, previous.liveSession.clock + elapsed)
-        return updateLive(previous, session, previous.save.active)
+        const delta = playbackDelta(previous.liveSession.simulation, elapsed, policy)
+        const session = tickAdventure(previous.liveSession, previous.liveSession.clock + delta)
+        const updated = updateLive(previous, session, previous.save.active)
+        return { ...updated, stepHeld: policy.enabled && policy.mode === 'step' && crossedStage(previous.liveSession.simulation, session.simulation) }
       })
     }, 100)
     return () => window.clearInterval(timer)
@@ -93,7 +100,7 @@ export function useAdventures() {
   const launch = useCallback((id: AdventureId, variant?: AdventureVariant) => {
     setController(previous => {
       const next = selectAdventure(previous.save, id, variant)
-      return { ...previous, save: next.save, liveSession: next.session, running: next.session.status === 'active', replay: null, replayRecord: null, replaySession: null, revision: previous.revision + 1 }
+      return { ...previous, save: next.save, liveSession: next.session, running: next.session.status === 'active', stepHeld: playbackRef.current.mode === 'step', replay: null, replayRecord: null, replaySession: null, revision: previous.revision + 1 }
     })
   }, [])
   const resume = useCallback((id?: AdventureId) => {
@@ -102,13 +109,15 @@ export function useAdventures() {
     if (target) launch(target)
   }, [launch])
   const pause = useCallback(() => { setController(previous => ({ ...previous, running: false, replay: previous.replay ? { ...previous.replay, playing: false } : null, revision: previous.revision + 1 })) }, [])
+  const advanceStage = useCallback(() => setController(previous => ({ ...previous, stepHeld: false })), [])
+  const holdStage = useCallback(() => setController(previous => ({ ...previous, stepHeld: true })), [])
   const restart = useCallback((id?: AdventureId, variant?: AdventureVariant) => {
     setController(previous => {
       const target = id ?? previous.save.selectedId
       if (!target) return previous
       const previousVariant = previous.save.active?.adventureId === target ? previous.save.active.variant : undefined
       const next = selectAdventure(previous.save, target, variant ?? previousVariant ?? undefined, true)
-      return { ...previous, save: next.save, liveSession: next.session, running: true, replay: null, replayRecord: null, replaySession: null, revision: previous.revision + 1 }
+      return { ...previous, save: next.save, liveSession: next.session, running: true, stepHeld: playbackRef.current.enabled && playbackRef.current.mode === 'step', replay: null, replayRecord: null, replaySession: null, revision: previous.revision + 1 }
     })
   }, [])
   const dispatch = useCallback((command: AdventureCommand) => {
@@ -119,7 +128,7 @@ export function useAdventures() {
       const session = reduceAdventure(previous.liveSession, command, previous.liveSession.clock)
       if (session === previous.liveSession) return previous
       const record = { ...previous.save.active, commands: [...previous.save.active.commands, { at: previous.liveSession.clock, command }] }
-      return updateLive(previous, session, record, true)
+      return { ...updateLive(previous, session, record, true), stepHeld: playbackRef.current.enabled && playbackRef.current.mode === 'step' }
     })
   }, [])
   const cancel = useCallback(() => dispatch({ type: 'cancel' }), [dispatch])
@@ -169,8 +178,8 @@ export function useAdventures() {
     session: controller.replaySession ?? controller.liveSession, liveSession: controller.liveSession,
     activeRecord: controller.save.active, completed: controller.save.completed, resumable,
     selectedId: controller.save.selectedId, running: controller.running, paused: controller.liveSession?.status === 'active' && !controller.running,
-    replay: controller.replay, notice: controller.notice, hintsEnabled: controller.save.preferences.hintsEnabled,
-    launch, resume, pause, restart, cancel, leave, dispatch, setHintsEnabled,
+    replay: controller.replay, replayRecord: controller.replayRecord, notice: controller.notice, hintsEnabled: controller.save.preferences.hintsEnabled,
+    launch, resume, pause, restart, cancel, leave, dispatch, setHintsEnabled, stepHeld: controller.stepHeld, advanceStage, holdStage,
     startReplay, pauseReplay, resumeReplay, restartReplay, stopReplay, setReplaySpeed,
     resetSave, exportSave, dismissNotice, retrySave,
   }

@@ -1,6 +1,28 @@
 // These cases intentionally cause resource/context errors; normal journeys use the strict fixture.
 import { test, expect } from '@playwright/test'
 
+for (const review of [false, true]) test(`WebGL loss pauses ${review ? 'historical stage review' : 'live laboratory playback'}`, async ({ page }) => {
+  await page.goto('/')
+  if (await page.getByTestId('onboarding-skip').isVisible()) await page.getByTestId('onboarding-skip').click()
+  await page.getByTestId('free-explore').click()
+  await page.getByTestId('open-simulation').click()
+  await page.getByTestId('simulation-start').click()
+  await page.getByTestId('lab-watch-flow').click()
+  await expect(page.getByTestId('watch-flow')).toHaveAttribute('data-stage', 'ci-start')
+  if (review) await page.getByTestId('flow-previous').click()
+  const supported = await page.evaluate(() => {
+    const extension = document.querySelector('canvas')?.getContext('webgl2')?.getExtension('WEBGL_lose_context')
+    if (!extension) return false
+    extension.loseContext(); return true
+  })
+  test.skip(!supported, 'This browser does not expose the WebGL context-loss test extension.')
+  await expect(page.getByTestId('renderer-notice')).toBeVisible()
+  await expect(page.getByTestId('flow-pause')).toHaveText('Resume')
+  const stage = await page.getByTestId('watch-flow').getAttribute('data-stage')
+  await page.waitForTimeout(600)
+  await expect(page.getByTestId('watch-flow')).toHaveAttribute('data-stage', stage!)
+})
+
 async function beginPod(page: import('@playwright/test').Page) {
   await page.getByTestId('play-adventure').click()
   await page.getByTestId('adventure-variant-recover-pod').selectOption('readiness')

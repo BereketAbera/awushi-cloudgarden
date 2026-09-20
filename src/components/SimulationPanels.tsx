@@ -19,13 +19,14 @@ export function SimulationDock({ state, environment, onEnvironment, onCommand, o
   </section>
 }
 
-type DetailProps = Omit<Props, 'onOpen'> & { scenario: ScenarioId; onScenario: (value: ScenarioId) => void }
-export function SimulationPanel({ state, environment, onEnvironment, onCommand, onLocate, scenario, onScenario }: DetailProps) {
+type DetailProps = Omit<Props, 'onOpen'> & { scenario: ScenarioId; onScenario: (value: ScenarioId) => void; onWatchFlow?: () => void; onExplore?: () => void }
+export function SimulationPanel({ state, environment, onEnvironment, onCommand, onLocate, scenario, onScenario, onWatchFlow, onExplore }: DetailProps) {
   const stage = DEPLOYMENT_STAGES[state.stageIndex]
   const busy = ['running', 'waiting-approval', 'retrying'].includes(state.status)
   const inspected = state.infra.environments[environment]
   return <div className="simulation-detail" data-testid="simulation-panel">
     <p className="dialog-intro">Push a change, follow its image by digest, and approve the handoff to GitOps. Every state and value here is simulated locally.</p>
+    {onWatchFlow && <div className="mission-view-choice"><button className="primary-button" data-testid="lab-watch-flow" onClick={onWatchFlow}><Play size={14} />Watch Flow<small>Recommended</small></button><button className="text-button" onClick={onExplore}>Explore Manually</button></div>}
     <div className="simulation-settings"><label>Inspect environment<select aria-label="Pipeline environment" value={environment} onChange={event => onEnvironment(event.target.value as EnvironmentId)}><option value="development">Development</option><option value="production">Production</option></select></label><label>Learning run<select aria-label="Learning scenario" data-testid="scenario-select" value={scenario} onChange={event => onScenario(event.target.value as ScenarioId)} disabled={busy}><option value="healthy">Healthy deployment</option><option value="tests-fail">Fail an automated test</option><option value="security-fail">Catch a security finding</option><option value="rollout-fail">Recover an unhealthy rollout</option></select></label></div>
     <div className="environment-boundary"><span>SHARED CLUSTER · SEPARATE NAMESPACES</span><p>Development and production keep independent configurations, secret references and deployment state. Namespaces organize and constrain access; they are not the same isolation boundary as separate clusters.</p></div>
     <div className={`pipeline-status status-${state.status}`} role="status" aria-live="polite" aria-atomic="true"><span className="status-dot" /><strong data-testid="pipeline-status">{statusLabels[state.status]}</strong><small>{state.environment} environment</small></div>

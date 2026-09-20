@@ -1,0 +1,36 @@
+.onboarding-card { position: absolute; z-index: 12; left: 24px; bottom: 48px; width: min(350px, calc(100% - 48px)); padding: 17px 19px; border: 1px solid #b5ded0a0; border-radius: 15px; background: #17313bf5; box-shadow: 0 12px 40px #04141b66; color: #d9ece5; pointer-events: auto; }
+.onboarding-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.onboarding-top > span { display: flex; align-items: center; gap: 9px; color: #b2d8c9; font-size: 8px; letter-spacing: 1px; }
+.onboarding-top .icon-button { width: 32px; height: 32px; }
+.onboarding-copy h2 { font-size: 22px; font-weight: 500; margin: 12px 0 9px; letter-spacing: -.5px; }
+.onboarding-copy p { color: #bdd1d3; font-size: 12px; line-height: 1.8; margin: 0; }
+.onboarding-step-actions .text-button { margin-top: 10px; min-height: 34px; font-size: 11px; color: #c9e8da; }
+.onboarding-card footer { display: flex; gap: 13px; align-items: center; margin-top: 15px; }
+.onboarding-dots { display: flex; gap: 4px; margin-right: auto; }
+.onboarding-dots i { width: 5px; height: 5px; border-radius: 50%; background: #65848b; }
+.onboarding-dots i.current { background: #c4ebd7; width: 15px; border-radius: 4px; }
+.onboarding-card footer .secondary-button { min-height: 36px; padding: 7px 11px; font-size: 11px; gap: 6px; }
+.onboarding-card footer .text-button { min-height: 36px; font-size: 10px; gap: 4px; }
+@media (max-width: 700px) { .onboarding-card { left: 12px; bottom: 34px; width: calc(100% - 24px); padding: 14px 16px; } .onboarding-copy h2 { font-size: 20px; } .onboarding-copy p { font-size: 12px; } .onboarding-top .icon-button, .onboarding-card footer .secondary-button, .onboarding-card footer .text-button { min-height: 40px; } }
+/* The introduction may cover scenery, never the welcome's main entry points. */
+.screen-welcome .onboarding-card { left: auto; right: 24px; bottom: 48px; }
+@media (max-width: 700px) {
+  .screen-welcome { --welcome-intro-height: clamp(200px, 37dvh, 260px); }
+  .screen-welcome .onboarding-card { left: 12px; right: 12px; bottom: 31px; height: var(--welcome-intro-height); overscroll-behavior: contain; scrollbar-color: #78a6a0 #17313b; }
+  /* Separate scroll areas keep every welcome link reachable on short screens. */
+  .screen-welcome:has(.onboarding-card) .welcome { bottom: calc(var(--welcome-intro-height) + 43px); overflow-y: auto; overscroll-behavior: contain; pointer-events: auto; scrollbar-color: #78a6a0 #17313b; }
+  .screen-welcome:has(.onboarding-card) .welcome-story { position: relative; inset: auto; width: auto; margin: 14px 23px 22px; }
+  .screen-welcome:has(.onboarding-card) .welcome-story h1 { font-size: 33px; margin: 14px 0 10px; }
+  .screen-welcome:has(.onboarding-card) .welcome-story > p { margin-bottom: 17px; }
+  .screen-welcome:has(.onboarding-card) .welcome-footer { display: none; }
+}
+.onboarding-card { display: flex; flex-direction: column; }
+.onboarding-top, .onboarding-step-actions, .onboarding-card footer { flex-shrink: 0; }
+.onboarding-copy { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+@media (max-width: 700px) {
+  .screen-welcome .onboarding-card { overflow: hidden; }
+  .onboarding-copy h2 { font-size: 19px; margin: 8px 0 6px; }
+  .onboarding-copy p { line-height: 1.6; }
+  .onboarding-card footer { margin-top: 10px; }
+  .onboarding-copy { flex: 1 1 auto; scrollbar-color: #78a6a0 #17313b; }
+}

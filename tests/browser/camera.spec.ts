@@ -44,8 +44,11 @@ test('third-person framing, turning, first-person look, projection switching and
   await page.screenshot({ path: `assets/previews/phase3-third-person-${info.project.name}.png` })
   await page.getByTestId('camera-first-person').click(); await page.waitForTimeout(1000)
   await expect(canvas).toHaveAttribute('data-character-visible', 'false')
-  const p = await position(page), eye = (await canvas.getAttribute('data-camera-position'))!.split(',').map(Number)
-  expect(eye[0]).toBeCloseTo(p[0], 2); expect(eye[2]).toBeCloseTo(p[2], 2); expect(eye[1] - p[1]).toBeCloseTo(1.218, 2)
+  // Wait for the actual eased pose; a fixed wall-time delay can sample before the 5 Hz diagnostics publish.
+  await expect.poll(async () => {
+    const p = await position(page), eye = (await canvas.getAttribute('data-camera-position'))!.split(',').map(Number)
+    return Math.max(Math.abs(eye[0] - p[0]), Math.abs(eye[2] - p[2]), Math.abs(eye[1] - p[1] - 1.218))
+  }).toBeLessThan(.005)
   const box = (await canvas.boundingBox())!, beforeLook = await heading(page)
   // Canvas drag is shared by desktop pointer and touch PointerEvents.
   const x = box.x + box.width * .5, y = box.y + box.height * .45

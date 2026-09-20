@@ -1,0 +1,130 @@
+import { mkdirSync } from 'node:fs'
+import { test, expect, type Page } from './fixtures'
+
+async function skipIntroduction(page: Page) {
+  const skip = page.getByTestId('onboarding-skip')
+  if (await skip.isVisible()) await skip.click()
+}
+async function commands(page: Page) {
+  return page.evaluate(() => JSON.parse(localStorage.getItem('awushi-adventures-v2') ?? 'null')?.active?.commands ?? [])
+}
+
+test('a first-time visitor can start an adventure without dismissing the introduction', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.getByTestId('onboarding')).toBeVisible()
+  await page.getByTestId('play-adventure').click()
+  await expect(page.getByTestId('adventure-select')).toBeVisible()
+  await page.getByTestId('adventure-start-ship-release').click()
+  await expect(page.getByTestId('adventure-action-push')).toBeVisible()
+  const action = await page.getByTestId('adventure-action-push').boundingBox()
+  expect(action!.y + action!.height).toBeLessThan(page.viewportSize()!.height)
+})
+
+test('a short optional introduction teaches controls and can be replayed from help', async ({ page }, info) => {
+  await page.goto('/')
+  const intro = page.getByTestId('onboarding')
+  await expect(intro).toBeVisible()
+  await expect(intro).toContainText('Meet Awushi.')
+  const card = await intro.boundingBox(), next = await page.getByTestId('onboarding-next').boundingBox()
+  expect(next!.y + next!.height).toBeLessThanOrEqual(card!.y + card!.height)
+  await page.getByTestId('onboarding-next').click()
+  await expect(intro).toContainText('Use W/S to move and A/D to turn')
+  await expect(intro).toContainText('touch screens')
+  for (const text of ['Look a little closer.', 'Start with a small mission.', 'Watch the world work.', 'Help is always nearby.']) {
+    await page.getByTestId('onboarding-next').click()
+    await expect(intro).toContainText(text)
+  }
+  await page.getByTestId('onboarding-next').click()
+  await expect(intro).toHaveCount(0)
+  await page.getByRole('button', { name: 'Open controls and help', exact: true }).click()
+  await page.getByTestId('replay-onboarding').click()
+  await expect(intro).toContainText('Meet Awushi.')
+  mkdirSync('assets/previews', { recursive: true })
+  await page.screenshot({ path: `assets/previews/phase4-onboarding-${info.project.name}.png` })
+  await skipIntroduction(page)
+  await page.reload()
+  await expect(intro).toHaveCount(0)
+  await expect(page.getByTestId('play-adventure')).toBeVisible()
+})
+
+test('guidance points to evidence without acting, records real progress, and preserves decisions across modes', async ({ page }, info) => {
+  await page.goto('/')
+  await skipIntroduction(page)
+  await page.getByTestId('play-adventure').click()
+  await page.getByTestId('adventure-variant-recover-pod').selectOption('readiness')
+  await page.getByTestId('adventure-start-recover-pod').click()
+  const inspect = page.getByTestId('adventure-action-inspect-pod')
+  await expect(inspect).toBeVisible()
+  const box = await inspect.boundingBox()
+  expect(box).not.toBeNull()
+  expect(box!.y).toBeGreaterThan(0)
+  expect(box!.y + box!.height).toBeLessThan(page.viewportSize()!.height)
+  await expect(page.getByTestId('checklist-diagnose')).toHaveAttribute('data-completed', 'false')
+  const before = await commands(page)
+  await page.getByTestId('guide-me').click()
+  await expect(page.getByTestId('guide-focus')).toBeVisible()
+  await expect(page.locator('canvas')).toHaveAttribute('data-camera-station', 'kubernetes')
+  expect(await commands(page)).toEqual(before)
+  await page.getByTestId('guide-inspect').click()
+  await expect(page.getByTestId('checklist-diagnose')).toHaveAttribute('data-completed', 'false')
+  await inspect.click()
+  await expect(page.getByTestId('checklist-diagnose')).toHaveAttribute('data-completed', 'true')
+  await expect(page.getByTestId('latest-evidence')).toContainText('Running / Ready=False')
+  const inspected = await commands(page)
+  for (const mode of ['engineer', 'commander']) {
+    await page.getByTestId('mission-guidance-mode').selectOption(mode)
+    await expect(page.getByTestId('investigation-checklist')).toHaveCount(0)
+    expect(await commands(page)).toEqual(inspected)
+  }
+  await page.getByTestId('mission-guidance-mode').selectOption('guided')
+  await expect(page.getByTestId('checklist-diagnose')).toHaveAttribute('data-completed', 'true')
+  for (const label of ['Direction', 'Technology', 'Evidence', 'Suggested action']) {
+    await page.getByTestId('adventure-hint').click()
+    await expect(page.locator('.mission-hints li strong').last()).toHaveText(label)
+  }
+  await page.getByTestId('adventure-action-restart-pod').click()
+  await expect(page.getByTestId('mission-feedback')).toContainText('configuration unchanged')
+  await expect(page.getByTestId('checklist-repair')).toHaveAttribute('data-completed', 'false')
+  mkdirSync('assets/previews', { recursive: true })
+  await page.getByTestId('mission-objective').scrollIntoViewIfNeeded()
+  await page.screenshot({ path: `assets/previews/phase4-guidance-${info.project.name}.png` })
+  await page.getByTestId('adventure-action-repair-readiness').click()
+  await page.getByTestId('adventure-action-verify-pod').click()
+  await expect(page.getByTestId('mission-status')).toHaveText('Adventure complete')
+  await expect(page.getByTestId('learning-summary')).toContainText('4 hints requested')
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1)).toBe(false)
+})
+
+test('architecture selection survives station focus and follows registry relationships', async ({ page }, info) => {
+  await page.goto('/')
+  await skipIntroduction(page)
+  await page.getByTestId('view-architecture').click()
+  await page.getByTestId('architecture-technology-github-actions').click()
+  await expect(page.getByTestId('technology-flows')).toContainText('GitHub → GitHub Actions')
+  await page.getByTestId('focus-technology').click()
+  await expect(page.locator('canvas')).toHaveAttribute('data-camera-station', 'ci')
+  await expect(page.getByTestId('guide-focus')).toBeVisible()
+  await page.getByTestId('return-architecture').click()
+  await expect(page.getByTestId('architecture-technology-github-actions')).toHaveAttribute('aria-pressed', 'true')
+  await page.getByTestId('flow-watch-github:github-actions').click()
+  await expect(page.locator('canvas')).toHaveAttribute('data-camera-station', 'ci')
+  await expect(page.getByTestId('return-architecture')).toBeVisible()
+  mkdirSync('assets/previews', { recursive: true })
+  await expect(page.locator('canvas')).toHaveAttribute('data-camera-shot', 'relationship:github:ci')
+  await expect(page.locator('canvas')).toHaveAttribute('data-camera-settled', 'true')
+  await expect(page.getByTestId('district-name')).toBeHidden()
+  if (info.project.name === 'mobile') {
+    const canvas = await page.locator('canvas').boundingBox(), card = await page.getByTestId('guide-focus').boundingBox()
+    expect(canvas!.y + canvas!.height).toBeLessThanOrEqual(card!.y)
+  }
+  await page.screenshot({ path: `assets/previews/phase4-graph-focus-${info.project.name}.png` })
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1)).toBe(false)
+})
+
+test('repeated ineffective actions offer dismissible help without revealing the solution', async ({page}) => {
+  await page.goto('/');await skipIntroduction(page);await page.getByTestId('play-adventure').click();await page.getByTestId('adventure-variant-recover-pod').selectOption('readiness');await page.getByTestId('adventure-start-recover-pod').click();await page.getByTestId('adventure-action-inspect-pod').click()
+  for(let i=0;i<3;i++)await page.getByTestId('adventure-action-restart-pod').click()
+  await page.getByTestId('close-mission').click();await expect(page.getByTestId('stuck-help')).toBeVisible();await expect(page.getByTestId('stuck-help')).not.toContainText('readiness')
+  await page.getByTestId('stuck-help').getByRole('button',{name:'No thanks'}).click();await expect(page.getByTestId('stuck-help')).toHaveCount(0)
+  await page.getByTestId('open-mission').click();await page.getByTestId('adventure-action-restart-pod').click();await page.getByTestId('close-mission').click();await expect(page.getByTestId('stuck-help')).toHaveCount(0)
+})

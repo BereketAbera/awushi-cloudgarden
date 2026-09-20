@@ -10,7 +10,9 @@ LocalStorage is sufficient for these small command journals. A notebook is bound
 
 `useAdventures` persists after scenario event boundaries and explicit actions, plus `pagehide`, visibility loss and an explicit pause. It does not write on every animation frame or 100ms clock tick. A hidden page pauses the lesson; a reload restores it paused. Pressing Resume continues from the saved logical clock, without treating time spent away as an automatic approval, an elapsed incident observation or new infrastructure work. Pagehide checkpoints retain elapsed time inside a deployment stage. A browser crash can lose time since the last safe event boundary; it does not create synthetic progress.
 
-Choosing another adventure suspends the current unfinished attempt. Launching an adventure with saved progress resumes it. Only the explicit Restart action replaces that adventure's attempt. Completion retains the best result by fewest rejected decisions, then fewest hints; elapsed speed does not determine the result. The latest completed attempt remains available as the active recording even when an earlier attempt has the better result.
+Choosing another adventure suspends the current unfinished attempt. Launching an adventure with saved progress resumes it. Only the explicit Restart action replaces that adventure's attempt. Completion retains the best result by fewest rejected decisions. Hint usage and elapsed speed do not break ties; assistance remains visible in the learning summary without a penalty. The first equally successful record is retained. The latest completed attempt remains available as the active recording even when an earlier attempt has the better result.
+
+Phase 4 guidance mode, automatic-camera preference and onboarding completion use the separate `awushi-guidance-v1` key. Stuck-detection observations, camera ownership and historical-stage review state stay in memory and do not enter the adventure command journal. Changing guidance does not change the scenario's reconstruction semantics or require a notebook migration. See [guidance](GUIDANCE.md).
 
 ## Validation and migration
 
@@ -25,6 +27,8 @@ Corrupt or unsupported versions produce a visible recovery notice and block auto
 `src/adventures/replay.ts` replays the timestamped user-command journal with the shared deterministic engine. It advances automatic infrastructure events to each input timestamp, applies that input and advances to the requested playhead. A replay never dispatches into the live session. Its record is cloned and treated as immutable, and playback state is excluded from the save.
 
 The controller exposes pause, resume, restart and 0.5×/1×/2×/4× speed. `advanceReplay` integrates logical playback time independently of WebGL's frame rate. Seeking the same timestamp produces the same scenario, infrastructure and event state regardless of how many rendered frames occurred. Stopping replay returns to the paused live session and its untouched completed records.
+
+Watch Flow's historical stage review additionally supplies an optional `commandCount` prefix to `replayAdventure`. This distinguishes events before and after multiple decisions recorded at the same timestamp. Ordinary replay omits that option and preserves its existing behavior. Prefixes are derived from actual event provenance, never written into the saved recording. Review pauses the live controller and navigates only recorded frames; it cannot authorize an approval or repair. See [cinematic playback](CINEMATICS.md).
 
 ## Tests and extension
 

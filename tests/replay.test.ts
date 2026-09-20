@@ -89,9 +89,10 @@ test('automatic reconciliation replays identically after many live ticks or one 
   assert.deepEqual(replayAdventure(record), session)
 })
 
-test('best results reward fewer rejected decisions then fewer hints, not elapsed speed', () => {
+test('best results reward fewer rejected decisions without penalizing hints or elapsed time', () => {
   const perfect = completedPod().record, hinted = completedPod(false, true).record, mistaken = completedPod(true).record
-  assert.equal(isBetterResult(perfect, hinted), true)
+  assert.equal(isBetterResult(perfect, hinted), false)
+  assert.equal(isBetterResult(hinted, perfect), false)
   assert.equal(isBetterResult(hinted, mistaken), true)
   assert.equal(isBetterResult(mistaken, hinted), false)
   assert.equal(isBetterResult({...perfect,elapsedMs:1} as AdventureRecord, perfect), false)

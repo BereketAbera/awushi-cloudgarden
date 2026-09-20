@@ -5,6 +5,7 @@ import { GRAPH_EDGES, TECHNOLOGIES, technologiesForStation, technologyById, type
 import { stationSnapshot } from '../simulation/engine'
 import { DEPLOYMENT_STAGES } from '../simulation/scenario'
 import type { EnvironmentId, SimulationCommand, SimulationState } from '../simulation/domain'
+import './technology-guidance.css'
 
 export function InfrastructureSnapshot({ state, stationId, environment }: { state: SimulationState; stationId: string; environment: EnvironmentId }) {
   const fields = stationSnapshot(state, stationId, environment)
@@ -13,9 +14,9 @@ export function InfrastructureSnapshot({ state, stationId, environment }: { stat
   return <section className="infrastructure-snapshot" aria-label="Current simulated state"><div className="snapshot-heading"><span className="status-dot" /><strong>SIMULATED STATE</strong><small>{scope}</small></div><dl data-testid="station-state">{fields.map(field => <div key={field.label} className={`tone-${field.tone ?? 'neutral'}`}><dt>{field.label}</dt><dd>{field.value}</dd></div>)}</dl></section>
 }
 
-function TechnologyDetails({ technology, onSelect, onLocate }: { technology: Technology; onSelect: (id: string) => void; onLocate: (stationId: string) => void }) {
+function TechnologyDetails({ technology, onSelect, onLocate, onFocus }: { technology: Technology; onSelect: (id: string) => void; onLocate: (stationId: string) => void; onFocus?: (stationId: string) => void }) {
   return <div className="technology-details" data-testid="technology-detail">
-    <div className="technology-title"><h3>{technology.name}</h3><button className="text-button" data-testid="locate-technology" onClick={() => onLocate(technology.stationId)}><MapPin size={14} />Find in world</button></div>
+    <div className="technology-title"><h3>{technology.name}</h3><div className="technology-world-actions">{onFocus && <button className="secondary-button" data-testid="focus-technology" onClick={() => onFocus(technology.stationId)}><MapPin size={14} />Focus station</button>}<button className="text-button" data-testid="locate-technology" onClick={() => onLocate(technology.stationId)}><MapPin size={14} />Find in world</button></div></div>
     <p className="technology-summary">{technology.summary}</p><p className="technology-role"><strong>Its role</strong>{technology.role}</p>
     <div className="technology-io"><div><h4>Receives</h4><ul>{technology.inputs.map(input => <li key={input}>{input}</li>)}</ul></div><div><h4>Produces</h4><ul>{technology.outputs.map(output => <li key={output}>{output}</li>)}</ul></div></div>
     <div className="related-technologies"><span>CONNECTED TO</span>{technology.relatedIds.map(id => { const related = technologyById(id); return related ? <button key={id} onClick={() => onSelect(id)}>{related.name}<ArrowRight size={11} /></button> : null })}</div>
@@ -41,13 +42,17 @@ export function StationTechnologyPanel({ stationId, state, environment, onEnviro
   </div>
 }
 
-type ArchitectureProps = { state: SimulationState; environment: EnvironmentId; onEnvironment: (value: EnvironmentId) => void; onLocate: (stationId: string) => void }
-export function ArchitectureExplorer({ state, environment, onEnvironment, onLocate }: ArchitectureProps) {
-  const [selectedId, setSelectedId] = useState('github')
+type ArchitectureProps = { state: SimulationState; environment: EnvironmentId; onEnvironment: (value: EnvironmentId) => void; onLocate: (stationId: string) => void; selectedId?: string; onSelectTechnology?: (id: string) => void; onFocusStation?: (stationId: string, relatedStationIds: string[]) => void; onFollowFlow?: (fromStationId: string, toStationId: string) => void }
+export function ArchitectureExplorer({ state, environment, onEnvironment, onLocate, selectedId: controlledId, onSelectTechnology, onFocusStation, onFollowFlow }: ArchitectureProps) {
+  const [localSelectedId, setLocalSelectedId] = useState('github')
+  const selectedId = controlledId ?? localSelectedId
+  const setSelectedId = (id: string) => { setLocalSelectedId(id); onSelectTechnology?.(id) }
   const [filter, setFilter] = useState('')
   const [flow, setFlow] = useState('selected')
   const selected = technologyById(selectedId) ?? TECHNOLOGIES[0]
   const selectedStation = getStation(selected.stationId)
+  const relatedStationIds = [...new Set(selected.relatedIds.map(id => technologyById(id)?.stationId).filter((id): id is string => Boolean(id) && id !== selected.stationId))]
+  const selectedEdges = GRAPH_EDGES.filter(edge => edge.from === selected.id || edge.to === selected.id)
   const facilities = useMemo(() => STATIONS.filter(station => technologiesForStation(station.id).length).map(station => {
     const district = getDistrict(station.districtId)!
     const siblings = STATIONS.filter(item => item.districtId === station.districtId)
@@ -77,11 +82,11 @@ export function ArchitectureExplorer({ state, environment, onEnvironment, onLoca
     <div className="architecture-graph-scroll" tabIndex={0} aria-label="Infrastructure relationships, scroll horizontally on smaller screens"><div className="architecture-graph" style={{ width: 1050, height: 358 }}>
       {DISTRICTS.map(district => <span key={district.id} className="architecture-column-label" style={{ left: (district.order - 1) * 174 + 12, color: district.color }}>{district.name}</span>)}
       <svg viewBox="0 0 1050 358" aria-hidden="true"><defs><marker id="architecture-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7" fill="#b6ded8" /></marker></defs>{visibleEdges.map(edge => <path key={edge.id} d={`M ${edge.from.x + 75} ${edge.from.y + 34} C ${edge.from.x + 75} ${edge.from.y - 16}, ${edge.to.x + 75} ${edge.to.y - 16}, ${edge.to.x + 75} ${edge.to.y + 34}`} fill="none" stroke="#b6ded8" strokeWidth="1.6" strokeOpacity=".65" markerEnd="url(#architecture-arrow)" />)}</svg>
-      {facilities.map(facility => { const count = technologiesForStation(facility.id).length; return <button key={facility.id} style={{ left: facility.x, top: facility.y, '--place-color': facility.color } as CSSProperties} className={`architecture-node ${selected.stationId === facility.id ? 'selected' : ''}`} data-testid={`architecture-station-${facility.id}`} aria-pressed={selected.stationId === facility.id} onClick={() => setSelectedId(technologiesForStation(facility.id)[0].id)}><span>{facility.name}</span><small>{count} {count === 1 ? 'technology' : 'technologies'}</small></button> })}
+      {facilities.map(facility => { const count = technologiesForStation(facility.id).length; return <button key={facility.id} style={{ left: facility.x, top: facility.y, '--place-color': facility.color } as CSSProperties} className={`architecture-node ${selected.stationId === facility.id ? 'selected' : relatedStationIds.includes(facility.id) ? 'related' : ''}`} data-testid={`architecture-station-${facility.id}`} aria-pressed={selected.stationId === facility.id} onClick={() => setSelectedId(technologiesForStation(facility.id)[0].id)}><span>{facility.name}</span><small>{count} {count === 1 ? 'technology' : 'technologies'}</small></button> })}
     </div></div>
     <details className="architecture-flow-details"><summary>{visibleEdges.length} facility connections · inspect the selected flow</summary><ul>{visibleEdges.map(edge => <li key={edge.id}><strong>{edge.from.name} → {edge.to.name}</strong><span>{edge.label}</span></li>)}</ul></details>
     <details className="architecture-flow-details" data-testid="architecture-lifecycle"><summary>Trace the deployment lifecycle · 22 stages</summary><ol>{DEPLOYMENT_STAGES.map(stage => <li key={stage.id} aria-current={state.stageId === stage.id ? 'step' : undefined}><strong>{stage.title}</strong><span>{stage.actor === 'human' ? 'Human approval' : 'Automated'} · {stage.description}</span></li>)}</ol></details>
-    <div className="architecture-inspector"><nav className="technology-directory" aria-label="Technology registry">{matching.map(technology => <button key={technology.id} onClick={() => setSelectedId(technology.id)} data-testid={`architecture-technology-${technology.id}`} aria-pressed={selected.id === technology.id} className={selected.id === technology.id ? 'selected' : ''}>{technology.name}<small>{getDistrict(getStation(technology.stationId)?.districtId ?? '')?.label}</small></button>)}{matching.length === 0 && <p>No technology matches that search.</p>}</nav><section className="architecture-selected"><div className="eyebrow">{selectedStation?.name}</div><TechnologyDetails technology={selected} onSelect={setSelectedId} onLocate={onLocate} /><InfrastructureSnapshot state={state} stationId={selected.stationId} environment={environment} /></section></div>
+    <div className="architecture-inspector"><nav className="technology-directory" aria-label="Technology registry">{matching.map(technology => <button key={technology.id} onClick={() => setSelectedId(technology.id)} data-testid={`architecture-technology-${technology.id}`} aria-pressed={selected.id === technology.id} className={selected.id === technology.id ? 'selected' : ''}>{technology.name}<small>{getDistrict(getStation(technology.stationId)?.districtId ?? '')?.label}</small></button>)}{matching.length === 0 && <p>No technology matches that search.</p>}</nav><section className="architecture-selected"><div className="eyebrow">{selectedStation?.name}</div><TechnologyDetails technology={selected} onSelect={setSelectedId} onLocate={onLocate} onFocus={onFocusStation ? stationId => onFocusStation(stationId, relatedStationIds) : undefined} /><section className="technology-flow-directions" aria-label="Selected technology flows" data-testid="technology-flows">{(["incoming", "outgoing"] as const).map(direction => { const edges = selectedEdges.filter(edge => direction === "incoming" ? edge.to === selected.id : edge.from === selected.id); return <div key={direction}><h4>{direction === "incoming" ? "Incoming flows" : "Outgoing flows"}</h4>{edges.length ? edges.map(edge => { const from = technologyById(edge.from)!, to = technologyById(edge.to)!, connected = direction === "incoming" ? from : to; return <article key={edge.id}><button className="text-button" onClick={() => setSelectedId(connected.id)} data-testid={`flow-select-${edge.id}`}><span>{from.name} → {to.name}</span><ArrowRight size={12} /></button><p>{edge.label}</p>{onFollowFlow && <button className="text-button" onClick={() => onFollowFlow(from.stationId, to.stationId)} data-testid={`flow-watch-${edge.id}`}>Follow in world<MapPin size={12} /></button>}</article>}) : <p>No {direction} relationship in this registry.</p>}</div>})}</section><InfrastructureSnapshot state={state} stationId={selected.stationId} environment={environment} /></section></div>
     <div className="architecture-legend"><span><i />Available: simulated delivery, state inspection, backup & restore.</span><span>Six adventures connect these responsibilities. No live accounts are connected.</span></div>
   </div>
 }

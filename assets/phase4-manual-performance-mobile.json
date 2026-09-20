@@ -1,0 +1,214 @@
+{
+  "date": "2026-11-06",
+  "project": "mobile",
+  "browser": "Installed Chrome, headless WebGL",
+  "mode": "third-person",
+  "quality": "balanced",
+  "scenario": "Active promotion adventure, development delivery: 10 seconds before approval and 18 seconds after approval",
+  "viewport": {
+    "width": 390,
+    "height": 664
+  },
+  "samples": [
+    {
+      "fps": 46,
+      "drawCalls": 196,
+      "triangles": 521164,
+      "geometries": 121,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 187,
+      "triangles": 520168,
+      "geometries": 121,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 187,
+      "triangles": 520168,
+      "geometries": 121,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 192,
+      "triangles": 452124,
+      "geometries": 123,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 190,
+      "triangles": 520564,
+      "geometries": 123,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 187,
+      "triangles": 520168,
+      "geometries": 123,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 192,
+      "triangles": 454316,
+      "geometries": 130,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 192,
+      "triangles": 455672,
+      "geometries": 133,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 202,
+      "triangles": 457544,
+      "geometries": 141,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 192,
+      "triangles": 455672,
+      "geometries": 141,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 180,
+      "triangles": 451008,
+      "geometries": 139,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 180,
+      "triangles": 451008,
+      "geometries": 139,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 180,
+      "triangles": 451008,
+      "geometries": 139,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 180,
+      "triangles": 451008,
+      "geometries": 134,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 180,
+      "triangles": 451008,
+      "geometries": 134,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 180,
+      "triangles": 451008,
+      "geometries": 134,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 181,
+      "triangles": 451392,
+      "geometries": 131,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 181,
+      "triangles": 451392,
+      "geometries": 131,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 180,
+      "triangles": 451008,
+      "geometries": 131,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 180,
+      "triangles": 451008,
+      "geometries": 131,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 180,
+      "triangles": 451008,
+      "geometries": 131,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 180,
+      "triangles": 451008,
+      "geometries": 131,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 180,
+      "triangles": 451008,
+      "geometries": 127,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 180,
+      "triangles": 451008,
+      "geometries": 127,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 181,
+      "triangles": 451392,
+      "geometries": 125,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 182,
+      "triangles": 451776,
+      "geometries": 127,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 182,
+      "triangles": 451776,
+      "geometries": 127,
+      "textures": 17
+    },
+    {
+      "fps": 60,
+      "drawCalls": 181,
+      "triangles": 451392,
+      "geometries": 127,
+      "textures": 17
+    }
+  ],
+  "meanFps": 59.5,
+  "minimumFps": 46,
+  "maximumFps": 60,
+  "note": "Phone profile is desktop browser emulation; no physical-mobile or universal frame-rate claim."
+}

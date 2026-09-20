@@ -1,0 +1,3018 @@
+{
+  "date": "2026-11-06",
+  "timezone": "Africa/Addis_Ababa",
+  "node": "v24.13.0",
+  "host": "macOS 26.6.2 arm64",
+  "baseCommit": "0829772",
+  "auditCommit": "e954c0f",
+  "result": "passed after targeted fixes and reruns",
+  "gates": {
+    "eslint": "passed",
+    "typescript": "passed",
+    "productionBuild": "passed",
+    "diffCheck": "passed"
+  },
+  "suites": {
+    "pipeline": 20,
+    "runtime": 19,
+    "unit": 131,
+    "browserPassed": 153,
+    "browserSkipped": 7,
+    "browserFailed": 0,
+    "totalPassed": 323
+  },
+  "browserProfiles": {
+    "desktop": {
+      "passed": 47,
+      "skipped": 2
+    },
+    "mobile": {
+      "skipped": 5,
+      "passed": 44
+    },
+    "firefox": {
+      "passed": 31
+    },
+    "webkit": {
+      "passed": 31
+    }
+  },
+  "browserVersions": {
+    "Chrome": "156.0.8078.80",
+    "Firefox": "159.0",
+    "WebKit": "27.2"
+  },
+  "browserRuns": [
+    {
+      "purpose": "Full regression matrix: mobile portfolio overlap and a Firefox trace-cleanup collision found.",
+      "stats": {
+        "startTime": "2026-11-06T09:24:37.371Z",
+        "duration": 1321981.733,
+        "expected": 143,
+        "skipped": 7,
+        "unexpected": 2,
+        "flaky": 0
+      },
+      "failures": [
+        {
+          "file": "adventures.spec.ts",
+          "name": "reload resumes a saved reconciliation, and replay controls keep the completed record immutable",
+          "project": "firefox",
+          "status": "failed",
+          "outcome": "unexpected",
+          "durationMs": 13839,
+          "skipReasons": []
+        },
+        {
+          "file": "compatibility.spec.ts",
+          "name": "portfolio, shared architecture lenses and immersive controls work across browsers",
+          "project": "mobile",
+          "status": "timedOut",
+          "outcome": "unexpected",
+          "durationMs": 65047,
+          "skipReasons": []
+        }
+      ]
+    },
+    {
+      "purpose": "Camera/framing, operational attention, immutable review and visual/performance checks after refinement.",
+      "stats": {
+        "startTime": "2026-11-06T09:51:12.596Z",
+        "duration": 184601.134,
+        "expected": 40,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "failures": []
+    },
+    {
+      "purpose": "Final onboarding and operational checks; repeated-key regression exposed canvas keyboard-focus handoff in Chrome/Firefox.",
+      "stats": {
+        "startTime": "2026-11-06T09:56:55.337Z",
+        "duration": 216914.801,
+        "expected": 33,
+        "skipped": 0,
+        "unexpected": 3,
+        "flaky": 0
+      },
+      "failures": [
+        {
+          "file": "cinematic.spec.ts",
+          "name": "held movement keys finish the paused camera return without restarting its tween",
+          "project": "desktop",
+          "status": "failed",
+          "outcome": "unexpected",
+          "durationMs": 16979,
+          "skipReasons": []
+        },
+        {
+          "file": "cinematic.spec.ts",
+          "name": "held movement keys finish the paused camera return without restarting its tween",
+          "project": "mobile",
+          "status": "failed",
+          "outcome": "unexpected",
+          "durationMs": 16722,
+          "skipReasons": []
+        },
+        {
+          "file": "cinematic.spec.ts",
+          "name": "held movement keys finish the paused camera return without restarting its tween",
+          "project": "firefox",
+          "status": "failed",
+          "outcome": "unexpected",
+          "durationMs": 17520,
+          "skipReasons": []
+        }
+      ]
+    },
+    {
+      "purpose": "Final canvas focus, repeated-key return, isolated playback keyboard, compatibility and welcome verification.",
+      "stats": {
+        "startTime": "2026-11-06T10:01:37.341Z",
+        "duration": 68939.157,
+        "expected": 24,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "failures": []
+    },
+    {
+      "purpose": "Final phone welcome spacing, guidance, compatibility and touch verification.",
+      "stats": {
+        "startTime": "2026-11-06T10:03:33.359Z",
+        "duration": 18654.130999999998,
+        "expected": 9,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "failures": []
+    }
+  ],
+  "browserTests": [
+    {
+      "file": "adventure.spec.ts",
+      "name": "all six introductions are reachable through real keyboard movement and persist",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 76736,
+      "skipReasons": []
+    },
+    {
+      "file": "adventure.spec.ts",
+      "name": "measures rendered frame rate and captures the full overview",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 17842,
+      "skipReasons": []
+    },
+    {
+      "file": "adventure.spec.ts",
+      "name": "optional isometric camera tracks actual keyboard movement with stable orientation",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 4623,
+      "skipReasons": []
+    },
+    {
+      "file": "adventure.spec.ts",
+      "name": "studio blends every expression while locomotion remains selected",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1566,
+      "skipReasons": []
+    },
+    {
+      "file": "adventure.spec.ts",
+      "name": "welcome, architecture map, camera modes, settings, focus and recovery",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2262,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Fix Configuration Drift: waiting without self-heal fails, manual and automatic modes converge",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 12995,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Investigate an Incident: correlated telemetry rejects unrelated diagnoses and image rollback",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 5853,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Promote to Production: explicit review promotes the exact development digest independently",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 50946,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Recover a Failed Pod: four causes distinguish controller recovery from configuration repair",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 11781,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Restore from Backup: snapshot consistency and object dependencies guard safe cutover",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1455,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Ship a New Release: failed checks block approval until inspected, repaired and verified",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 32152,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "reload resumes a saved reconciliation, and replay controls keep the completed record immutable",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 5798,
+      "skipReasons": []
+    },
+    {
+      "file": "camera.spec.ts",
+      "name": "immersive camera and steering cross a real bridge and interact at the workshop",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 15210,
+      "skipReasons": []
+    },
+    {
+      "file": "camera.spec.ts",
+      "name": "third-person framing, turning, first-person look, projection switching and persistence",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 6928,
+      "skipReasons": []
+    },
+    {
+      "file": "cinematic-performance.spec.ts",
+      "name": "measures the actual renderer through a cinematic release and explicit approval",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 38918,
+      "skipReasons": []
+    },
+    {
+      "file": "cinematic.spec.ts",
+      "name": "Watch Flow frames a station, pauses, allows takeover, and returns to the previous camera",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 5370,
+      "skipReasons": []
+    },
+    {
+      "file": "cinematic.spec.ts",
+      "name": "automatic camera opt-out leaves playback usable and Guide Me remains an explicit choice",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2887,
+      "skipReasons": []
+    },
+    {
+      "file": "cinematic.spec.ts",
+      "name": "held movement keys finish the paused camera return without restarting its tween",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 3576,
+      "skipReasons": []
+    },
+    {
+      "file": "cinematic.spec.ts",
+      "name": "step playback holds each stage and historical review cannot authorize a release",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 16738,
+      "skipReasons": []
+    },
+    {
+      "file": "compatibility.spec.ts",
+      "name": "original local audio is opt-in, respects mute and releases finished voices",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1190,
+      "skipReasons": []
+    },
+    {
+      "file": "compatibility.spec.ts",
+      "name": "portfolio, shared architecture lenses and immersive controls work across browsers",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 3212,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance-regression.spec.ts",
+      "name": "a guidance storage failure can be dismissed and clears after saving succeeds",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 612,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance-regression.spec.ts",
+      "name": "cancelled missions remove inactive guidance instead of offering a no-op",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2479,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance-regression.spec.ts",
+      "name": "completed missions remove inactive guidance instead of offering a no-op",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2579,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance-regression.spec.ts",
+      "name": "graph focus keeps its own station context during and after a mission",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1940,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance.spec.ts",
+      "name": "a first-time visitor can start an adventure without dismissing the introduction",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 988,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance.spec.ts",
+      "name": "a short optional introduction teaches controls and can be replayed from help",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1498,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance.spec.ts",
+      "name": "architecture selection survives station focus and follows registry relationships",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 3161,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance.spec.ts",
+      "name": "guidance points to evidence without acting, records real progress, and preserves decisions across modes",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1802,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance.spec.ts",
+      "name": "repeated ineffective actions offer dismissible help without revealing the solution",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1290,
+      "skipReasons": []
+    },
+    {
+      "file": "operational-flow.spec.ts",
+      "name": "incident and recorded-operation attention follow request health without revealing the diagnosis",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 6078,
+      "skipReasons": []
+    },
+    {
+      "file": "performance.spec.ts",
+      "name": "measures active third-person adventure delivery with the real renderer",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 29786,
+      "skipReasons": []
+    },
+    {
+      "file": "performance.spec.ts",
+      "name": "renderer resources remain bounded when switching repeatedly between studio and world",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 7234,
+      "skipReasons": []
+    },
+    {
+      "file": "phase4-visual.spec.ts",
+      "name": "incident investigation stays readable from station focus through evidence and recovery",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 7481,
+      "skipReasons": []
+    },
+    {
+      "file": "replay-controls.spec.ts",
+      "name": "Space toggles playback details without being consumed by world keyboard shortcuts",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 457,
+      "skipReasons": []
+    },
+    {
+      "file": "replay-controls.spec.ts",
+      "name": "Watch Flow controls a recorded journey without resuming a different unfinished adventure",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2289,
+      "skipReasons": []
+    },
+    {
+      "file": "replay-controls.spec.ts",
+      "name": "architecture focus leaves historical stage review and inspects current infrastructure",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1776,
+      "skipReasons": []
+    },
+    {
+      "file": "resilience.spec.ts",
+      "name": "WebGL loss pauses historical stage review",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 4367,
+      "skipReasons": []
+    },
+    {
+      "file": "resilience.spec.ts",
+      "name": "WebGL loss pauses live laboratory playback",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 4259,
+      "skipReasons": []
+    },
+    {
+      "file": "resilience.spec.ts",
+      "name": "a missing local model can be retried without losing adventure state",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2511,
+      "skipReasons": []
+    },
+    {
+      "file": "resilience.spec.ts",
+      "name": "corrupt saves remain recoverable and are never silently overwritten",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1247,
+      "skipReasons": []
+    },
+    {
+      "file": "resilience.spec.ts",
+      "name": "real WebGL context loss pauses the adventure and retains the notebook",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1831,
+      "skipReasons": []
+    },
+    {
+      "file": "simulation.spec.ts",
+      "name": "a failed check can be repaired, and cancellation keeps a clear terminal state",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 12202,
+      "skipReasons": []
+    },
+    {
+      "file": "simulation.spec.ts",
+      "name": "architecture supports technology inspection and location guidance without prior discovery",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1412,
+      "skipReasons": []
+    },
+    {
+      "file": "simulation.spec.ts",
+      "name": "complete deployment waits for a person, reconciles the chosen environment and exposes telemetry",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 31314,
+      "skipReasons": []
+    },
+    {
+      "file": "simulation.spec.ts",
+      "name": "deployment controls and close remain usable after scrolling on each viewport",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1170,
+      "skipReasons": []
+    },
+    {
+      "file": "simulation.spec.ts",
+      "name": "keyboard users can open event history and receive pipeline status inside the modal",
+      "project": "desktop",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1119,
+      "skipReasons": []
+    },
+    {
+      "file": "touch.spec.ts",
+      "name": "350px studio controls and discovery map stay inside the viewport",
+      "project": "desktop",
+      "status": "skipped",
+      "outcome": "skipped",
+      "durationMs": 167,
+      "skipReasons": [
+        "Small-width regression runs once."
+      ]
+    },
+    {
+      "file": "touch.spec.ts",
+      "name": "mobile movement releases cleanly, panels pause input, and recovery is one tap away",
+      "project": "desktop",
+      "status": "skipped",
+      "outcome": "skipped",
+      "durationMs": 177,
+      "skipReasons": [
+        "Pointer pad is shown for touch and narrow screens."
+      ]
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Fix Configuration Drift: waiting without self-heal fails, manual and automatic modes converge",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 13747,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Investigate an Incident: correlated telemetry rejects unrelated diagnoses and image rollback",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 17478,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Promote to Production: explicit review promotes the exact development digest independently",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 59318,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Recover a Failed Pod: four causes distinguish controller recovery from configuration repair",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 19486,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Restore from Backup: snapshot consistency and object dependencies guard safe cutover",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 16455,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Ship a New Release: failed checks block approval until inspected, repaired and verified",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 34091,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "reload resumes a saved reconciliation, and replay controls keep the completed record immutable",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 5859,
+      "skipReasons": []
+    },
+    {
+      "file": "cinematic.spec.ts",
+      "name": "Watch Flow frames a station, pauses, allows takeover, and returns to the previous camera",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 6247,
+      "skipReasons": []
+    },
+    {
+      "file": "cinematic.spec.ts",
+      "name": "automatic camera opt-out leaves playback usable and Guide Me remains an explicit choice",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 5608,
+      "skipReasons": []
+    },
+    {
+      "file": "cinematic.spec.ts",
+      "name": "held movement keys finish the paused camera return without restarting its tween",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 3785,
+      "skipReasons": []
+    },
+    {
+      "file": "cinematic.spec.ts",
+      "name": "step playback holds each stage and historical review cannot authorize a release",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 19989,
+      "skipReasons": []
+    },
+    {
+      "file": "compatibility.spec.ts",
+      "name": "original local audio is opt-in, respects mute and releases finished voices",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1715,
+      "skipReasons": []
+    },
+    {
+      "file": "compatibility.spec.ts",
+      "name": "portfolio, shared architecture lenses and immersive controls work across browsers",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 4285,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance-regression.spec.ts",
+      "name": "a guidance storage failure can be dismissed and clears after saving succeeds",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1260,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance-regression.spec.ts",
+      "name": "cancelled missions remove inactive guidance instead of offering a no-op",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2860,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance-regression.spec.ts",
+      "name": "completed missions remove inactive guidance instead of offering a no-op",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 4959,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance-regression.spec.ts",
+      "name": "graph focus keeps its own station context during and after a mission",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 6692,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance.spec.ts",
+      "name": "a first-time visitor can start an adventure without dismissing the introduction",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1160,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance.spec.ts",
+      "name": "a short optional introduction teaches controls and can be replayed from help",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1764,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance.spec.ts",
+      "name": "architecture selection survives station focus and follows registry relationships",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 3353,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance.spec.ts",
+      "name": "guidance points to evidence without acting, records real progress, and preserves decisions across modes",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2456,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance.spec.ts",
+      "name": "repeated ineffective actions offer dismissible help without revealing the solution",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1815,
+      "skipReasons": []
+    },
+    {
+      "file": "operational-flow.spec.ts",
+      "name": "incident and recorded-operation attention follow request health without revealing the diagnosis",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 7158,
+      "skipReasons": []
+    },
+    {
+      "file": "replay-controls.spec.ts",
+      "name": "Space toggles playback details without being consumed by world keyboard shortcuts",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 888,
+      "skipReasons": []
+    },
+    {
+      "file": "replay-controls.spec.ts",
+      "name": "Watch Flow controls a recorded journey without resuming a different unfinished adventure",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 3035,
+      "skipReasons": []
+    },
+    {
+      "file": "replay-controls.spec.ts",
+      "name": "architecture focus leaves historical stage review and inspects current infrastructure",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 3011,
+      "skipReasons": []
+    },
+    {
+      "file": "resilience.spec.ts",
+      "name": "WebGL loss pauses historical stage review",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 5668,
+      "skipReasons": []
+    },
+    {
+      "file": "resilience.spec.ts",
+      "name": "WebGL loss pauses live laboratory playback",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 5513,
+      "skipReasons": []
+    },
+    {
+      "file": "resilience.spec.ts",
+      "name": "a missing local model can be retried without losing adventure state",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2475,
+      "skipReasons": []
+    },
+    {
+      "file": "resilience.spec.ts",
+      "name": "corrupt saves remain recoverable and are never silently overwritten",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2187,
+      "skipReasons": []
+    },
+    {
+      "file": "resilience.spec.ts",
+      "name": "real WebGL context loss pauses the adventure and retains the notebook",
+      "project": "firefox",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2524,
+      "skipReasons": []
+    },
+    {
+      "file": "adventure.spec.ts",
+      "name": "all six introductions are reachable through real keyboard movement and persist",
+      "project": "mobile",
+      "status": "skipped",
+      "outcome": "skipped",
+      "durationMs": 771,
+      "skipReasons": [
+        "Long route traversal runs on desktop; mobile controls and layout have separate coverage."
+      ]
+    },
+    {
+      "file": "adventure.spec.ts",
+      "name": "measures rendered frame rate and captures the full overview",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 18143,
+      "skipReasons": []
+    },
+    {
+      "file": "adventure.spec.ts",
+      "name": "optional isometric camera tracks actual keyboard movement with stable orientation",
+      "project": "mobile",
+      "status": "skipped",
+      "outcome": "skipped",
+      "durationMs": 770,
+      "skipReasons": [
+        "Camera movement is shared across input types."
+      ]
+    },
+    {
+      "file": "adventure.spec.ts",
+      "name": "studio blends every expression while locomotion remains selected",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1881,
+      "skipReasons": []
+    },
+    {
+      "file": "adventure.spec.ts",
+      "name": "welcome, architecture map, camera modes, settings, focus and recovery",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2540,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Fix Configuration Drift: waiting without self-heal fails, manual and automatic modes converge",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 12732,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Investigate an Incident: correlated telemetry rejects unrelated diagnoses and image rollback",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 7046,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Promote to Production: explicit review promotes the exact development digest independently",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 51730,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Recover a Failed Pod: four causes distinguish controller recovery from configuration repair",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 13301,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Restore from Backup: snapshot consistency and object dependencies guard safe cutover",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1968,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Ship a New Release: failed checks block approval until inspected, repaired and verified",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 31933,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "reload resumes a saved reconciliation, and replay controls keep the completed record immutable",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 5105,
+      "skipReasons": []
+    },
+    {
+      "file": "camera.spec.ts",
+      "name": "immersive camera and steering cross a real bridge and interact at the workshop",
+      "project": "mobile",
+      "status": "skipped",
+      "outcome": "skipped",
+      "durationMs": 272,
+      "skipReasons": [
+        "Keyboard route is shared; mobile framing/look is covered above."
+      ]
+    },
+    {
+      "file": "camera.spec.ts",
+      "name": "third-person framing, turning, first-person look, projection switching and persistence",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 8206,
+      "skipReasons": []
+    },
+    {
+      "file": "cinematic-performance.spec.ts",
+      "name": "measures the actual renderer through a cinematic release and explicit approval",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 39421,
+      "skipReasons": []
+    },
+    {
+      "file": "cinematic.spec.ts",
+      "name": "Watch Flow frames a station, pauses, allows takeover, and returns to the previous camera",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 5238,
+      "skipReasons": []
+    },
+    {
+      "file": "cinematic.spec.ts",
+      "name": "automatic camera opt-out leaves playback usable and Guide Me remains an explicit choice",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 3420,
+      "skipReasons": []
+    },
+    {
+      "file": "cinematic.spec.ts",
+      "name": "held movement keys finish the paused camera return without restarting its tween",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 3591,
+      "skipReasons": []
+    },
+    {
+      "file": "cinematic.spec.ts",
+      "name": "step playback holds each stage and historical review cannot authorize a release",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 17500,
+      "skipReasons": []
+    },
+    {
+      "file": "compatibility.spec.ts",
+      "name": "original local audio is opt-in, respects mute and releases finished voices",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1246,
+      "skipReasons": []
+    },
+    {
+      "file": "compatibility.spec.ts",
+      "name": "portfolio, shared architecture lenses and immersive controls work across browsers",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 3384,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance-regression.spec.ts",
+      "name": "a guidance storage failure can be dismissed and clears after saving succeeds",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1192,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance-regression.spec.ts",
+      "name": "cancelled missions remove inactive guidance instead of offering a no-op",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2782,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance-regression.spec.ts",
+      "name": "completed missions remove inactive guidance instead of offering a no-op",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2755,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance-regression.spec.ts",
+      "name": "graph focus keeps its own station context during and after a mission",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2625,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance.spec.ts",
+      "name": "a first-time visitor can start an adventure without dismissing the introduction",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 925,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance.spec.ts",
+      "name": "a short optional introduction teaches controls and can be replayed from help",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1366,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance.spec.ts",
+      "name": "architecture selection survives station focus and follows registry relationships",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 3225,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance.spec.ts",
+      "name": "guidance points to evidence without acting, records real progress, and preserves decisions across modes",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1664,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance.spec.ts",
+      "name": "repeated ineffective actions offer dismissible help without revealing the solution",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1108,
+      "skipReasons": []
+    },
+    {
+      "file": "operational-flow.spec.ts",
+      "name": "incident and recorded-operation attention follow request health without revealing the diagnosis",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 6064,
+      "skipReasons": []
+    },
+    {
+      "file": "performance.spec.ts",
+      "name": "measures active third-person adventure delivery with the real renderer",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 30126,
+      "skipReasons": []
+    },
+    {
+      "file": "performance.spec.ts",
+      "name": "renderer resources remain bounded when switching repeatedly between studio and world",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 7148,
+      "skipReasons": []
+    },
+    {
+      "file": "phase4-visual.spec.ts",
+      "name": "incident investigation stays readable from station focus through evidence and recovery",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 7517,
+      "skipReasons": []
+    },
+    {
+      "file": "replay-controls.spec.ts",
+      "name": "Space toggles playback details without being consumed by world keyboard shortcuts",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 447,
+      "skipReasons": []
+    },
+    {
+      "file": "replay-controls.spec.ts",
+      "name": "Watch Flow controls a recorded journey without resuming a different unfinished adventure",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2306,
+      "skipReasons": []
+    },
+    {
+      "file": "replay-controls.spec.ts",
+      "name": "architecture focus leaves historical stage review and inspects current infrastructure",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2055,
+      "skipReasons": []
+    },
+    {
+      "file": "resilience.spec.ts",
+      "name": "WebGL loss pauses historical stage review",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 4566,
+      "skipReasons": []
+    },
+    {
+      "file": "resilience.spec.ts",
+      "name": "WebGL loss pauses live laboratory playback",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 4276,
+      "skipReasons": []
+    },
+    {
+      "file": "resilience.spec.ts",
+      "name": "a missing local model can be retried without losing adventure state",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2459,
+      "skipReasons": []
+    },
+    {
+      "file": "resilience.spec.ts",
+      "name": "corrupt saves remain recoverable and are never silently overwritten",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1571,
+      "skipReasons": []
+    },
+    {
+      "file": "resilience.spec.ts",
+      "name": "real WebGL context loss pauses the adventure and retains the notebook",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2288,
+      "skipReasons": []
+    },
+    {
+      "file": "simulation.spec.ts",
+      "name": "a failed check can be repaired, and cancellation keeps a clear terminal state",
+      "project": "mobile",
+      "status": "skipped",
+      "outcome": "skipped",
+      "durationMs": 249,
+      "skipReasons": [
+        "Domain failure flows run once."
+      ]
+    },
+    {
+      "file": "simulation.spec.ts",
+      "name": "architecture supports technology inspection and location guidance without prior discovery",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2062,
+      "skipReasons": []
+    },
+    {
+      "file": "simulation.spec.ts",
+      "name": "complete deployment waits for a person, reconciles the chosen environment and exposes telemetry",
+      "project": "mobile",
+      "status": "skipped",
+      "outcome": "skipped",
+      "durationMs": 250,
+      "skipReasons": [
+        "Full timed journey runs once; mobile uses the same domain reducer."
+      ]
+    },
+    {
+      "file": "simulation.spec.ts",
+      "name": "deployment controls and close remain usable after scrolling on each viewport",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1830,
+      "skipReasons": []
+    },
+    {
+      "file": "simulation.spec.ts",
+      "name": "keyboard users can open event history and receive pipeline status inside the modal",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1414,
+      "skipReasons": []
+    },
+    {
+      "file": "touch.spec.ts",
+      "name": "350px studio controls and discovery map stay inside the viewport",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1242,
+      "skipReasons": []
+    },
+    {
+      "file": "touch.spec.ts",
+      "name": "mobile movement releases cleanly, panels pause input, and recovery is one tap away",
+      "project": "mobile",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 3463,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Fix Configuration Drift: waiting without self-heal fails, manual and automatic modes converge",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 14365,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Investigate an Incident: correlated telemetry rejects unrelated diagnoses and image rollback",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 6587,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Promote to Production: explicit review promotes the exact development digest independently",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 51325,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Recover a Failed Pod: four causes distinguish controller recovery from configuration repair",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 13319,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Restore from Backup: snapshot consistency and object dependencies guard safe cutover",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2016,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "Ship a New Release: failed checks block approval until inspected, repaired and verified",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 32604,
+      "skipReasons": []
+    },
+    {
+      "file": "adventures.spec.ts",
+      "name": "reload resumes a saved reconciliation, and replay controls keep the completed record immutable",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 6024,
+      "skipReasons": []
+    },
+    {
+      "file": "cinematic.spec.ts",
+      "name": "Watch Flow frames a station, pauses, allows takeover, and returns to the previous camera",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 5914,
+      "skipReasons": []
+    },
+    {
+      "file": "cinematic.spec.ts",
+      "name": "automatic camera opt-out leaves playback usable and Guide Me remains an explicit choice",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 3120,
+      "skipReasons": []
+    },
+    {
+      "file": "cinematic.spec.ts",
+      "name": "held movement keys finish the paused camera return without restarting its tween",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 4190,
+      "skipReasons": []
+    },
+    {
+      "file": "cinematic.spec.ts",
+      "name": "step playback holds each stage and historical review cannot authorize a release",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 17347,
+      "skipReasons": []
+    },
+    {
+      "file": "compatibility.spec.ts",
+      "name": "original local audio is opt-in, respects mute and releases finished voices",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1609,
+      "skipReasons": []
+    },
+    {
+      "file": "compatibility.spec.ts",
+      "name": "portfolio, shared architecture lenses and immersive controls work across browsers",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 4338,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance-regression.spec.ts",
+      "name": "a guidance storage failure can be dismissed and clears after saving succeeds",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 945,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance-regression.spec.ts",
+      "name": "cancelled missions remove inactive guidance instead of offering a no-op",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2743,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance-regression.spec.ts",
+      "name": "completed missions remove inactive guidance instead of offering a no-op",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2899,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance-regression.spec.ts",
+      "name": "graph focus keeps its own station context during and after a mission",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2317,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance.spec.ts",
+      "name": "a first-time visitor can start an adventure without dismissing the introduction",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1114,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance.spec.ts",
+      "name": "a short optional introduction teaches controls and can be replayed from help",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1660,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance.spec.ts",
+      "name": "architecture selection survives station focus and follows registry relationships",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 3222,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance.spec.ts",
+      "name": "guidance points to evidence without acting, records real progress, and preserves decisions across modes",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2408,
+      "skipReasons": []
+    },
+    {
+      "file": "guidance.spec.ts",
+      "name": "repeated ineffective actions offer dismissible help without revealing the solution",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1815,
+      "skipReasons": []
+    },
+    {
+      "file": "operational-flow.spec.ts",
+      "name": "incident and recorded-operation attention follow request health without revealing the diagnosis",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 7099,
+      "skipReasons": []
+    },
+    {
+      "file": "replay-controls.spec.ts",
+      "name": "Space toggles playback details without being consumed by world keyboard shortcuts",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 676,
+      "skipReasons": []
+    },
+    {
+      "file": "replay-controls.spec.ts",
+      "name": "Watch Flow controls a recorded journey without resuming a different unfinished adventure",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2953,
+      "skipReasons": []
+    },
+    {
+      "file": "replay-controls.spec.ts",
+      "name": "architecture focus leaves historical stage review and inspects current infrastructure",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2778,
+      "skipReasons": []
+    },
+    {
+      "file": "resilience.spec.ts",
+      "name": "WebGL loss pauses historical stage review",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 4634,
+      "skipReasons": []
+    },
+    {
+      "file": "resilience.spec.ts",
+      "name": "WebGL loss pauses live laboratory playback",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 5633,
+      "skipReasons": []
+    },
+    {
+      "file": "resilience.spec.ts",
+      "name": "a missing local model can be retried without losing adventure state",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2703,
+      "skipReasons": []
+    },
+    {
+      "file": "resilience.spec.ts",
+      "name": "corrupt saves remain recoverable and are never silently overwritten",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 1353,
+      "skipReasons": []
+    },
+    {
+      "file": "resilience.spec.ts",
+      "name": "real WebGL context loss pauses the adventure and retains the notebook",
+      "project": "webkit",
+      "status": "passed",
+      "outcome": "expected",
+      "durationMs": 2178,
+      "skipReasons": []
+    }
+  ],
+  "assets": {
+    "exports": 14,
+    "errors": 0,
+    "warnings": 0,
+    "geometryChanges": false
+  },
+  "build": {
+    "files": [
+      {
+        "path": "dist/assets/Scene-Bw_u4cCF.js",
+        "bytes": 1082710,
+        "sha256": "f55be34993491456ef0571e6633cea38f7f0b4f5305d8a69b238f2fb47ef3120"
+      },
+      {
+        "path": "dist/assets/index-C6f-ENBC.css",
+        "bytes": 97198,
+        "sha256": "d28ea383f879c6f0c21cf47b66a7fd29b920f57d0458d8caf91cd62755b0255d"
+      },
+      {
+        "path": "dist/assets/index-CcZnBck7.js",
+        "bytes": 510682,
+        "sha256": "325f9867b2d653f5c2fadcf97bba70bb9fe77fa4655451c9740d1f02c5d20205"
+      }
+    ],
+    "warning": "UI and Three.js scene bundles exceed the 500 kB advisory threshold"
+  },
+  "performance": {
+    "desktop": {
+      "date": "2026-11-06",
+      "profile": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "quality": "balanced",
+      "playback": "Watch Flow automatic,2\u00d7,explicit human approval",
+      "samples": [
+        {
+          "stage": "push",
+          "fps": 0,
+          "drawCalls": 193,
+          "triangles": 504176,
+          "geometries": 127,
+          "textures": 17
+        },
+        {
+          "stage": "ci-start",
+          "fps": 49,
+          "drawCalls": 173,
+          "triangles": 482628,
+          "geometries": 127,
+          "textures": 17
+        },
+        {
+          "stage": "ci-start",
+          "fps": 49,
+          "drawCalls": 157,
+          "triangles": 479732,
+          "geometries": 127,
+          "textures": 17
+        },
+        {
+          "stage": "ci-start",
+          "fps": 60,
+          "drawCalls": 157,
+          "triangles": 479732,
+          "geometries": 127,
+          "textures": 17
+        },
+        {
+          "stage": "ci-start",
+          "fps": 60,
+          "drawCalls": 157,
+          "triangles": 479732,
+          "geometries": 127,
+          "textures": 17
+        },
+        {
+          "stage": "quality",
+          "fps": 60,
+          "drawCalls": 150,
+          "triangles": 479312,
+          "geometries": 127,
+          "textures": 17
+        },
+        {
+          "stage": "quality",
+          "fps": 60,
+          "drawCalls": 148,
+          "triangles": 478736,
+          "geometries": 127,
+          "textures": 17
+        },
+        {
+          "stage": "quality",
+          "fps": 60,
+          "drawCalls": 148,
+          "triangles": 478736,
+          "geometries": 127,
+          "textures": 17
+        },
+        {
+          "stage": "security",
+          "fps": 60,
+          "drawCalls": 151,
+          "triangles": 410680,
+          "geometries": 128,
+          "textures": 17
+        },
+        {
+          "stage": "security",
+          "fps": 60,
+          "drawCalls": 149,
+          "triangles": 346372,
+          "geometries": 130,
+          "textures": 17
+        },
+        {
+          "stage": "security",
+          "fps": 60,
+          "drawCalls": 135,
+          "triangles": 367840,
+          "geometries": 135,
+          "textures": 17
+        },
+        {
+          "stage": "security",
+          "fps": 60,
+          "drawCalls": 135,
+          "triangles": 367840,
+          "geometries": 135,
+          "textures": 17
+        },
+        {
+          "stage": "build",
+          "fps": 60,
+          "drawCalls": 131,
+          "triangles": 363768,
+          "geometries": 132,
+          "textures": 17
+        },
+        {
+          "stage": "build",
+          "fps": 60,
+          "drawCalls": 155,
+          "triangles": 497948,
+          "geometries": 134,
+          "textures": 17
+        },
+        {
+          "stage": "build",
+          "fps": 60,
+          "drawCalls": 148,
+          "triangles": 478736,
+          "geometries": 134,
+          "textures": 17
+        },
+        {
+          "stage": "publish",
+          "fps": 60,
+          "drawCalls": 148,
+          "triangles": 478736,
+          "geometries": 134,
+          "textures": 17
+        },
+        {
+          "stage": "publish",
+          "fps": 60,
+          "drawCalls": 141,
+          "triangles": 384220,
+          "geometries": 144,
+          "textures": 17
+        },
+        {
+          "stage": "publish",
+          "fps": 60,
+          "drawCalls": 135,
+          "triangles": 376496,
+          "geometries": 144,
+          "textures": 17
+        },
+        {
+          "stage": "publish",
+          "fps": 60,
+          "drawCalls": 143,
+          "triangles": 379400,
+          "geometries": 144,
+          "textures": 17
+        },
+        {
+          "stage": "pull-request",
+          "fps": 60,
+          "drawCalls": 133,
+          "triangles": 358112,
+          "geometries": 148,
+          "textures": 17
+        },
+        {
+          "stage": "pull-request",
+          "fps": 60,
+          "drawCalls": 143,
+          "triangles": 409328,
+          "geometries": 151,
+          "textures": 17
+        },
+        {
+          "stage": "pull-request",
+          "fps": 60,
+          "drawCalls": 143,
+          "triangles": 409328,
+          "geometries": 151,
+          "textures": 17
+        },
+        {
+          "stage": "approval",
+          "fps": 60,
+          "drawCalls": 145,
+          "triangles": 409904,
+          "geometries": 153,
+          "textures": 17
+        },
+        {
+          "stage": "promote",
+          "fps": 60,
+          "drawCalls": 152,
+          "triangles": 407848,
+          "geometries": 149,
+          "textures": 17
+        },
+        {
+          "stage": "promote",
+          "fps": 60,
+          "drawCalls": 151,
+          "triangles": 379532,
+          "geometries": 157,
+          "textures": 17
+        },
+        {
+          "stage": "promote",
+          "fps": 60,
+          "drawCalls": 167,
+          "triangles": 382124,
+          "geometries": 157,
+          "textures": 17
+        },
+        {
+          "stage": "configuration",
+          "fps": 60,
+          "drawCalls": 153,
+          "triangles": 374500,
+          "geometries": 164,
+          "textures": 17
+        },
+        {
+          "stage": "configuration",
+          "fps": 60,
+          "drawCalls": 153,
+          "triangles": 374500,
+          "geometries": 164,
+          "textures": 17
+        },
+        {
+          "stage": "configuration",
+          "fps": 60,
+          "drawCalls": 153,
+          "triangles": 374500,
+          "geometries": 164,
+          "textures": 17
+        },
+        {
+          "stage": "render-manifests",
+          "fps": 60,
+          "drawCalls": 151,
+          "triangles": 373924,
+          "geometries": 164,
+          "textures": 17
+        },
+        {
+          "stage": "render-manifests",
+          "fps": 60,
+          "drawCalls": 143,
+          "triangles": 373108,
+          "geometries": 163,
+          "textures": 17
+        },
+        {
+          "stage": "render-manifests",
+          "fps": 60,
+          "drawCalls": 143,
+          "triangles": 373108,
+          "geometries": 163,
+          "textures": 17
+        },
+        {
+          "stage": "render-manifests",
+          "fps": 60,
+          "drawCalls": 134,
+          "triangles": 372112,
+          "geometries": 163,
+          "textures": 17
+        },
+        {
+          "stage": "gitops-commit",
+          "fps": 60,
+          "drawCalls": 145,
+          "triangles": 384588,
+          "geometries": 163,
+          "textures": 17
+        },
+        {
+          "stage": "gitops-commit",
+          "fps": 60,
+          "drawCalls": 158,
+          "triangles": 433228,
+          "geometries": 190,
+          "textures": 17
+        },
+        {
+          "stage": "gitops-commit",
+          "fps": 60,
+          "drawCalls": 156,
+          "triangles": 433216,
+          "geometries": 190,
+          "textures": 17
+        },
+        {
+          "stage": "detect",
+          "fps": 60,
+          "drawCalls": 158,
+          "triangles": 433792,
+          "geometries": 189,
+          "textures": 17
+        },
+        {
+          "stage": "detect",
+          "fps": 60,
+          "drawCalls": 158,
+          "triangles": 433792,
+          "geometries": 189,
+          "textures": 17
+        },
+        {
+          "stage": "detect",
+          "fps": 60,
+          "drawCalls": 158,
+          "triangles": 433792,
+          "geometries": 189,
+          "textures": 17
+        },
+        {
+          "stage": "detect",
+          "fps": 60,
+          "drawCalls": 157,
+          "triangles": 433408,
+          "geometries": 189,
+          "textures": 17
+        },
+        {
+          "stage": "sync",
+          "fps": 60,
+          "drawCalls": 175,
+          "triangles": 435040,
+          "geometries": 188,
+          "textures": 17
+        },
+        {
+          "stage": "sync",
+          "fps": 60,
+          "drawCalls": 175,
+          "triangles": 435040,
+          "geometries": 188,
+          "textures": 17
+        },
+        {
+          "stage": "sync",
+          "fps": 60,
+          "drawCalls": 187,
+          "triangles": 436372,
+          "geometries": 191,
+          "textures": 17
+        },
+        {
+          "stage": "rollout",
+          "fps": 60,
+          "drawCalls": 167,
+          "triangles": 503784,
+          "geometries": 191,
+          "textures": 17
+        },
+        {
+          "stage": "rollout",
+          "fps": 60,
+          "drawCalls": 155,
+          "triangles": 502392,
+          "geometries": 191,
+          "textures": 17
+        },
+        {
+          "stage": "rollout",
+          "fps": 60,
+          "drawCalls": 155,
+          "triangles": 502392,
+          "geometries": 191,
+          "textures": 17
+        },
+        {
+          "stage": "ready",
+          "fps": 60,
+          "drawCalls": 155,
+          "triangles": 499584,
+          "geometries": 191,
+          "textures": 17
+        },
+        {
+          "stage": "ready",
+          "fps": 60,
+          "drawCalls": 155,
+          "triangles": 499584,
+          "geometries": 191,
+          "textures": 17
+        },
+        {
+          "stage": "ready",
+          "fps": 60,
+          "drawCalls": 155,
+          "triangles": 499584,
+          "geometries": 191,
+          "textures": 17
+        },
+        {
+          "stage": "ready",
+          "fps": 60,
+          "drawCalls": 155,
+          "triangles": 499584,
+          "geometries": 191,
+          "textures": 17
+        },
+        {
+          "stage": "service",
+          "fps": 60,
+          "drawCalls": 168,
+          "triangles": 431820,
+          "geometries": 198,
+          "textures": 17
+        },
+        {
+          "stage": "service",
+          "fps": 60,
+          "drawCalls": 168,
+          "triangles": 431820,
+          "geometries": 198,
+          "textures": 17
+        },
+        {
+          "stage": "service",
+          "fps": 60,
+          "drawCalls": 168,
+          "triangles": 431820,
+          "geometries": 198,
+          "textures": 17
+        },
+        {
+          "stage": "ingress",
+          "fps": 60,
+          "drawCalls": 164,
+          "triangles": 432276,
+          "geometries": 197,
+          "textures": 17
+        },
+        {
+          "stage": "ingress",
+          "fps": 60,
+          "drawCalls": 162,
+          "triangles": 423404,
+          "geometries": 197,
+          "textures": 17
+        },
+        {
+          "stage": "ingress",
+          "fps": 60,
+          "drawCalls": 154,
+          "triangles": 416940,
+          "geometries": 197,
+          "textures": 17
+        },
+        {
+          "stage": "ingress",
+          "fps": 60,
+          "drawCalls": 147,
+          "triangles": 416520,
+          "geometries": 197,
+          "textures": 17
+        },
+        {
+          "stage": "metrics",
+          "fps": 60,
+          "drawCalls": 147,
+          "triangles": 387736,
+          "geometries": 201,
+          "textures": 17
+        },
+        {
+          "stage": "metrics",
+          "fps": 60,
+          "drawCalls": 135,
+          "triangles": 374240,
+          "geometries": 208,
+          "textures": 17
+        },
+        {
+          "stage": "metrics",
+          "fps": 60,
+          "drawCalls": 135,
+          "triangles": 374240,
+          "geometries": 208,
+          "textures": 17
+        },
+        {
+          "stage": "logs",
+          "fps": 60,
+          "drawCalls": 138,
+          "triangles": 375200,
+          "geometries": 208,
+          "textures": 17
+        },
+        {
+          "stage": "logs",
+          "fps": 60,
+          "drawCalls": 138,
+          "triangles": 375200,
+          "geometries": 208,
+          "textures": 17
+        },
+        {
+          "stage": "logs",
+          "fps": 60,
+          "drawCalls": 138,
+          "triangles": 375200,
+          "geometries": 208,
+          "textures": 17
+        },
+        {
+          "stage": "dashboard",
+          "fps": 59,
+          "drawCalls": 136,
+          "triangles": 374624,
+          "geometries": 211,
+          "textures": 17
+        },
+        {
+          "stage": "dashboard",
+          "fps": 59,
+          "drawCalls": 138,
+          "triangles": 375200,
+          "geometries": 212,
+          "textures": 17
+        },
+        {
+          "stage": "dashboard",
+          "fps": 60,
+          "drawCalls": 138,
+          "triangles": 375200,
+          "geometries": 212,
+          "textures": 17
+        },
+        {
+          "stage": "dashboard",
+          "fps": 60,
+          "drawCalls": 138,
+          "triangles": 375200,
+          "geometries": 212,
+          "textures": 17
+        },
+        {
+          "stage": "alerts",
+          "fps": 60,
+          "drawCalls": 150,
+          "triangles": 382108,
+          "geometries": 217,
+          "textures": 17
+        },
+        {
+          "stage": "alerts",
+          "fps": 60,
+          "drawCalls": 150,
+          "triangles": 382108,
+          "geometries": 217,
+          "textures": 17
+        },
+        {
+          "stage": "alerts",
+          "fps": 60,
+          "drawCalls": 150,
+          "triangles": 382108,
+          "geometries": 217,
+          "textures": 17
+        },
+        {
+          "stage": "alerts",
+          "fps": 60,
+          "drawCalls": 150,
+          "triangles": 382108,
+          "geometries": 217,
+          "textures": 17
+        }
+      ],
+      "meanFps": 59.65714285714286,
+      "minimumFps": 49,
+      "maximumFps": 60,
+      "observedStages": [
+        "push",
+        "ci-start",
+        "quality",
+        "security",
+        "build",
+        "publish",
+        "pull-request",
+        "approval",
+        "promote",
+        "configuration",
+        "render-manifests",
+        "gitops-commit",
+        "detect",
+        "sync",
+        "rollout",
+        "ready",
+        "service",
+        "ingress",
+        "metrics",
+        "logs",
+        "dashboard",
+        "alerts"
+      ],
+      "note": "Local headless desktop Chrome with real WebGL. Phone profile is viewport/touch emulation, not a physical device. Counters include shadow/transmission passes."
+    },
+    "mobile": {
+      "date": "2026-11-06",
+      "profile": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 664
+      },
+      "quality": "balanced",
+      "playback": "Watch Flow automatic,2\u00d7,explicit human approval",
+      "samples": [
+        {
+          "stage": "push",
+          "fps": 0,
+          "drawCalls": 213,
+          "triangles": 546872,
+          "geometries": 123,
+          "textures": 17
+        },
+        {
+          "stage": "push",
+          "fps": 50,
+          "drawCalls": 181,
+          "triangles": 502308,
+          "geometries": 123,
+          "textures": 17
+        },
+        {
+          "stage": "ci-start",
+          "fps": 50,
+          "drawCalls": 163,
+          "triangles": 480740,
+          "geometries": 123,
+          "textures": 17
+        },
+        {
+          "stage": "ci-start",
+          "fps": 60,
+          "drawCalls": 157,
+          "triangles": 479732,
+          "geometries": 123,
+          "textures": 17
+        },
+        {
+          "stage": "ci-start",
+          "fps": 60,
+          "drawCalls": 157,
+          "triangles": 479732,
+          "geometries": 123,
+          "textures": 17
+        },
+        {
+          "stage": "quality",
+          "fps": 60,
+          "drawCalls": 157,
+          "triangles": 479732,
+          "geometries": 123,
+          "textures": 17
+        },
+        {
+          "stage": "quality",
+          "fps": 60,
+          "drawCalls": 148,
+          "triangles": 478736,
+          "geometries": 123,
+          "textures": 17
+        },
+        {
+          "stage": "quality",
+          "fps": 60,
+          "drawCalls": 148,
+          "triangles": 478736,
+          "geometries": 123,
+          "textures": 17
+        },
+        {
+          "stage": "quality",
+          "fps": 60,
+          "drawCalls": 148,
+          "triangles": 478736,
+          "geometries": 123,
+          "textures": 17
+        },
+        {
+          "stage": "security",
+          "fps": 60,
+          "drawCalls": 185,
+          "triangles": 467956,
+          "geometries": 125,
+          "textures": 17
+        },
+        {
+          "stage": "security",
+          "fps": 60,
+          "drawCalls": 141,
+          "triangles": 384780,
+          "geometries": 127,
+          "textures": 17
+        },
+        {
+          "stage": "security",
+          "fps": 60,
+          "drawCalls": 135,
+          "triangles": 367840,
+          "geometries": 131,
+          "textures": 17
+        },
+        {
+          "stage": "build",
+          "fps": 60,
+          "drawCalls": 141,
+          "triangles": 368336,
+          "geometries": 131,
+          "textures": 17
+        },
+        {
+          "stage": "build",
+          "fps": 60,
+          "drawCalls": 175,
+          "triangles": 457732,
+          "geometries": 130,
+          "textures": 17
+        },
+        {
+          "stage": "build",
+          "fps": 60,
+          "drawCalls": 148,
+          "triangles": 478736,
+          "geometries": 130,
+          "textures": 17
+        },
+        {
+          "stage": "build",
+          "fps": 60,
+          "drawCalls": 148,
+          "triangles": 478736,
+          "geometries": 130,
+          "textures": 17
+        },
+        {
+          "stage": "publish",
+          "fps": 59,
+          "drawCalls": 159,
+          "triangles": 428204,
+          "geometries": 137,
+          "textures": 17
+        },
+        {
+          "stage": "publish",
+          "fps": 59,
+          "drawCalls": 137,
+          "triangles": 376508,
+          "geometries": 144,
+          "textures": 17
+        },
+        {
+          "stage": "publish",
+          "fps": 60,
+          "drawCalls": 141,
+          "triangles": 378980,
+          "geometries": 144,
+          "textures": 17
+        },
+        {
+          "stage": "pull-request",
+          "fps": 60,
+          "drawCalls": 141,
+          "triangles": 366336,
+          "geometries": 148,
+          "textures": 17
+        },
+        {
+          "stage": "pull-request",
+          "fps": 60,
+          "drawCalls": 147,
+          "triangles": 410456,
+          "geometries": 151,
+          "textures": 17
+        },
+        {
+          "stage": "pull-request",
+          "fps": 60,
+          "drawCalls": 143,
+          "triangles": 409328,
+          "geometries": 151,
+          "textures": 17
+        },
+        {
+          "stage": "pull-request",
+          "fps": 60,
+          "drawCalls": 145,
+          "triangles": 409544,
+          "geometries": 151,
+          "textures": 17
+        },
+        {
+          "stage": "approval",
+          "fps": 60,
+          "drawCalls": 145,
+          "triangles": 409904,
+          "geometries": 153,
+          "textures": 17
+        },
+        {
+          "stage": "promote",
+          "fps": 60,
+          "drawCalls": 156,
+          "triangles": 408676,
+          "geometries": 149,
+          "textures": 17
+        },
+        {
+          "stage": "promote",
+          "fps": 60,
+          "drawCalls": 151,
+          "triangles": 379532,
+          "geometries": 157,
+          "textures": 17
+        },
+        {
+          "stage": "promote",
+          "fps": 60,
+          "drawCalls": 167,
+          "triangles": 382124,
+          "geometries": 157,
+          "textures": 17
+        },
+        {
+          "stage": "configuration",
+          "fps": 60,
+          "drawCalls": 153,
+          "triangles": 374500,
+          "geometries": 164,
+          "textures": 17
+        },
+        {
+          "stage": "configuration",
+          "fps": 60,
+          "drawCalls": 153,
+          "triangles": 374500,
+          "geometries": 164,
+          "textures": 17
+        },
+        {
+          "stage": "configuration",
+          "fps": 60,
+          "drawCalls": 153,
+          "triangles": 374500,
+          "geometries": 164,
+          "textures": 17
+        },
+        {
+          "stage": "render-manifests",
+          "fps": 60,
+          "drawCalls": 151,
+          "triangles": 373924,
+          "geometries": 164,
+          "textures": 17
+        },
+        {
+          "stage": "render-manifests",
+          "fps": 60,
+          "drawCalls": 143,
+          "triangles": 373108,
+          "geometries": 163,
+          "textures": 17
+        },
+        {
+          "stage": "render-manifests",
+          "fps": 60,
+          "drawCalls": 143,
+          "triangles": 373108,
+          "geometries": 163,
+          "textures": 17
+        },
+        {
+          "stage": "render-manifests",
+          "fps": 60,
+          "drawCalls": 136,
+          "triangles": 372688,
+          "geometries": 163,
+          "textures": 17
+        },
+        {
+          "stage": "gitops-commit",
+          "fps": 60,
+          "drawCalls": 147,
+          "triangles": 385020,
+          "geometries": 164,
+          "textures": 17
+        },
+        {
+          "stage": "gitops-commit",
+          "fps": 60,
+          "drawCalls": 158,
+          "triangles": 433228,
+          "geometries": 190,
+          "textures": 17
+        },
+        {
+          "stage": "gitops-commit",
+          "fps": 60,
+          "drawCalls": 158,
+          "triangles": 433228,
+          "geometries": 190,
+          "textures": 17
+        },
+        {
+          "stage": "detect",
+          "fps": 60,
+          "drawCalls": 166,
+          "triangles": 434524,
+          "geometries": 190,
+          "textures": 17
+        },
+        {
+          "stage": "detect",
+          "fps": 60,
+          "drawCalls": 160,
+          "triangles": 433804,
+          "geometries": 189,
+          "textures": 17
+        },
+        {
+          "stage": "detect",
+          "fps": 60,
+          "drawCalls": 160,
+          "triangles": 433804,
+          "geometries": 189,
+          "textures": 17
+        },
+        {
+          "stage": "detect",
+          "fps": 60,
+          "drawCalls": 157,
+          "triangles": 433408,
+          "geometries": 189,
+          "textures": 17
+        },
+        {
+          "stage": "sync",
+          "fps": 60,
+          "drawCalls": 175,
+          "triangles": 435040,
+          "geometries": 188,
+          "textures": 17
+        },
+        {
+          "stage": "sync",
+          "fps": 60,
+          "drawCalls": 183,
+          "triangles": 436060,
+          "geometries": 189,
+          "textures": 17
+        },
+        {
+          "stage": "sync",
+          "fps": 60,
+          "drawCalls": 189,
+          "triangles": 449572,
+          "geometries": 191,
+          "textures": 17
+        },
+        {
+          "stage": "rollout",
+          "fps": 60,
+          "drawCalls": 175,
+          "triangles": 504804,
+          "geometries": 191,
+          "textures": 17
+        },
+        {
+          "stage": "rollout",
+          "fps": 58,
+          "drawCalls": 155,
+          "triangles": 502392,
+          "geometries": 191,
+          "textures": 17
+        },
+        {
+          "stage": "rollout",
+          "fps": 60,
+          "drawCalls": 155,
+          "triangles": 502392,
+          "geometries": 191,
+          "textures": 17
+        },
+        {
+          "stage": "ready",
+          "fps": 60,
+          "drawCalls": 155,
+          "triangles": 502392,
+          "geometries": 191,
+          "textures": 17
+        },
+        {
+          "stage": "ready",
+          "fps": 59,
+          "drawCalls": 155,
+          "triangles": 499584,
+          "geometries": 191,
+          "textures": 17
+        },
+        {
+          "stage": "ready",
+          "fps": 59,
+          "drawCalls": 155,
+          "triangles": 499584,
+          "geometries": 191,
+          "textures": 17
+        },
+        {
+          "stage": "ready",
+          "fps": 60,
+          "drawCalls": 155,
+          "triangles": 499584,
+          "geometries": 191,
+          "textures": 17
+        },
+        {
+          "stage": "service",
+          "fps": 60,
+          "drawCalls": 168,
+          "triangles": 431820,
+          "geometries": 198,
+          "textures": 17
+        },
+        {
+          "stage": "service",
+          "fps": 60,
+          "drawCalls": 168,
+          "triangles": 431820,
+          "geometries": 198,
+          "textures": 17
+        },
+        {
+          "stage": "service",
+          "fps": 60,
+          "drawCalls": 168,
+          "triangles": 431820,
+          "geometries": 198,
+          "textures": 17
+        },
+        {
+          "stage": "ingress",
+          "fps": 60,
+          "drawCalls": 164,
+          "triangles": 431796,
+          "geometries": 196,
+          "textures": 17
+        },
+        {
+          "stage": "ingress",
+          "fps": 60,
+          "drawCalls": 162,
+          "triangles": 423404,
+          "geometries": 197,
+          "textures": 17
+        },
+        {
+          "stage": "ingress",
+          "fps": 60,
+          "drawCalls": 156,
+          "triangles": 417700,
+          "geometries": 197,
+          "textures": 17
+        },
+        {
+          "stage": "ingress",
+          "fps": 60,
+          "drawCalls": 149,
+          "triangles": 417280,
+          "geometries": 197,
+          "textures": 17
+        },
+        {
+          "stage": "metrics",
+          "fps": 60,
+          "drawCalls": 151,
+          "triangles": 404752,
+          "geometries": 201,
+          "textures": 17
+        },
+        {
+          "stage": "metrics",
+          "fps": 60,
+          "drawCalls": 137,
+          "triangles": 376760,
+          "geometries": 209,
+          "textures": 17
+        },
+        {
+          "stage": "metrics",
+          "fps": 60,
+          "drawCalls": 137,
+          "triangles": 376760,
+          "geometries": 209,
+          "textures": 17
+        },
+        {
+          "stage": "logs",
+          "fps": 60,
+          "drawCalls": 140,
+          "triangles": 377720,
+          "geometries": 209,
+          "textures": 17
+        },
+        {
+          "stage": "logs",
+          "fps": 60,
+          "drawCalls": 140,
+          "triangles": 377720,
+          "geometries": 209,
+          "textures": 17
+        },
+        {
+          "stage": "logs",
+          "fps": 60,
+          "drawCalls": 140,
+          "triangles": 377720,
+          "geometries": 209,
+          "textures": 17
+        },
+        {
+          "stage": "dashboard",
+          "fps": 60,
+          "drawCalls": 140,
+          "triangles": 377720,
+          "geometries": 213,
+          "textures": 17
+        },
+        {
+          "stage": "dashboard",
+          "fps": 58,
+          "drawCalls": 140,
+          "triangles": 377720,
+          "geometries": 213,
+          "textures": 17
+        },
+        {
+          "stage": "dashboard",
+          "fps": 58,
+          "drawCalls": 140,
+          "triangles": 377720,
+          "geometries": 213,
+          "textures": 17
+        },
+        {
+          "stage": "dashboard",
+          "fps": 60,
+          "drawCalls": 140,
+          "triangles": 377720,
+          "geometries": 213,
+          "textures": 17
+        },
+        {
+          "stage": "alerts",
+          "fps": 60,
+          "drawCalls": 150,
+          "triangles": 382108,
+          "geometries": 217,
+          "textures": 17
+        },
+        {
+          "stage": "alerts",
+          "fps": 60,
+          "drawCalls": 150,
+          "triangles": 382108,
+          "geometries": 217,
+          "textures": 17
+        },
+        {
+          "stage": "alerts",
+          "fps": 60,
+          "drawCalls": 156,
+          "triangles": 383116,
+          "geometries": 217,
+          "textures": 17
+        },
+        {
+          "stage": "alerts",
+          "fps": 60,
+          "drawCalls": 156,
+          "triangles": 383676,
+          "geometries": 218,
+          "textures": 17
+        }
+      ],
+      "meanFps": 59.57746478873239,
+      "minimumFps": 50,
+      "maximumFps": 60,
+      "observedStages": [
+        "push",
+        "ci-start",
+        "quality",
+        "security",
+        "build",
+        "publish",
+        "pull-request",
+        "approval",
+        "promote",
+        "configuration",
+        "render-manifests",
+        "gitops-commit",
+        "detect",
+        "sync",
+        "rollout",
+        "ready",
+        "service",
+        "ingress",
+        "metrics",
+        "logs",
+        "dashboard",
+        "alerts"
+      ],
+      "note": "Local headless desktop Chrome with real WebGL. Phone profile is viewport/touch emulation, not a physical device. Counters include shadow/transmission passes."
+    }
+  },
+  "resources": {
+    "desktop": {
+      "resources": [
+        {
+          "geometries": 150,
+          "textures": 19
+        },
+        {
+          "geometries": 150,
+          "textures": 19
+        },
+        {
+          "geometries": 150,
+          "textures": 19
+        },
+        {
+          "geometries": 150,
+          "textures": 19
+        },
+        {
+          "geometries": 150,
+          "textures": 19
+        }
+      ],
+      "note": "Renderer resource counts after five real studio/world transitions; not a byte-accurate GPU-memory or long-duration soak measurement."
+    },
+    "mobile": {
+      "resources": [
+        {
+          "geometries": 150,
+          "textures": 19
+        },
+        {
+          "geometries": 150,
+          "textures": 19
+        },
+        {
+          "geometries": 150,
+          "textures": 19
+        },
+        {
+          "geometries": 150,
+          "textures": 19
+        },
+        {
+          "geometries": 150,
+          "textures": 19
+        }
+      ],
+      "note": "Renderer resource counts after five real studio/world transitions; not a byte-accurate GPU-memory or long-duration soak measurement."
+    }
+  },
+  "sourceSha256": {
+    "index.html": "46b90cc28eabad4fb1714fcd4e062793eb0779d8b1b662e6d948880d6d511a64",
+    "package-lock.json": "ef2e8db18f75f0e44be8a9ad81f71f317a8179729a5f10d5a8f470bd75573cd7",
+    "package.json": "f37ce393c89e3a3fa062ee19ed75c440217b01446a8f9f0df01c4b29facc423b",
+    "playwright.config.ts": "0434eb6ff5de4738992640576c604cc29a161bf6c1760e7c646951105b8fb680",
+    "scripts/blender/asset_factory.py": "a9de59b5cec3fec5eef816e29cc54e0ae35db7d653b99ba6eaa50f8ec6151511",
+    "scripts/blender/common.py": "17a48d6a53c58f0152421f59b14a1a1500bd394c0deed5f7e38b9967f451fada",
+    "scripts/blender/facial_helpers.py": "61844a13ae1a16795f13b6c2be93ca9af3dde8c80023a7696bacb0f1319f3544",
+    "scripts/blender/generate_awushi.py": "06d95857817211969c68b3ecb016b640288a3d5f8ea576d3d555d7a85f4f8288",
+    "scripts/blender/generate_effects.py": "dd8327f250a5a634545f7134f0008a3a5a2a8f81029751e7e908eb75d11abe7d",
+    "scripts/blender/generate_world.py": "bbb7e969ce0df6a597709d8e4d554be09bb59e0b12752cd77db106529b7d98e7",
+    "scripts/blender/legacy_world.py": "55daacf00fce6a96025c99d037e394e59a1eba5e1ba5e98b90cccf2886450304",
+    "scripts/compare-glb.mjs": "e78a628753b863fba03ccc5d38f7a089ed858af61909e23e5a7a97e7fec9ff0e",
+    "scripts/generate.mjs": "57532c27a897b67004b48cc9b080000d6870b0dc71a9fd297eba07ad1502f0d0",
+    "scripts/test-pipeline.mjs": "a0b91230ab8b88153a338b647d4ef8d7b5303bd8b465f01e80fbe88431eb859b",
+    "scripts/test-runtime.mjs": "451ee0807e39a3c0022cbe2b2f931ee7c47ee860bad303e0aeb995ae45320433",
+    "scripts/validate-assets.mjs": "fd968eb170acef3e1e121784a8fbb25f8ebc7adeea8102e5c94c4866917d6f89",
+    "scripts/verify-deployment.mjs": "98ff9f9ce97c0654394011f5bc0ecfe34e1f0054b186656667d78a586bfd7ae4",
+    "src/App.tsx": "febfacffe1215dcf40a2f2fc8927f0125f9f2c117d623dce7eafb72a9e1e653d",
+    "src/Scene.tsx": "d240bb33e3e1218e2099f69a862b35a510f248dd024c8b4f3d8efa0dded4db9b",
+    "src/adventures/adventures.css": "960e7d7d06eb8fba1068975ac75d7527379429427c7b24f8eb7e7e97236bfc12",
+    "src/adventures/catalog.ts": "1cb7346a1b945965417554aa4e06979f73e0006695d97a687f14479893724847",
+    "src/adventures/domain.ts": "e2b55dce7a889e170aeb8565a4043dd401c63392f52e245ebb1f8a760225f51f",
+    "src/adventures/engine.ts": "079a22afc62296bcde6333f340cb92e7b49addafaaf804d180759ad926934917",
+    "src/adventures/guidance.ts": "29a26a0d84643b31565e1ef0fdcc481caeb059e9642633e7c39eabbe6ee25128",
+    "src/adventures/persistence.ts": "b09d060d91a1a8846da63a497143735f86536717235753c49d3fffbca237b036",
+    "src/adventures/replay.ts": "57d9af6fc81338d04e816ec39fbe11ca9d61857d5d7f5c6cf14cce917718c7a6",
+    "src/adventures/selectors.ts": "244ab0e5451318a97167f191297af73c44554d0cd3e5fbafdd9c7e480f62a450",
+    "src/adventures/useAdventures.ts": "3c35145bec796ac7a298e6de3d175c7d50ea7cf80c13efd5c8267aa169aa123d",
+    "src/adventures/useGuidance.ts": "84450b6fbf8dcabc631b4150400a8638c7104d38e72ab7fed067879a83a1a211",
+    "src/audio/sound.ts": "0dd5d490a22c5e7d30ecc8f9ee02ab6d59cb10b9d748cacf24cdf041cb12a0a8",
+    "src/audio/useSound.ts": "6f01c3cdd4360e5a48721b4078da7b4d683b2721d76c5d30b48a2cda180bdad2",
+    "src/character/expressions.ts": "d46543b1ee2aaa7e79dfbdfa691672944823de860388e1127a5efd613c15906c",
+    "src/cinematic/cinematic.css": "51784eab0056cdef205b3eaeef0387445300472a57b4d74415f3160e580363bd",
+    "src/cinematic/playback.ts": "10a4b6ef5638c56b053b5993a89f50cf8a95678e2e3583ab6cc90bccebd42c20",
+    "src/cinematic/useWatchFlow.ts": "f475134c7d477a7cd97c228e6b5036fdc6e2bde2906cc0cfb8e98320b6603a35",
+    "src/components/AdventurePanels.tsx": "5f68d3552a5cc40651fd9c7bce9aad394974a11a8ed6e4deeef4cfcf6feaf290",
+    "src/components/Dialog.tsx": "306197d2a0396dc9156211b6419254ad738b6e0f25405d9d9dbf52241d3213f6",
+    "src/components/MiniMap.tsx": "d8c31a4f190ef9bc3836683ff3b5d14d7a26e3394a00ebfcda03e105a073e8c7",
+    "src/components/Onboarding.tsx": "789a4b0281a33cb8be3f06626fe0ef89cec91a303c66b8cabd0a0637d74eea48",
+    "src/components/Portfolio.tsx": "34b99ddf2d7d8404dba3c6fda40685fdf01b0c0434cc3de7b2b8fd46a0d392d4",
+    "src/components/SimulationPanels.tsx": "d48227d8e8c6926df87798477ead28f68159bf7fb7577988f713f10c5ee8c6ef",
+    "src/components/TechnologyPanels.tsx": "d864f876b2a24ae85a630893790e3a5b338dcfa20c238b29ee000491bd77ebfe",
+    "src/components/WatchFlow.tsx": "6eb39a3e2c4068835018b0d6f7e31d5daf4c46fbfd1779126f3dbdca9c6ae45e",
+    "src/components/onboarding.css": "5ac50296fc17cfdb9c74c14d837eeee3b9fb8991a54ce12d3afc26de5049b2f9",
+    "src/components/technology-guidance.css": "eb76e6cc3dcb8548775e404b77a8dd439e22c4c9663d1aef973c7fd5da768e38",
+    "src/components/useSimulation.ts": "4c62978ced8815c2042a66d058cc3c0b02c259d5b6d3d684bfa99e22961d8b31",
+    "src/data/world-layout.json": "678bc4b037b1be0db6086beb30188efd611b7d1a713adcefe6038a58211057b8",
+    "src/game/behavior.ts": "edc4f332936a147ce80a65a639864f0818336c0c0d50bd064d65991161506a60",
+    "src/game/camera.ts": "4bcad3b0d49ff137accf8d03a04571ff3a8c20c31f92b07697aced1bde40d82c",
+    "src/game/cinematic.ts": "9bbccb39d9e42a3d4265d6f90256565ce7d3d2c660b17576641e69fd32f95a82",
+    "src/game/navigation.ts": "035727d167ce71d2b577e2477234bd55de14ddb5d57e50da421d104907d1a8db",
+    "src/game/progress.ts": "4617318a313c7e595c529d09c69505c68d2b174f5c3226f462fe8f00dee9392e",
+    "src/game/stationGeometry.ts": "72f58076f47bc763898912a4f435c3debbdd41f107afefa91376174c65ad1e3c",
+    "src/game/types.ts": "11ffdae2117c87e2b6c22c632eaecc770c81505536ed99f26e1e6b19054dfa1c",
+    "src/main.tsx": "449360d409ecbdd6aa7fb603226836ba7a6f3ed5cdcbb1a814397e7deb96a9bb",
+    "src/simulation/SimulationEffects.tsx": "c51d337f3b0e789c22685b23b80eaec52f90709a417e02ae7128d88c5e938237",
+    "src/simulation/domain.ts": "673e6b691c3dfaddd11069e357595107bf4ca5ae47ed5b27df37f4741837cce3",
+    "src/simulation/effects.ts": "b7a61e40216b3faf2413347269bedaadece7d55581dfbd98953735f82179e1fb",
+    "src/simulation/engine.ts": "33a3de8c50e6e931b5d26925200a3bfb55c06935652da145f36ee44a1f1598d0",
+    "src/simulation/operations.ts": "eff2af8b62d41655da62f40ff3cd64d5336bc2df250a939784a8d744d8c8d8f2",
+    "src/simulation/registry.ts": "fb1e0b9c29ca46b92147b02d8763cac30e8db3bbf837e5c355c6fdfec33b2bb0",
+    "src/simulation/scenario.ts": "629450f359d31af7ace9438d6a24c8e0b7423ec9f9ac02eecd85e6d6b896ffdb",
+    "src/styles.css": "ef3d7dfefbbaadd977d92304b2c5dd810e6542678887afbee38def07d50e6efc",
+    "src/worldConfig.ts": "5079bc09a4d8f81a7c261b335b2d69055ff78b07b4e2d41991276983dd8e6bc0",
+    "tests/adventures.test.ts": "74d5278caea953a2c9f1818e4e0902d42d4f035564bea5d75204a72e8d1b72d9",
+    "tests/audio.test.ts": "e9ed80ea2ccc0425d02305504c98ba7f96331a6a45326bac301f8dffc5cf2bf9",
+    "tests/browser/adventure.spec.ts": "efc093d9ccab05d47f64315932848649d39a2cbea1c438d786ddcb786966ae15",
+    "tests/browser/adventures.spec.ts": "dbe880c4a9042aca306cb92ce9d0cf9ab0793a0fc9a598a89102f31997b74874",
+    "tests/browser/camera.spec.ts": "d8dde895e650b3cab039763e7602d9d208eb81fb52187502f44b332b137c5ced",
+    "tests/browser/cinematic-performance.spec.ts": "8f07cdce4c867b63b53b1f6a60fa08e57de314d987fb49e49829a46bacc8fcb4",
+    "tests/browser/cinematic.spec.ts": "08d76943f3bec6ca1cebd59dc6ade82de5cfc45c610acede73098a6f2f0798e5",
+    "tests/browser/compatibility.spec.ts": "b0dcd799c5f98c0dc24127dd1e80de8e0f9c43b23eb9c1bf228f9ec4721b6fc1",
+    "tests/browser/fixtures.ts": "328b6e0539c56e54bd77b33a39db3c986e8867e1207647c46c99db923e8cecb0",
+    "tests/browser/guidance-regression.spec.ts": "38975bad648a55587348c29a7fa7f4e324e661d2f23fd2c6ed7bc9c6f2f744dd",
+    "tests/browser/guidance.spec.ts": "1df26c41a83e6f76c84d33a913ea03cf18da03171b654f261c336bb71f1e8151",
+    "tests/browser/operational-flow.spec.ts": "1bb4581fe3352bbfbdd95739ee46285d09f89180f17316d7cdb2738fb3b1710b",
+    "tests/browser/performance.spec.ts": "1f1dfbd888a63e2d23895591abb919bc2f8637e758b9caee00ab140e615fe0df",
+    "tests/browser/phase4-visual.spec.ts": "fd5aa297ea37521009f871d0f5799a8282b3e60fd1b7f41a032a0aedac207bfd",
+    "tests/browser/replay-controls.spec.ts": "fe5b37f3adf4df69c2aa8e2e777fe8065b0380247d0ae65dd963e10962ac2da7",
+    "tests/browser/resilience.spec.ts": "a59add83b9baba53a65dcdd7a8bbb828414d3ee888df191b59f1d34922eb6ebc",
+    "tests/browser/simulation.spec.ts": "7557688cb65581ff6dbb4b4557b9370f16a79ab95eb255c406d106508d7bca29",
+    "tests/browser/touch.spec.ts": "7d395271e260b710dd57f0172e3966813a39859f0d29c0517469cdb2671a5d8d",
+    "tests/camera.test.ts": "28de744bc82cab7b65918c83fd84955116e4d619665fde26e2ad5cd64a92541e",
+    "tests/cinematic.test.ts": "5e3367e61ebbf70e04549518342e13695c8b8fc18f87bab603048c38745b061d",
+    "tests/effects.test.ts": "93244c06981b8d337600ec6fdf1fb68b41326091c36d1c453ef0d539100d8a2b",
+    "tests/expressions.test.ts": "7013d72e42cca5dc770a8225dae998afe89571d70c19206032906fb5f792d5fb",
+    "tests/game.test.ts": "a9bfca64c0392f07ce250bdf3d4517459e969ba37cb04916b5d8773d10a75d92",
+    "tests/guidance.test.ts": "9ece17f9229e693224862645444799e8a767ffdc15d0dcc1e5c2832d905fe2d5",
+    "tests/persistence.test.ts": "7e2ea29f49b394a031edf9b8dd671ee9ed8491e9bcea39e755a09e5f86ab1ae1",
+    "tests/playback.test.ts": "2c905c4f21fee6241e50c07528b0f92986151d9bc55132f2cc9b876f5a357b7b",
+    "tests/replay.test.ts": "198c2f51404c97f92069b4a1a9125bd9f3c445c4cf5ec55adebfcbeb5cd56c35",
+    "tests/simulation.test.ts": "ff8ad00b73144be2d95df40361ad415d9562df8b296e34763a075dff39afd90a",
+    "vite.config.ts": "d9964cb2a330b11c273223df483543cb6685ec1209ce1444dda760880b398aaa"
+  },
+  "limits": [
+    "Merged latest outcomes from the full matrix and focused reruns; not one uninterrupted all-green full run.",
+    "Phone emulation is desktop Chromium, not physical-device or Safari performance.",
+    "Expert walkthrough, no participant usability study or measured 30-second comprehension claim.",
+    "In-app browser WebGL unavailable during final connection check; architecture fallback worked and actual 3D was verified in Playwright browsers.",
+    "Building occlusion is approximate; newly authored geometry may require explicit camera framing.",
+    "Long evidence still scrolls on phones; resource counts are not GPU bytes or a long-duration soak.",
+    "Browser-local saves are origin/profile specific; existing large bundle advisory remains."
+  ]
+}

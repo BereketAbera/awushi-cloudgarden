@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { Box3, Mesh, Vector3 } from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
-import { recentEventEffects, effectPosition } from '../src/simulation/effects.ts'
+import { recentEventEffects, effectPosition, FLOW_STYLE, flowKindForEvent } from '../src/simulation/effects.ts'
 import type { SimulationEvent } from '../src/simulation/domain.ts'
 
 const bytes = readFileSync(new URL('../public/assets/deployment-effects.glb', import.meta.url))
@@ -65,4 +65,38 @@ test('shared operational events produce bounded visual routes without changing i
   assert.equal(projected[0].timestamp, input.timestamp)
   assert.deepEqual(recentEventEffects([input], 'production'), [])
   assert.equal(JSON.stringify(input), snapshot)
+})
+
+test('flows distinguish actual code, artifact, telemetry and log events', () => {
+  const image = event(1)
+  assert.equal(flowKindForEvent(image), 'image')
+  assert.equal(flowKindForEvent({ ...image, stageId: 'logs', visual: { kind: 'telemetry', fromStationId: 'kubernetes', toStationId: 'observability' } }), 'logs')
+  assert.equal(flowKindForEvent({ ...image, stageId: 'metrics', visual: { kind: 'telemetry', fromStationId: 'network', toStationId: 'observability' } }), 'metrics')
+  assert.equal(flowKindForEvent({ ...image, stageId: 'service' }), 'traffic')
+  assert.equal(Object.keys(FLOW_STYLE).length, 8)
+  assert.ok(Object.values(FLOW_STYLE).every(style => style.label && style.glyph))
+})
+test('arrival acknowledgment requires a matching completed stage in the same run and environment', () => {
+  const start = event(1)
+  const complete: SimulationEvent = { ...start, id: 2, timestamp: start.timestamp + 1200, type: 'stage-completed' }
+  assert.equal(recentEventEffects([start], 'development')[0].acknowledged, false)
+  assert.equal(recentEventEffects([start, { ...complete, environment: 'production' }], 'development')[0].acknowledged, false)
+  assert.equal(recentEventEffects([start, { ...complete, runId: 2 }], 'development')[0].acknowledged, false)
+  assert.equal(recentEventEffects([start, complete], 'development')[0].acknowledged, true)
+  const failure = recentEventEffects([{ ...start, type: 'failed', visual: { kind: 'failure', fromStationId: 'ci', toStationId: 'alerts' } }], 'development')[0]
+  assert.equal(failure.outcome, 'failed')
+  assert.equal(failure.kind, 'alert')
+})
+
+test('secret reference route is a secondary projection of the real sync event', () => {
+  const sync: SimulationEvent = { ...event(3), stageId: 'sync', visual: { kind: 'sync', fromStationId: 'gitops', toStationId: 'kubernetes' } }
+  const snapshot = JSON.stringify(sync), routes = recentEventEffects([sync], 'development')
+  assert.equal(routes.length, 2)
+  assert.deepEqual(routes.map(route => route.id), [sync.id, sync.id])
+  assert.equal(new Set(routes.map(route => route.routeId)).size, 2)
+  assert.equal(routes[0].kind, 'secret'); assert.equal(routes[0].fromStationId, 'secrets')
+  assert.equal(routes.at(-1)?.fromStationId, 'gitops', 'Primary route remains the actual manifest flow')
+  assert.equal(routes[0].acknowledged, false)
+  assert.equal(FLOW_STYLE.secret.label, 'Secret reference')
+  assert.equal(JSON.stringify(sync), snapshot)
 })

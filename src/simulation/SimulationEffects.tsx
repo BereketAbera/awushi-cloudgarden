@@ -1,15 +1,14 @@
 import { useEffect, useMemo, useRef, type MutableRefObject } from 'react'
-import { useFrame } from '@react-three/fiber'
-import { useGLTF } from '@react-three/drei'
-import { Color, Group, InstancedMesh, Mesh, MeshStandardMaterial, Object3D, QuadraticBezierCurve3, Vector3, type Material } from 'three'
+import { useFrame, useThree } from '@react-three/fiber'
+import { Html, useGLTF } from '@react-three/drei'
+import { Color, Group, InstancedMesh, Mesh, Object3D, QuadraticBezierCurve3, Vector3, type Material } from 'three'
 import { getStation } from '../worldConfig'
 import type { EnvironmentId, SimulationState } from './domain'
-import { stageById } from './scenario'
-import { effectPosition, recentEventEffects, type EventEffect } from './effects'
+import { FLOW_STYLE, effectPosition, recentEventEffects, type EventEffect } from './effects'
 
 const ASSET = '/assets/deployment-effects.glb'
 type VisualClock = MutableRefObject<number>
-type Props = { simulation: SimulationState; environment: EnvironmentId; reducedMotion: boolean; paused?: boolean }
+type Props = { simulation: SimulationState; environment: EnvironmentId; reducedMotion: boolean; paused?: boolean; labelsVisible?: boolean }
 
 function Prototype({ name }: { name: string }) {
   const { scene } = useGLTF(ASSET)
@@ -22,66 +21,56 @@ function Prototype({ name }: { name: string }) {
   return <primitive object={object} dispose={null} />
 }
 
-function EventPacket({ effect, clock, reducedMotion }: { effect: EventEffect; clock: VisualClock; reducedMotion: boolean }) {
-  const group = useRef<Group>(null!)
+function FlowSymbol({ effect }: { effect: EventEffect }) {
+  const style = FLOW_STYLE[effect.kind]
+  if (effect.kind === 'metrics') return <group>{[.2, .4, .7].map((height, index) => <mesh key={index} position={[(index - 1) * .23, height / 2, 0]}><boxGeometry args={[.15, height, .16]} /><meshBasicMaterial color={style.color} toneMapped={false} /></mesh>)}</group>
+  if (effect.kind === 'logs') return <group>{[0, 1, 2].map(index => <mesh key={index} position={[0, index * .18, 0]}><boxGeometry args={[.68 - index * .1, .09, .12]} /><meshBasicMaterial color={style.color} toneMapped={false} /></mesh>)}</group>
+  if (effect.kind === 'traffic') return <group>{[-.17, .17].map(offset => <mesh key={offset} position={[0, 0, offset]} rotation={[Math.PI / 2, 0, 0]}><coneGeometry args={[.22, .28, 3]} /><meshBasicMaterial color={style.color} toneMapped={false} /></mesh>)}</group>
+  if (effect.kind === 'alert') return <mesh><octahedronGeometry args={[.4, 0]} /><meshBasicMaterial color={style.color} toneMapped={false} /></mesh>
+  if (effect.kind === 'secret') return <group><mesh><boxGeometry args={[.5, .4, .25]} /><meshBasicMaterial color={style.color} /></mesh><mesh position={[0, .3, 0]}><torusGeometry args={[.17, .045, 6, 12, Math.PI]} /><meshBasicMaterial color={style.color} /></mesh></group>
+  return <Prototype name={effect.prototype} />
+}
+function EventPacket({ effect, clock, reducedMotion, prominent, labelsVisible, acknowledge }: { effect: EventEffect; clock: VisualClock; reducedMotion: boolean; prominent: boolean; labelsVisible: boolean; acknowledge: boolean }) {
+  const group = useRef<Group>(null!), route = useRef<Group>(null!), arrival = useRef<Group>(null!)
+  const packetLabel = useRef<HTMLSpanElement>(null), arrivalLabel = useRef<HTMLSpanElement>(null)
+  const style = FLOW_STYLE[effect.kind]
+  const sameStation = effect.fromStationId === effect.toStationId
+  const compact = useThree(state => state.size.width < 600)
+  const { from, to } = effect
+  const curve = useMemo(() => {
+    const route = { from, to }
+    const start = effectPosition(route, 0, false), end = effectPosition(route, 1, false), midpoint = effectPosition(route, .5, false)
+    return new QuadraticBezierCurve3(new Vector3(...start), new Vector3(midpoint[0], midpoint[1] * 2 - (start[1] + end[1]) / 2, midpoint[2]), new Vector3(...end))
+  }, [from, to])
+  const points = useMemo(() => [.2, .5, .8].map(progress => ({ point: curve.getPoint(progress), direction: curve.getTangent(progress) })), [curve])
   useFrame(() => {
     const age = clock.current - effect.timestamp
-    group.current.visible = age >= 0 && age < effect.durationMs
-    if (!group.current.visible) return
+    const traveling = age >= 0 && age < effect.durationMs
+    group.current.visible = traveling
+    route.current.visible = (prominent || effect.kind === 'secret') && !sameStation && age >= 0 && age < effect.durationMs + 900
+    arrival.current.visible = acknowledge && effect.acknowledged && age >= effect.durationMs && age < effect.durationMs + 1100
+    if (packetLabel.current) packetLabel.current.style.display = traveling ? 'inline-block' : 'none'
+    if (arrivalLabel.current) arrivalLabel.current.style.display = arrival.current.visible ? 'inline-block' : 'none'
+    if (arrival.current.visible) arrival.current.scale.setScalar(reducedMotion ? 1 : 1 + Math.min(1, (age - effect.durationMs) / 1100) * .35)
+    if (!traveling) return
     const progress = age / effect.durationMs
     group.current.position.fromArray(effectPosition(effect, progress, reducedMotion))
     group.current.rotation.y = reducedMotion ? 0 : Math.atan2(effect.to[0] - effect.from[0], effect.to[2] - effect.from[2])
-    const size = reducedMotion ? .8 : Math.min(1, progress * 7, (1 - progress) * 7) * 1.05
-    group.current.scale.setScalar(size)
+    group.current.scale.setScalar(prominent ? 1.45 : .95)
   })
-  return <group ref={group} visible={false}><Prototype name={effect.prototype} /></group>
-}
-
-function FacilityIndicator({ stationId, color, active, reducedMotion, clock, until }: { stationId: string | null; color: string; active: boolean; reducedMotion: boolean; clock?: VisualClock; until?: number }) {
-  const root = useRef<Group>(null!)
-  const { scene } = useGLTF(ASSET)
-  const { object, materials } = useMemo(() => {
-    const object = scene.getObjectByName('SyncRing')!.clone(true)
-    const materials: MeshStandardMaterial[] = []
-    object.traverse(node => {
-      if (!(node instanceof Mesh)) return
-      node.material = (Array.isArray(node.material) ? node.material : [node.material]).map(source => {
-        const material = source.clone() as MeshStandardMaterial
-        materials.push(material); return material
-      })
-      if (node.material.length === 1) node.material = node.material[0]
-    })
-    return { object, materials }
-  }, [scene])
-  useEffect(() => () => materials.forEach(material => material.dispose()), [materials])
-  useEffect(() => { materials.forEach(material => { material.color.set(color); material.emissive.set(color); material.emissiveIntensity = .35 }) }, [color, materials])
-  const station = stationId ? getStation(stationId) : undefined
-  useFrame(({ clock: rendererClock }) => {
-    root.current.visible = active && Boolean(station) && (until === undefined || !clock || clock.current < until)
-    if (!station) return
-    root.current.position.set(station.position[0], station.position[1] + .025, station.position[2])
-    const pulse = reducedMotion ? 1 : 1 + Math.sin(rendererClock.elapsedTime * 2) * .025
-    root.current.scale.set((station.radius + .22) / .36 * pulse, .4, (station.radius + .22) / .36 * pulse)
-    root.current.rotation.y = reducedMotion ? 0 : rendererClock.elapsedTime * .22
-  })
-  return <group ref={root} visible={false}><primitive object={object} dispose={null} /></group>
-}
-
-function ActivityIndicator({ simulation, reducedMotion }: Pick<Props, 'simulation' | 'reducedMotion'>) {
-  const color = simulation.status === 'failed' ? '#ff756d' : simulation.status === 'waiting-approval' ? '#ffd585' : '#74ede1'
-  return <FacilityIndicator stationId={stageById(simulation.stageId)?.stationId ?? null} color={color} active={['running', 'retrying', 'waiting-approval', 'failed'].includes(simulation.status)} reducedMotion={reducedMotion} />
-}
-function OperationalIndicators({ simulation, environment, reducedMotion, clock }: Pick<Props, 'simulation' | 'environment' | 'reducedMotion'> & { clock: VisualClock }) {
-  const env = simulation.infra.environments[environment], ops = env.operations
-  const recent = simulation.history.filter(event => event.environment === environment && event.visual && ['stage-completed', 'operation'].includes(event.type)).at(-1)
-  return <group name="OperationalFacilityFeedback">
-    {ops?.pod && !ops.pod.corrected && <FacilityIndicator stationId="kubernetes" color="#ff8b7e" active reducedMotion={reducedMotion} />}
-    {ops?.drift && !ops.drift.corrected && <FacilityIndicator stationId="gitops" color="#ffd585" active reducedMotion={reducedMotion} />}
-    {env.alert === 'firing' && <FacilityIndicator stationId="alerts" color="#ff8b7e" active reducedMotion={reducedMotion} />}
-    {ops?.recovery && !ops.recovery.validated && <FacilityIndicator stationId={ops.recovery.databaseRestored ? 'recovery' : 'database'} color={ops.recovery.databaseRestored ? '#a8e2cf' : '#ffd585'} active reducedMotion={reducedMotion} />}
-    {recent?.visual && <FacilityIndicator key={recent.id} stationId={recent.visual.toStationId} color={recent.visual.kind === 'failure' ? '#ff8b7e' : '#b7f4df'} active reducedMotion={reducedMotion} clock={clock} until={recent.timestamp + 1400} />}
+  return <group name={`Flow-${effect.kind}`}>
+    <group ref={route} visible={false}>
+      <mesh><tubeGeometry args={[curve, 32, .045, 6, false]} /><meshBasicMaterial color={style.color} transparent opacity={prominent ? .8 : .35} toneMapped={false} depthWrite={false} /></mesh>
+      {points.map(({ point, direction }, index) => <mesh key={index} position={point} rotation={[Math.PI / 2, 0, -Math.atan2(direction.x, direction.z)]}><coneGeometry args={[.2, .48, 3]} /><meshBasicMaterial color={style.color} toneMapped={false} /></mesh>)}
+    </group>
+    <group ref={group} visible={false}><FlowSymbol effect={effect} />{(prominent || effect.kind === 'secret') && labelsVisible && !compact && <Html center position={[0, .8, 0]} zIndexRange={[7, 0]} style={{ pointerEvents: 'none' }}><span ref={packetLabel} data-testid="flow-packet-label" data-flow-kind={effect.kind} style={{ display: 'none', whiteSpace: 'nowrap', background: '#071923ef', color: style.color, border: `1px solid ${style.color}`, borderRadius: 7, padding: '4px 8px', fontSize: 11, fontWeight: 700 }}>{style.glyph} {style.label}</span></Html>}</group>
+    <group ref={arrival} visible={false} position={[effect.to[0], effect.to[1] + 3.2, effect.to[2]]}>
+      <mesh rotation={[Math.PI / 2, 0, 0]}><torusGeometry args={[.6, .075, 6, 24]} /><meshBasicMaterial color={effect.outcome === 'failed' ? '#ffb093' : '#98f5c7'} toneMapped={false} /></mesh>
+      {labelsVisible && !sameStation && !compact && <Html center position={[0, .8, 0]} zIndexRange={[7, 0]} style={{ pointerEvents: 'none' }}><span ref={arrivalLabel} data-testid="flow-arrival" style={{ display: 'none', whiteSpace: 'nowrap', background: '#071923ef', color: effect.outcome === 'failed' ? '#ffb093' : '#98f5c7', padding: '4px 8px', borderRadius: 7, fontSize: 11 }}>{effect.outcome === 'failed' ? '! Failure reported' : '✓ Destination updated'}</span></Html>}
+    </group>
   </group>
 }
+
 function PodPart({ source, simulation, environment }: { source: Mesh; simulation: SimulationState; environment: EnvironmentId }) {
   const instances = useRef<InstancedMesh>(null!)
   useEffect(() => { const mesh = instances.current; return () => { mesh.dispose() } }, [])
@@ -122,20 +111,24 @@ function ReadyLink({ from, to, color, visible }: { from: string; to: string; col
 }
 
 /** A presentation-only projection of the engine. Never dispatches commands or completes stages. */
-export function SimulationEffects({ simulation, environment, reducedMotion, paused = false }: Props) {
+export function SimulationEffects({ simulation, environment, reducedMotion, paused = false, labelsVisible = true }: Props) {
   const visualClock = useRef(simulation.clock)
-  const last = useRef({ engine: simulation.clock, renderedAt: 0 })
+  const last = useRef({ engine: simulation.clock, renderedAt: 0, rate: 1 })
   const effects = useMemo(() => recentEventEffects(simulation.history, environment), [simulation.history, environment])
   useFrame(({ clock }) => {
-    if (paused) { visualClock.current = simulation.clock; last.current = { engine: simulation.clock, renderedAt: clock.elapsedTime }; return }
-    if (last.current.engine !== simulation.clock || last.current.renderedAt === 0) last.current = { engine: simulation.clock, renderedAt: clock.elapsedTime }
-    visualClock.current = simulation.clock + Math.max(0, clock.elapsedTime - last.current.renderedAt) * 1000
+    if (paused) { visualClock.current = simulation.clock; last.current = { engine: simulation.clock, renderedAt: clock.elapsedTime, rate: 0 }; return }
+    if (last.current.engine !== simulation.clock || last.current.renderedAt === 0) {
+      const wall = Math.max(.001, clock.elapsedTime - last.current.renderedAt) * 1000
+      last.current = { engine: simulation.clock, renderedAt: clock.elapsedTime, rate: Math.max(0, Math.min(4, (simulation.clock - last.current.engine) / wall)) }
+    }
+    const elapsed = Math.max(0, clock.elapsedTime - last.current.renderedAt) * 1000
+    const progressing = simulation.status === 'running' || simulation.status === 'retrying'
+    visualClock.current = simulation.clock + (progressing ? Math.min(100, elapsed) * last.current.rate : elapsed)
   })
   const env = simulation.infra.environments[environment]
+  const lastAcknowledged = effects.filter(effect => effect.acknowledged).at(-1)?.routeId
   return <group name="SimulationEventEffects">
-    {effects.map(effect => <EventPacket key={`${simulation.runId}-${effect.id}`} effect={effect} clock={visualClock} reducedMotion={reducedMotion} />)}
-    {simulation.environment === environment && <ActivityIndicator simulation={simulation} reducedMotion={reducedMotion || paused} />}
-    <OperationalIndicators simulation={simulation} environment={environment} reducedMotion={reducedMotion || paused} clock={visualClock} />
+    {effects.map((effect, index) => <EventPacket key={`${simulation.runId}-${effect.routeId}`} effect={effect} clock={visualClock} reducedMotion={reducedMotion} prominent={index === effects.length - 1} labelsVisible={labelsVisible} acknowledge={effect.routeId === lastAcknowledged} />)}
     <PodDisplay simulation={simulation} environment={environment} />
     <ReadyLink from="kubernetes" to="network" visible={env.serviceReady} color="#8ce6bd" />
     <ReadyLink from="network" to="observability" visible={env.metrics.collected && env.ingressReady} color="#9bcaef" />

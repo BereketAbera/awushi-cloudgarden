@@ -1,7 +1,7 @@
-import { Component, Suspense, memo, useEffect, useMemo, useRef, type ErrorInfo, type MutableRefObject, type ReactNode } from 'react'
+import { Component, Suspense, memo, useCallback, useEffect, useMemo, useRef, useState, type ErrorInfo, type MutableRefObject, type ReactNode } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { ContactShadows, Environment, Lightformer, OrbitControls, PerspectiveCamera as PerspectiveLens, OrthographicCamera as OrthographicLens, useAnimations, useGLTF } from '@react-three/drei'
-import { NeutralToneMapping, Group, LoopOnce, LoopRepeat, Mesh, SkinnedMesh, Vector3, PerspectiveCamera, OrthographicCamera, DirectionalLight, InstancedMesh, Object3D, Color, type AnimationAction } from 'three'
+import { ContactShadows, Environment, Html, Lightformer, OrbitControls, PerspectiveCamera as PerspectiveLens, OrthographicCamera as OrthographicLens, useAnimations, useGLTF } from '@react-three/drei'
+import { BackSide, BufferGeometry, Float32BufferAttribute, NeutralToneMapping, Group, LoopOnce, LoopRepeat, Mesh, SkinnedMesh, Vector3, PerspectiveCamera, OrthographicCamera, DirectionalLight, InstancedMesh, Object3D, Color, type AnimationAction } from 'three'
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js'
 import type { OrbitControls as OrbitControlsType } from 'three-stdlib'
 import { DISTRICTS, HUB, STATIONS, WORLD_LAYOUT, type Point3 } from './worldConfig'
@@ -10,6 +10,8 @@ import { eligibleStation, moveCharacter, movementDirection, immersiveDirection, 
 import { advanceCamera, advanceSteering, damp, desiredCamera, cameraObstruction, FOLLOW_ANCHOR_HEIGHT, WORLD_CHARACTER_SCALE, INITIAL_HEADING, isImmersive, FOLLOW_AZIMUTH, studioCamera, type CameraPose } from './game/camera'
 import { createBehavior, stepBehavior } from './game/behavior'
 import { SimulationEffects } from './simulation/SimulationEffects'
+import { ATTENTION, cinematicOwnsCamera, cinematicPose, interpolateShot, advanceShotTime, orbitFromPose, manualOrbitPose, fallbackBounds, shotDuration, simulationShot, type SubjectBounds, type CameraOwnership, type ShotRequest } from './game/cinematic'
+import { measureStationGeometry, type StationShape } from './game/stationGeometry'
 import { applyExpression, getExpressionTargets, resetExpression } from './character/expressions'
 
 type LiveWorld = { position: Vector3; azimuth: number; viewYaw: number; movementYaw: number; heading: number; bodyVisible: boolean; nearby: string | null }
@@ -152,6 +154,10 @@ function Awushi(props: SceneProps & { live: LiveRef }) {
     } else if (moving.current && !oneShot) onClip('Idle')
     moving.current = direction.moving
     if (immersive && !direction.moving) targetRotation.current = live.current.viewYaw + (props.activeStation || clip === 'Celebrate' || reaction.current?.expression === 'Happy' ? Math.PI : 0)
+    if (mode === 'world' && !direction.moving && !oneShot && props.targetStation) {
+      const destination = STATIONS.find(station => station.id === props.targetStation)
+      if (destination) targetRotation.current = Math.atan2(destination.position[0] - mover.current.position.x, destination.position[2] - mover.current.position.z)
+    }
     mover.current.visible = mode === 'studio' || live.current.bodyVisible
     const rotation = targetRotation.current + (mode === 'studio' ? props.rotation * Math.PI / 180 : 0)
     const difference = Math.atan2(Math.sin(rotation - mover.current.rotation.y), Math.cos(rotation - mover.current.rotation.y))
@@ -176,13 +182,21 @@ function Awushi(props: SceneProps & { live: LiveRef }) {
   return <group ref={mover} scale={mode === 'world' ? WORLD_CHARACTER_SCALE : 1}><primitive object={scene} /></group>
 }
 
-function WorldAsset({ path, position = [0, 0, 0], quality }: { path: string; position?: Point3; quality: SceneProps['quality'] }) {
+function WorldAsset({ path, position = [0, 0, 0], quality, shapes, onMeasured }: { path: string; position?: Point3; quality: SceneProps['quality']; shapes?: Map<string, StationShape>; onMeasured?: () => void }) {
   const { scene } = useGLTF(path)
   useEffect(() => {
     scene.traverse(object => {
       if (object instanceof Mesh) { object.castShadow = quality !== 'low'; object.receiveShadow = quality !== 'low'; object.frustumCulled = true }
     })
   }, [scene, quality])
+  useEffect(() => {
+    const district = DISTRICTS.find(item => item.asset === path)
+    if (!district || !shapes) return
+    const measured = measureStationGeometry(scene, district, STATIONS.filter(station => station.districtId === district.id))
+    for (const [id, shape] of measured) shapes.set(id, shape)
+    onMeasured?.()
+    return () => { for (const [id, shape] of measured) { if (shapes.get(id) === shape) shapes.delete(id); shape.geometry.dispose() } }
+  }, [scene, path, shapes, onMeasured])
   return <primitive object={scene} position={position} />
 }
 /** Six shared beacon instances: a quiet arrival/status cue with one draw call. */
@@ -222,10 +236,10 @@ function WorldMarker({ live, reducedMotion, targetStation }: { live: LiveRef; re
   })
   return <group ref={marker} visible={false}><mesh rotation={[-Math.PI / 2, 0, 0]}><ringGeometry args={[1, 1.045, 64]} /><meshBasicMaterial color="#ffe4a3" toneMapped={false} transparent opacity={0.85} depthWrite={false} /></mesh></group>
 }
-function Stage({ mode, quality, live, reducedMotion, targetStation }: Pick<SceneProps, 'mode' | 'quality' | 'reducedMotion' | 'targetStation'> & { live: LiveRef }) {
+function Stage({ mode, quality, live, reducedMotion, targetStation, shapes, onMeasured }: Pick<SceneProps, 'mode' | 'quality' | 'reducedMotion' | 'targetStation'> & { live: LiveRef; shapes: Map<string, StationShape>; onMeasured: () => void }) {
   if (mode === 'world') return <group>
     <WorldAsset path="/assets/world-hub.glb" quality={quality} />
-    {DISTRICTS.map(district => <WorldAsset key={district.id} path={district.asset} position={district.center} quality={quality} />)}
+    {DISTRICTS.map(district => <WorldAsset key={district.id} path={district.asset} position={district.center} quality={quality} shapes={shapes} onMeasured={onMeasured} />)}
     <WorldMarker live={live} reducedMotion={reducedMotion} targetStation={targetStation} /><DistrictBeacons reducedMotion={reducedMotion} />
     <mesh position={[0, -0.07, 0]} rotation={[-Math.PI / 2, 0, 0]}><ringGeometry args={[1.05, 1.09, 64]} /><meshBasicMaterial color={HUB.color} /></mesh>
   </group>
@@ -236,62 +250,140 @@ function Stage({ mode, quality, live, reducedMotion, targetStation }: Pick<Scene
   </group>
 }
 
-function CameraRig({ view, reset, mode, cameraMode, reducedMotion, inputEnabled, input, live }: Pick<SceneProps, 'view' | 'reset' | 'mode' | 'cameraMode' | 'reducedMotion' | 'inputEnabled' | 'input'> & { live: LiveRef }) {
+function AttentionOutline({ shot, shape, secondary = false, reducedMotion, labelsVisible }: { shot: ShotRequest; shape?: StationShape; secondary?: boolean; reducedMotion: boolean; labelsVisible: boolean }) {
+  const root = useRef<Group>(null!)
+  const station = STATIONS.find(item => item.id === shot.stationId)
+  const bounds = useMemo(() => shape?.bounds ?? fallbackBounds(shot.stationId), [shape, shot.stationId])
+  const status = ATTENTION[shot.status ?? 'neutral']
+  const compact = useThree(state => state.size.width < 600)
+  const bracketGeometry = useMemo(() => {
+    const size = bounds.size.map(value => value / 2 + .16), points: number[] = []
+    for (const x of [-1, 1]) for (const y of [-1, 1]) for (const z of [-1, 1]) {
+      const corner = [x * size[0], y * size[1], z * size[2]]
+      for (let axis = 0; axis < 3; axis++) { const end = [...corner]; end[axis] *= .65; points.push(...corner, ...end) }
+    }
+    return new BufferGeometry().setAttribute('position', new Float32BufferAttribute(points, 3))
+  }, [bounds.size])
+  useEffect(() => () => bracketGeometry.dispose(), [bracketGeometry])
+  useFrame(({ clock }) => {
+    if (root.current) root.current.scale.setScalar(reducedMotion || secondary ? 1 : 1 + Math.sin(clock.elapsedTime * 2.5) * .008)
+  })
+  if (!station) return null
+  return <group name={secondary ? 'RelatedStationAttention' : 'PrimaryStationAttention'} position={bounds.center}>
+    <group ref={root}>
+      {shape && !secondary && <>
+        <mesh geometry={shape.geometry} scale={1.075} renderOrder={3}><meshBasicMaterial color="#06151f" side={BackSide} depthWrite={false} /></mesh>
+        <mesh geometry={shape.geometry} scale={1.038} renderOrder={4}><meshBasicMaterial color={status.color} side={BackSide} depthWrite={false} toneMapped={false} /></mesh>
+      </>}
+      <lineSegments geometry={bracketGeometry} renderOrder={8}><lineBasicMaterial color={status.color} depthTest={false} transparent opacity={secondary ? .5 : 1} toneMapped={false} /></lineSegments>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[station.position[0] - bounds.center[0], station.position[1] - bounds.center[1] + .06, station.position[2] - bounds.center[2]]}>
+        <ringGeometry args={[station.radius + .15, station.radius + (secondary ? .23 : .34), 48]} /><meshBasicMaterial color={status.color} toneMapped={false} transparent opacity={secondary ? .35 : .95} depthWrite={false} />
+      </mesh>
+    </group>
+    {!secondary && labelsVisible && <Html center position={[0, bounds.size[1] / 2 + .55, 0]} zIndexRange={[9, 0]} style={{ pointerEvents: 'none' }}>
+      <div data-testid="station-attention" data-station={station.id} data-status={shot.status ?? 'neutral'} style={{ color: '#f4fbff', background: '#071923ed', border: `2px solid ${status.color}`, borderRadius: 12, padding: compact ? '5px 9px' : '8px 13px', minWidth: compact ? 125 : 155, maxWidth: compact ? 185 : 240, transform: 'translateY(-50%)', textAlign: 'center', boxShadow: '0 4px 20px #0008', fontFamily: 'inherit', fontSize: compact ? 11 : 12, lineHeight: 1.4 }}>
+        <strong style={{ display: 'block', fontSize: compact ? 12 : 13 }}>{station.name}</strong><span style={{ color: status.color }}>{status.icon} {status.label}</span>
+      </div>
+    </Html>}
+  </group>
+}
+function StationAttention({ shot, shapes, reducedMotion, labelsVisible }: { shot: ShotRequest | null; shapes: Map<string, StationShape>; reducedMotion: boolean; labelsVisible: boolean }) {
+  if (!shot) return null
+  return <group name="StationAttention"><AttentionOutline shot={shot} shape={shapes.get(shot.stationId)} reducedMotion={reducedMotion} labelsVisible={labelsVisible} />{[...new Set(shot.relatedStationIds)].filter(id => id !== shot.stationId).slice(0, 2).map(id => <AttentionOutline key={id} shot={{ ...shot, stationId: id, status: 'neutral' }} shape={shapes.get(id)} reducedMotion={reducedMotion} labelsVisible={labelsVisible} secondary />)}</group>
+}
+
+function CameraRig({ view, reset, mode, cameraMode, reducedMotion, inputEnabled, input, live, cinematic, onCameraOverride, onCameraSettled, bounds }: Pick<SceneProps, 'view' | 'reset' | 'mode' | 'cameraMode' | 'reducedMotion' | 'inputEnabled' | 'input' | 'cinematic' | 'onCameraOverride' | 'onCameraSettled'> & { live: LiveRef; bounds: ReadonlyMap<string, SubjectBounds> }) {
   const controls = useRef<OrbitControlsType>(null!)
   const camera = useThree(state => state.camera) as PerspectiveCamera | OrthographicCamera
-  const gl = useThree(state => state.gl)
-  const size = useThree(state => state.size)
+  const gl = useThree(state => state.gl), size = useThree(state => state.size)
   const pose = useRef<CameraPose>({ position: [14, 14, 18], target: [0, 1, 0], span: 18, fov: 58 })
   const transition = useRef(.85), initialized = useRef(false), publish = useRef(0)
   const look = useRef({ yaw: INITIAL_HEADING, pitch: .2, distance: 5.8, dragging: false })
+  const manual = useRef({ yaw: 0, pitch: .6, distance: 8, target: [0, 1, 0] as Point3 })
+  const owner = useRef<CameraOwnership>(cinematic?.ownership ?? 'player')
+  const latest = useRef({ cinematic, onCameraOverride, onCameraSettled })
+  latest.current = { cinematic, onCameraOverride, onCameraSettled }
+  const shotTransition = useRef({ key: '', from: pose.current, elapsed: 0, settled: false, instant: false })
+  const skippedRevision = useRef<number | null>(null)
   const lastProjection = useRef<boolean | null>(null)
   const aspect = size.width / size.height
-  const immersive = mode === 'world' && isImmersive(cameraMode)
+  const cinematicControlled = mode === 'world' && (cinematicOwnsCamera(cinematic) || cinematic?.ownership === 'returning-character')
+  const immersive = mode === 'world' && isImmersive(cameraMode) && !cinematicControlled
+  useEffect(() => {
+    if (cinematic?.ownership === 'overridden' && owner.current !== 'overridden') manual.current = orbitFromPose(pose.current)
+    owner.current = cinematic?.ownership ?? 'player'
+  }, [cinematic?.ownership, cinematic?.revision])
   useEffect(() => { transition.current = .85 }, [view, reset, mode, cameraMode, aspect])
   useEffect(() => { look.current = { yaw: INITIAL_HEADING, pitch: .2, distance: 5.8, dragging: false }; live.current.viewYaw = INITIAL_HEADING; live.current.movementYaw = INITIAL_HEADING }, [reset, live])
   useEffect(() => {
     const canvas = gl.domElement
-    if (!immersive || !inputEnabled) return
+    if (mode !== 'world' || !inputEnabled) return
     let pointer: number | null = null, x = 0, y = 0
     const original = canvas.style.touchAction
+    const originalTabIndex = canvas.getAttribute('tabindex')
     canvas.style.touchAction = 'none'
+    canvas.tabIndex = 0
+    const override = () => {
+      if (!cinematicOwnsCamera(latest.current.cinematic) || owner.current === 'overridden') return
+      owner.current = 'overridden'
+      manual.current = orbitFromPose(pose.current)
+      latest.current.onCameraOverride?.()
+    }
     const down = (event: PointerEvent) => {
       if (pointer !== null || event.button !== 0 && event.button !== 2) return
-      pointer = event.pointerId; x = event.clientX; y = event.clientY; look.current.dragging = true
+      // Cancelling the pointer default prevents the browser's focus handoff. Move focus
+      // explicitly so movement keys leave the playback controls with this click.
+      canvas.focus({ preventScroll: true })
+      if (!immersive && !cinematicOwnsCamera(latest.current.cinematic)) return
+      override(); pointer = event.pointerId; x = event.clientX; y = event.clientY; look.current.dragging = true
       canvas.setPointerCapture(pointer); event.preventDefault()
     }
     const move = (event: PointerEvent) => {
       if (event.pointerId !== pointer) return
-      look.current.yaw -= (event.clientX - x) * .005
-      look.current.pitch = Math.max(cameraMode === 'first-person' ? -.9 : -.02, Math.min(cameraMode === 'first-person' ? 1.3 : .72, look.current.pitch + (event.clientY - y) * .004))
+      if (owner.current === 'overridden' && cinematicOwnsCamera(latest.current.cinematic)) {
+        manual.current.yaw -= (event.clientX - x) * .005
+        manual.current.pitch = Math.max(.12, Math.min(1.45, manual.current.pitch + (event.clientY - y) * .004))
+      } else {
+        look.current.yaw -= (event.clientX - x) * .005
+        look.current.pitch = Math.max(cameraMode === 'first-person' ? -.9 : -.02, Math.min(cameraMode === 'first-person' ? 1.3 : .72, look.current.pitch + (event.clientY - y) * .004))
+      }
       x = event.clientX; y = event.clientY
     }
     const up = () => { pointer = null; look.current.dragging = false }
-    const wheel = (event: WheelEvent) => { if (cameraMode === 'third-person') { look.current.distance = Math.max(3.8, Math.min(8, look.current.distance + event.deltaY * .006)); event.preventDefault() } }
+    const wheel = (event: WheelEvent) => {
+      if (cinematicOwnsCamera(latest.current.cinematic)) { override(); manual.current.distance = Math.max(3.5, Math.min(95, manual.current.distance + event.deltaY * .012)); event.preventDefault() }
+      else if (immersive && cameraMode === 'third-person') { look.current.distance = Math.max(3.8, Math.min(8, look.current.distance + event.deltaY * .006)); event.preventDefault() }
+    }
     const context = (event: MouseEvent) => event.preventDefault()
     canvas.addEventListener('pointerdown', down); canvas.addEventListener('pointermove', move)
     canvas.addEventListener('pointerup', up); canvas.addEventListener('pointercancel', up); canvas.addEventListener('lostpointercapture', up)
     canvas.addEventListener('wheel', wheel, { passive: false }); canvas.addEventListener('contextmenu', context)
     return () => {
       canvas.style.touchAction = original; up()
+      if (originalTabIndex === null) canvas.removeAttribute('tabindex')
+      else canvas.setAttribute('tabindex', originalTabIndex)
       canvas.removeEventListener('pointerdown', down); canvas.removeEventListener('pointermove', move)
       canvas.removeEventListener('pointerup', up); canvas.removeEventListener('pointercancel', up); canvas.removeEventListener('lostpointercapture', up)
       canvas.removeEventListener('wheel', wheel); canvas.removeEventListener('contextmenu', context)
     }
-  }, [gl, immersive, inputEnabled, cameraMode])
-  // Resolve steering before movement; midpoint yaw avoids low-FPS path bias.
+  }, [gl, camera, mode, immersive, inputEnabled, cameraMode])
   useFrame((_, delta) => {
     if (!immersive) return
     const result = advanceSteering(live.current.viewYaw, look.current.yaw, inputEnabled ? steeringInput(input.current) : 0, Math.min(delta, .1))
     look.current.yaw = result.targetYaw; live.current.viewYaw = result.viewYaw; live.current.movementYaw = result.movementYaw
   }, -2)
   useFrame((_, delta) => {
-    const dt = Math.min(delta, .1)
-    const perspective = camera instanceof PerspectiveCamera
+    const dt = Math.min(delta, .1), perspective = camera instanceof PerspectiveCamera
     const player = live.current.position.toArray() as Point3
-    const desired = mode === 'studio' ? studioCamera(view, aspect) : desiredCamera(cameraMode, player, aspect, live.current.viewYaw, look.current.pitch, look.current.distance)
+    const current = latest.current.cinematic
+    const active = mode === 'world' && cinematicOwnsCamera(current)
+    const returning = mode === 'world' && current?.ownership === 'returning-character'
+    if (active && owner.current !== 'overridden' && inputEnabled && ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].some(key => input.current.has(key))) {
+      manual.current = orbitFromPose(pose.current); owner.current = 'overridden'; latest.current.onCameraOverride?.()
+    }
+    let desired = mode === 'studio' ? studioCamera(view, aspect) : desiredCamera(cameraMode, player, aspect, live.current.viewYaw, look.current.pitch, look.current.distance)
+    if (active && current?.shot) desired = cinematicPose(current.shot, aspect, bounds)
     if (!initialized.current) { pose.current = desired; initialized.current = true }
-    // Match the apparent size at the focal plane when swapping projection types.
     if (lastProjection.current !== null && perspective !== lastProjection.current) {
       const length = Math.hypot(...pose.current.position.map((value, axis) => value - pose.current.target[axis]))
       if (perspective) pose.current.fov = 2 * Math.atan(pose.current.span / (2 * Math.max(1, length))) * 180 / Math.PI
@@ -299,21 +391,36 @@ function CameraRig({ view, reset, mode, cameraMode, reducedMotion, inputEnabled,
     }
     lastProjection.current = perspective
     const orbit = controls.current
-    if (mode === 'studio' && transition.current <= 0) {
+    if (active && owner.current === 'overridden') {
+      pose.current = manualOrbitPose(manual.current, pose.current)
+    } else if ((active || returning) && current) {
+      const key = `${current.revision}:${returning ? 'character' : 'station'}:${current.shot?.id}:${aspect.toFixed(3)}`
+      const tween = shotTransition.current
+      if (tween.key !== key) {
+        tween.key = key; tween.from = { ...pose.current, position: [...pose.current.position], target: [...pose.current.target] }; tween.elapsed = 0; tween.settled = false
+        tween.instant = Boolean(current.skipTransition && skippedRevision.current !== current.revision)
+        if (tween.instant) skippedRevision.current = current.revision
+      }
+      const duration = returning ? .9 : shotDuration(current.shot!)
+      tween.elapsed = advanceShotTime(tween.elapsed, dt, { ...current, skipTransition: tween.instant })
+      const progress = reducedMotion || tween.instant ? 1 : Math.min(1, tween.elapsed / duration)
+      pose.current = interpolateShot(tween.from, desired, progress)
+      if (progress >= 1 && !tween.settled) {
+        tween.settled = true
+        if (current.ownership === 'returning-cinematic') latest.current.onCameraSettled?.('cinematic')
+        if (returning) latest.current.onCameraSettled?.('player')
+      }
+    } else if (mode === 'studio' && transition.current <= 0) {
       pose.current = { position: camera.position.toArray() as Point3, target: orbit.target.toArray() as Point3, span: 18 / camera.zoom, fov: 18 }
     } else {
       pose.current = reducedMotion ? desired : advanceCamera(pose.current, desired, dt, transition.current > 0 ? 7 : 14)
       if (immersive) {
         if (cameraMode === 'first-person' && transition.current <= 0) pose.current.position = desired.position
-        else if (cameraMode === 'third-person') {
-          const anchor: Point3 = [player[0], player[1] + FOLLOW_ANCHOR_HEIGHT, player[2]]
-          // Recheck the damped position, so smoothing cannot carry the camera through a wall.
-          pose.current.position = cameraObstruction(anchor, pose.current.position).position
-        }
+        else if (cameraMode === 'third-person') pose.current.position = cameraObstruction([player[0], player[1] + FOLLOW_ANCHOR_HEIGHT, player[2]], pose.current.position).position
       }
-      camera.position.fromArray(pose.current.position)
-      orbit.target.fromArray(pose.current.target)
-      camera.lookAt(orbit.target)
+    }
+    if (!(mode === 'studio' && transition.current <= 0)) {
+      camera.position.fromArray(pose.current.position); orbit.target.fromArray(pose.current.target); camera.lookAt(orbit.target)
       transition.current = Math.max(0, transition.current - dt)
     }
     if (perspective) { camera.aspect = aspect; camera.fov = Math.max(5, Math.min(90, pose.current.fov ?? 58)); camera.zoom = 1 }
@@ -322,21 +429,28 @@ function CameraRig({ view, reset, mode, cameraMode, reducedMotion, inputEnabled,
     orbit.enabled = mode === 'studio' && transition.current === 0 && inputEnabled
     if (mode === 'studio') orbit.update()
     live.current.azimuth = immersive ? live.current.viewYaw + Math.PI : FOLLOW_AZIMUTH
-    live.current.bodyVisible = cameraMode !== 'first-person' || mode === 'studio'
+    live.current.bodyVisible = cinematicControlled || cameraMode !== 'first-person' || mode === 'studio'
+    if (returning && cameraMode === 'first-person' && camera.position.distanceTo(live.current.position.clone().add(new Vector3(0, FOLLOW_ANCHOR_HEIGHT, 0))) < 1.2) live.current.bodyVisible = false
     if (immersive && cameraMode === 'third-person') live.current.bodyVisible = camera.position.distanceTo(live.current.position.clone().add(new Vector3(0, FOLLOW_ANCHOR_HEIGHT, 0))) > 1.1
+    const settled = active ? owner.current === 'overridden' || shotTransition.current.settled : returning ? shotTransition.current.settled : transition.current <= 0
+    gl.domElement.dataset.cameraSettled = String(settled)
     publish.current += delta
     if (publish.current >= .2) {
       publish.current = 0
       gl.domElement.dataset.cameraPosition = camera.position.toArray().join(',')
       gl.domElement.dataset.cameraTarget = orbit.target.toArray().join(',')
-      gl.domElement.dataset.cameraMode = mode === 'studio' ? view : cameraMode
+      gl.domElement.dataset.cameraMode = active || returning ? 'cinematic' : mode === 'studio' ? view : cameraMode
+      gl.domElement.dataset.cameraOwner = active ? owner.current : returning ? 'returning-character' : 'player'
+      gl.domElement.dataset.cameraStation = current?.shot?.stationId ?? ''
+      gl.domElement.dataset.cameraRevision = String(current?.revision ?? 0)
+      gl.domElement.dataset.cameraShot = current?.shot?.id ?? ''
       gl.domElement.dataset.cameraProjection = perspective ? 'perspective' : 'orthographic'
       gl.domElement.dataset.viewYaw = String(live.current.viewYaw)
       gl.domElement.dataset.characterVisible = String(live.current.bodyVisible)
       gl.domElement.dataset.characterHeading = String(live.current.heading)
     }
   })
-  return <><PerspectiveLens makeDefault={immersive} position={[5, 3, 5]} near={.08} far={180} fov={58} /><OrthographicLens makeDefault={!immersive} position={[14, 14, 18]} near={.08} far={180} /><OrbitControls ref={controls} enablePan={false} minZoom={.18} maxZoom={6} minPolarAngle={.3} maxPolarAngle={Math.PI / 2 + .05} enableDamping={!reducedMotion} dampingFactor={.12} enabled={false} /></>
+  return <><PerspectiveLens makeDefault={immersive || cinematicControlled} position={[5, 3, 5]} near={.08} far={220} fov={58} /><OrthographicLens makeDefault={!immersive && !cinematicControlled} position={[14, 14, 18]} near={.08} far={220} /><OrbitControls ref={controls} enablePan={false} minZoom={.18} maxZoom={6} minPolarAngle={.3} maxPolarAngle={Math.PI / 2 + .05} enableDamping={!reducedMotion} dampingFactor={.12} enabled={false} /></>
 }
 
 // Stable children prevent rebuilding the static environment map on every telemetry update.
@@ -368,14 +482,18 @@ function Lighting({ lighting, quality, live, mode }: Pick<SceneProps, 'lighting'
   </>
 }
 function SceneContents(props: SceneProps) {
+  const shapes = useRef(new Map<string, StationShape>()).current
+  const [bounds, setBounds] = useState(new Map<string, SubjectBounds>())
+  const onMeasured = useCallback(() => setBounds(new Map([...shapes].map(([id, shape]) => [id, shape.bounds]))), [shapes])
+  const attention = props.cinematic?.shot ?? (props.simulation ? simulationShot(props.simulation) : null)
   const live = useRef<LiveWorld>({ position: new Vector3(...WORLD_LAYOUT.spawn), azimuth: FOLLOW_AZIMUTH, viewYaw: INITIAL_HEADING, movementYaw: INITIAL_HEADING, heading: INITIAL_HEADING, bodyVisible: true, nearby: null })
   return <>
     <RendererRecovery onStatus={props.onRendererStatus} />
     {/* Keep one shadow resource set per Canvas; switching modes never allocates another. */}
     <group visible={props.mode === 'studio' && props.quality !== 'low'}><ContactShadows frames={props.mode === 'studio' && props.quality !== 'low' ? Infinity : 0} position={[0, 0.005, 0]} opacity={0.65} scale={16} blur={2.2} far={7} resolution={512} color="#02080e" /></group>
     <Lighting {...props} live={live} />
-    <Suspense fallback={null}><Awushi {...props} live={live} /><Stage {...props} live={live} />{props.mode === 'world' && props.simulation && <SimulationEffects simulation={props.simulation} environment={props.simulationEnvironment ?? props.simulation.environment} reducedMotion={props.reducedMotion} paused={props.effectsPaused} />}</Suspense>
-    <CameraRig {...props} live={live} />
+    <Suspense fallback={null}><Awushi {...props} live={live} /><Stage {...props} live={live} shapes={shapes} onMeasured={onMeasured} />{props.mode === 'world' && <StationAttention shot={attention} shapes={shapes} reducedMotion={props.reducedMotion || Boolean(props.effectsPaused)} labelsVisible={props.inputEnabled} />}{props.mode === 'world' && props.simulation && <SimulationEffects simulation={props.simulation} environment={props.simulationEnvironment ?? props.simulation.environment} reducedMotion={props.reducedMotion} paused={props.effectsPaused} labelsVisible={props.inputEnabled} />}</Suspense>
+    <CameraRig {...props} live={live} bounds={bounds} />
   </>
 }
 export default function Scene(props: SceneProps) {
