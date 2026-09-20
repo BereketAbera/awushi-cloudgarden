@@ -50,6 +50,8 @@ for (const ending of ['completed', 'cancelled'] as const) {
     await expect(page.getByTestId('guide-me-world')).toHaveCount(0)
     await expect(page.getByTestId('hud-guide-me')).toHaveCount(0)
     await expect(page.getByTestId('guide-focus')).toHaveCount(0)
+    await expect(page.getByTestId('navigation-target')).toHaveCount(0)
+    await expect(page.locator('.toast')).toHaveCount(0)
     await expect(page.locator('canvas')).toHaveAttribute('data-camera-owner', 'player')
   })
 }

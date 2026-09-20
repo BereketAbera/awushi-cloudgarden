@@ -43,7 +43,7 @@ For every row, a panel visit, graph selection or camera movement must leave the 
 3. Architecture focus clears historical review, and architecture/station inspectors read current state rather than a stale review snapshot.
 4. Native summary controls retain keyboard Space behavior; playback options do not accidentally trigger world shortcuts.
 5. Pause stops automatic interpolation, while explicit focus/return/skip commands remain usable. Manual orbit begins from the existing pose instead of allowing camera controllers to compete.
-6. Finished/cancelled missions remove inactive Guide Me controls; graph focus keeps its own selected station context. Guidance storage notices can be dismissed and clear after a successful save.
+6. Finished/cancelled missions remove inactive Guide Me controls, route markers and stale direction notices; graph focus keeps its own selected station context. Guidance storage notices can be dismissed and clear after a successful save.
 7. Starting exploration closes the introductory card so it cannot cover phone controls. The Guide Me view reserves a separate scene viewport and control rail. WebGL interruption pauses lab, adventure and recorded-stage clocks.
 8. Missing mechanical prerequisites receive explanations without disabling useful incorrect choices. Hint usage no longer penalizes an otherwise equal completed result.
 
@@ -58,7 +58,7 @@ Additional final review found and corrected operational-state attention (failing
 | Runtime GLB/Three.js loading checks | 19 passed |
 | Unit/domain checks, including camera, guidance, playback and replay | 131 passed |
 | GLB validation and asset budgets | 14 exports, zero errors and zero warnings |
-| Production build | Passed; UI 510.68 kB and scene 1,082.71 kB minified trigger the visible size warning |
+| Production build | Passed; UI 510.71 kB and scene 1,082.71 kB minified trigger the visible size warning |
 | Desktop Chrome 156.0.8078.80 | 47 passed, 2 intentional skips |
 | Chromium phone emulation | 44 passed, 5 intentional skips |
 | Firefox 159.0 | 31 passed |
@@ -66,7 +66,7 @@ Additional final review found and corrected operational-state attention (failing
 | Unique latest browser outcomes | 153 passed, 7 intentional skips, 0 unresolved failures |
 | Total unique passed checks | 323 (170 pipeline/runtime/unit + 153 browser) |
 
-The [machine-readable verification record](../assets/phase4-verification.json) retains each unique case, latest outcome, run history, source hashes, versions and raw measurements. The initial full 152-case run had 143 passes, seven skips and two failures: mobile onboarding intercepted the portfolio link, and a concurrent smoke run removed Firefox trace artifacts during cleanup. The portfolio layout was fixed; reconciliation/reload was rerun in isolation in all four browsers. Later focused runs passed 40 cases, then exposed and fixed keyboard focus in a new held-key regression; the final cross-browser focus run passed 24 cases and the final mobile run passed nine. This is a merged final result, not a claim that the initial full run was uninterrupted and green. Seven longstanding skips avoid duplicated keyboard routes/timed lab journeys on the phone and touch-only tests on desktop; mobile adventure journeys and touch behavior have separate passing coverage.
+The [machine-readable verification record](../assets/phase4-verification.json) retains each unique case, latest outcome, run history, source hashes, versions and raw measurements. The initial full 152-case run had 143 passes, seven skips and two failures: mobile onboarding intercepted the portfolio link, and a concurrent smoke run removed Firefox trace artifacts during cleanup. The portfolio layout was fixed; reconciliation/reload was rerun in isolation in all four browsers. Later focused runs passed 40 cases, then exposed and fixed keyboard focus in a new held-key regression; the final cross-browser focus run passed 24 cases and the final mobile run passed nine. Public screenshot review then identified a leftover completed-mission route marker; the final completion/graph/operational regression run verifies its cleanup. This is a merged final result, not a claim that the initial full run was uninterrupted and green. Seven longstanding skips avoid duplicated keyboard routes/timed lab journeys on the phone and touch-only tests on desktop; mobile adventure journeys and touch behavior have separate passing coverage.
 
 `tests/guidance.test.ts` covers read-only guidance, real checklist updates, non-spoiling briefing data, mechanical prerequisites, guidance preferences, hints, detector thresholds and suppression. `tests/playback.test.ts` covers readable stage timing, gate clamps, same-tick event provenance, stale record rejection and immutable review. `tests/cinematic.test.ts` checks actual GLB subject bounds, desktop/portrait frustum fit, alternate sightlines, shot families, ownership, manual orbit and status semantics. Existing adventure/persistence/replay tests continue to exercise the shared engine.
 
@@ -117,4 +117,4 @@ This is an expert walkthrough, not a participant usability study. The design aim
 
 Building occlusion uses an authored-footprint approximation; unusual new geometry may need explicit framing. Long raw evidence and technical details still require scrolling on a phone. Historical review can distinguish recorded same-time commands but cannot invent intermediate states inside one atomic reducer command, and trimmed event history is not recoverable through stage navigation. Stuck detection is a dismissible heuristic, not a diagnosis of user understanding. Browser-local saves remain tied to the current origin and profile.
 
-The separate Three.js scene bundle continues to produce Vite's large-chunk warning. The 510.68 kB interface and 1,082.71 kB scene bundles build successfully; their loading cost remains a limitation. Physical-device profiling, longer-duration resource analysis and external first-time-user feedback remain useful follow-up work after this release.
+The separate Three.js scene bundle continues to produce Vite's large-chunk warning. The 510.71 kB interface and 1,082.71 kB scene bundles build successfully; their loading cost remains a limitation. Physical-device profiling, longer-duration resource analysis and external first-time-user feedback remain useful follow-up work after this release.

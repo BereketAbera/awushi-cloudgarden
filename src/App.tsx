@@ -181,15 +181,18 @@ export default function App() {
     if (inGame && !modal && !missionOpen && distance > .06 && distance < 2) sound.play('step')
   }, [telemetry.position, inGame, modal, missionOpen, sound])
   useEffect(() => {
-    if (missionId) setNavigationTarget(guidance.preferences.mode === 'guided' ? missionView?.stationId ?? null : null)
-  }, [missionId, missionView?.objective?.id, missionView?.stationId, guidance.preferences.mode])
+    if (missionId) setNavigationTarget(missionStatus === 'active' && guidance.preferences.mode === 'guided' ? missionView?.stationId ?? null : null)
+  }, [missionId, missionStatus, missionView?.objective?.id, missionView?.stationId, guidance.preferences.mode])
   useEffect(() => {
     if (missionEnvironment) setEnvironment(missionEnvironment)
   }, [missionEnvironment])
   useEffect(() => {
-    if (missionStatus && missionStatus !== 'active' && guideStation && !graphReturn) {
-      setGuideStation(null)
-      returnToCharacter()
+    if (missionStatus && missionStatus !== 'active') {
+      setNotice(null)
+      if (guideStation && !graphReturn) {
+        setGuideStation(null)
+        returnToCharacter()
+      }
     }
   }, [missionStatus, guideStation, graphReturn, returnToCharacter])
   useEffect(() => { if (clip === 'Celebrate' && !adventures.replay) sound.play('celebration') }, [clip, adventures.replay, sound])

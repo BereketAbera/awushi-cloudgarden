@@ -149,6 +149,18 @@
         "flaky": 0
       },
       "failures": []
+    },
+    {
+      "purpose": "Final completion/cancellation route cleanup, graph continuity and recorded-operation regression checks.",
+      "stats": {
+        "startTime": "2026-11-06T10:08:15.412Z",
+        "duration": 60447.945,
+        "expected": 16,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "failures": []
     }
   ],
   "browserTests": [
@@ -356,7 +368,7 @@
       "project": "desktop",
       "status": "passed",
       "outcome": "expected",
-      "durationMs": 2479,
+      "durationMs": 2495,
       "skipReasons": []
     },
     {
@@ -365,7 +377,7 @@
       "project": "desktop",
       "status": "passed",
       "outcome": "expected",
-      "durationMs": 2579,
+      "durationMs": 2442,
       "skipReasons": []
     },
     {
@@ -374,7 +386,7 @@
       "project": "desktop",
       "status": "passed",
       "outcome": "expected",
-      "durationMs": 1940,
+      "durationMs": 2199,
       "skipReasons": []
     },
     {
@@ -428,7 +440,7 @@
       "project": "desktop",
       "status": "passed",
       "outcome": "expected",
-      "durationMs": 6078,
+      "durationMs": 6093,
       "skipReasons": []
     },
     {
@@ -729,7 +741,7 @@
       "project": "firefox",
       "status": "passed",
       "outcome": "expected",
-      "durationMs": 2860,
+      "durationMs": 2887,
       "skipReasons": []
     },
     {
@@ -738,7 +750,7 @@
       "project": "firefox",
       "status": "passed",
       "outcome": "expected",
-      "durationMs": 4959,
+      "durationMs": 2969,
       "skipReasons": []
     },
     {
@@ -747,7 +759,7 @@
       "project": "firefox",
       "status": "passed",
       "outcome": "expected",
-      "durationMs": 6692,
+      "durationMs": 3526,
       "skipReasons": []
     },
     {
@@ -801,7 +813,7 @@
       "project": "firefox",
       "status": "passed",
       "outcome": "expected",
-      "durationMs": 7158,
+      "durationMs": 6762,
       "skipReasons": []
     },
     {
@@ -1086,7 +1098,7 @@
       "project": "mobile",
       "status": "passed",
       "outcome": "expected",
-      "durationMs": 2782,
+      "durationMs": 2556,
       "skipReasons": []
     },
     {
@@ -1095,7 +1107,7 @@
       "project": "mobile",
       "status": "passed",
       "outcome": "expected",
-      "durationMs": 2755,
+      "durationMs": 2456,
       "skipReasons": []
     },
     {
@@ -1104,7 +1116,7 @@
       "project": "mobile",
       "status": "passed",
       "outcome": "expected",
-      "durationMs": 2625,
+      "durationMs": 1739,
       "skipReasons": []
     },
     {
@@ -1158,7 +1170,7 @@
       "project": "mobile",
       "status": "passed",
       "outcome": "expected",
-      "durationMs": 6064,
+      "durationMs": 5907,
       "skipReasons": []
     },
     {
@@ -1459,7 +1471,7 @@
       "project": "webkit",
       "status": "passed",
       "outcome": "expected",
-      "durationMs": 2743,
+      "durationMs": 2786,
       "skipReasons": []
     },
     {
@@ -1468,7 +1480,7 @@
       "project": "webkit",
       "status": "passed",
       "outcome": "expected",
-      "durationMs": 2899,
+      "durationMs": 3033,
       "skipReasons": []
     },
     {
@@ -1477,7 +1489,7 @@
       "project": "webkit",
       "status": "passed",
       "outcome": "expected",
-      "durationMs": 2317,
+      "durationMs": 2813,
       "skipReasons": []
     },
     {
@@ -1531,7 +1543,7 @@
       "project": "webkit",
       "status": "passed",
       "outcome": "expected",
-      "durationMs": 7099,
+      "durationMs": 6919,
       "skipReasons": []
     },
     {
@@ -1616,9 +1628,9 @@
   "build": {
     "files": [
       {
-        "path": "dist/assets/Scene-Bw_u4cCF.js",
+        "path": "dist/assets/Scene-BXhJUw21.js",
         "bytes": 1082710,
-        "sha256": "f55be34993491456ef0571e6633cea38f7f0b4f5305d8a69b238f2fb47ef3120"
+        "sha256": "e97199f87b1be22c19a36d68ea11b65998910fc97d2567c1820c701fe8dc3190"
       },
       {
         "path": "dist/assets/index-C6f-ENBC.css",
@@ -1626,9 +1638,9 @@
         "sha256": "d28ea383f879c6f0c21cf47b66a7fd29b920f57d0458d8caf91cd62755b0255d"
       },
       {
-        "path": "dist/assets/index-CcZnBck7.js",
-        "bytes": 510682,
-        "sha256": "325f9867b2d653f5c2fadcf97bba70bb9fe77fa4655451c9740d1f02c5d20205"
+        "path": "dist/assets/index-bmle6U-W.js",
+        "bytes": 510711,
+        "sha256": "c7e59ac9a7efb3037702cc7b65860379ce218656c036d198c9dcaa289bd91d5a"
       }
     ],
     "warning": "UI and Three.js scene bundles exceed the 500 kB advisory threshold"
@@ -2928,8 +2940,8 @@
     "scripts/test-pipeline.mjs": "a0b91230ab8b88153a338b647d4ef8d7b5303bd8b465f01e80fbe88431eb859b",
     "scripts/test-runtime.mjs": "451ee0807e39a3c0022cbe2b2f931ee7c47ee860bad303e0aeb995ae45320433",
     "scripts/validate-assets.mjs": "fd968eb170acef3e1e121784a8fbb25f8ebc7adeea8102e5c94c4866917d6f89",
-    "scripts/verify-deployment.mjs": "98ff9f9ce97c0654394011f5bc0ecfe34e1f0054b186656667d78a586bfd7ae4",
-    "src/App.tsx": "febfacffe1215dcf40a2f2fc8927f0125f9f2c117d623dce7eafb72a9e1e653d",
+    "scripts/verify-deployment.mjs": "f726642cec93aeb5a0d5ae8ca8f298eb88f6c31758b3db673bacca458a05137e",
+    "src/App.tsx": "d5b448caa371b2872d1b5a7bb7949028965cc98fafa17abb15e395fc098c28d6",
     "src/Scene.tsx": "d240bb33e3e1218e2099f69a862b35a510f248dd024c8b4f3d8efa0dded4db9b",
     "src/adventures/adventures.css": "960e7d7d06eb8fba1068975ac75d7527379429427c7b24f8eb7e7e97236bfc12",
     "src/adventures/catalog.ts": "1cb7346a1b945965417554aa4e06979f73e0006695d97a687f14479893724847",
@@ -2985,7 +2997,7 @@
     "tests/browser/cinematic.spec.ts": "08d76943f3bec6ca1cebd59dc6ade82de5cfc45c610acede73098a6f2f0798e5",
     "tests/browser/compatibility.spec.ts": "b0dcd799c5f98c0dc24127dd1e80de8e0f9c43b23eb9c1bf228f9ec4721b6fc1",
     "tests/browser/fixtures.ts": "328b6e0539c56e54bd77b33a39db3c986e8867e1207647c46c99db923e8cecb0",
-    "tests/browser/guidance-regression.spec.ts": "38975bad648a55587348c29a7fa7f4e324e661d2f23fd2c6ed7bc9c6f2f744dd",
+    "tests/browser/guidance-regression.spec.ts": "9df71276e31a2da318a424b88dac7843d01462e0039957f550b5d1b87659f706",
     "tests/browser/guidance.spec.ts": "1df26c41a83e6f76c84d33a913ea03cf18da03171b654f261c336bb71f1e8151",
     "tests/browser/operational-flow.spec.ts": "1bb4581fe3352bbfbdd95739ee46285d09f89180f17316d7cdb2738fb3b1710b",
     "tests/browser/performance.spec.ts": "1f1dfbd888a63e2d23895591abb919bc2f8637e758b9caee00ab140e615fe0df",
