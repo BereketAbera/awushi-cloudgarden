@@ -1,16 +1,24 @@
 {
   "url": "https://awushi-devops-world.vercel.app",
-  "deploymentId": "dpl_4tu2tgf4hYtvVqEMadAZ9a1KKQe2",
-  "date": "2026-11-06",
+  "date": "2026-11-06T10:10:30.038Z",
+  "phase": 4,
   "target": "production",
   "publicUnauthenticatedAccess": true,
   "missingAssetStatus": 404,
   "files": [
     {
-      "path": "/assets/Scene-axIaiq5X.js",
+      "path": "/index.html",
       "status": 200,
-      "bytes": 1064262,
-      "sha256": "1b9ddfc2d8be59fdd2c98df6661fca2dee2d89d12006d9852653f6c6f522d2cf",
+      "bytes": 1036,
+      "sha256": "90f3b2f7549e4bcbcf4247a98269af398258a27d061f25bd75d1f75538368874",
+      "contentType": "text/html; charset=utf-8",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/assets/Scene-BXhJUw21.js",
+      "status": 200,
+      "bytes": 1082710,
+      "sha256": "e97199f87b1be22c19a36d68ea11b65998910fc97d2567c1820c701fe8dc3190",
       "contentType": "application/javascript; charset=utf-8",
       "cacheControl": "public, max-age=0, must-revalidate"
     },
@@ -95,19 +103,19 @@
       "cacheControl": "public, max-age=0, must-revalidate"
     },
     {
-      "path": "/assets/index-CmYiKrFS.js",
+      "path": "/assets/index-C6f-ENBC.css",
       "status": 200,
-      "bytes": 460780,
-      "sha256": "577e869b6f53c469401f0622ab2696d249a69b3754f099fc8ed623ca720c6181",
-      "contentType": "application/javascript; charset=utf-8",
+      "bytes": 97198,
+      "sha256": "d28ea383f879c6f0c21cf47b66a7fd29b920f57d0458d8caf91cd62755b0255d",
+      "contentType": "text/css; charset=utf-8",
       "cacheControl": "public, max-age=0, must-revalidate"
     },
     {
-      "path": "/assets/index-i3Qg55nd.css",
+      "path": "/assets/index-bmle6U-W.js",
       "status": 200,
-      "bytes": 81370,
-      "sha256": "14190ef2e3559b292a53f62702a4ec4bfabf91b6cf2127070a7a297956475805",
-      "contentType": "text/css; charset=utf-8",
+      "bytes": 510711,
+      "sha256": "c7e59ac9a7efb3037702cc7b65860379ce218656c036d198c9dcaa289bd91d5a",
+      "contentType": "application/javascript; charset=utf-8",
       "cacheControl": "public, max-age=0, must-revalidate"
     },
     {
@@ -141,14 +149,6 @@
       "sha256": "5f1a3c2df745287431cfe0b680863c656e131b906f1901fbabfb737da84c27b5",
       "contentType": "model/gltf-binary",
       "cacheControl": "public, max-age=0, must-revalidate"
-    },
-    {
-      "path": "/index.html",
-      "status": 200,
-      "bytes": 1036,
-      "sha256": "68ac6c4fd258d1bd8c8a2fdd8952b55d7a09e4d7ae4b1d98a5eda44b872f3b7b",
-      "contentType": "text/html; charset=utf-8",
-      "cacheControl": "public, max-age=0, must-revalidate"
     }
   ],
   "browserSmoke": {
@@ -157,18 +157,24 @@
       "width": 1440,
       "height": 1000
     },
-    "renderer": "WebGL canvas loaded",
-    "adventure": "Recover a Failed Pod / readiness: inspect, rejected restart, correct repair, completion",
+    "renderer": "Real WebGL canvas loaded",
+    "adventure": "Recover a Failed Pod / readiness: onboarding, Watch Flow, Guide Me, inspection, ineffective restart, repair, verified completion",
     "persistence": "Completed adventure retained after reload",
-    "pageAndConsoleErrors": []
+    "pageAndConsoleErrors": [],
+    "screenshots": [
+      "assets/previews/vercel-phase4-watch-flow.png",
+      "assets/previews/vercel-phase4-complete.png"
+    ]
   },
+  "deploymentId": "dpl_7FBLK1gPSTbGStVwnn2iMXgYnLGE",
+  "deploymentUrl": "https://awushi-devops-world-28vgi6scr-bereketaberas-projects.vercel.app",
+  "sourceCommit": "d8c4f3fbf9d2041911dae1b4b9d4fadc37277c11",
   "visualReview": {
-    "method": "In-app browser screenshot reviewed after models finished loading",
-    "viewport": {
-      "width": 1280,
-      "height": 720
-    },
-    "result": "Landing page renders the connected floating districts, facilities, bridges and Awushi",
-    "screenshot": "assets/previews/vercel-live.png"
+    "method": "Opened and inspected actual public Chrome screenshots after station framing and completion camera return settled",
+    "result": "Red Pod attention and investigation caption match failure; completion shows the recovery summary without obsolete route markers or direction notices",
+    "screenshots": [
+      "assets/previews/vercel-phase4-watch-flow.png",
+      "assets/previews/vercel-phase4-complete.png"
+    ]
   }
 }

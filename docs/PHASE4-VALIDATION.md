@@ -111,7 +111,10 @@ Frames, camera interpolation and station attention use bounded work and refs rat
 ## Commits and remaining limits
 
 - `e954c0f` — baseline UX audit and Phase 4 plan.
-- The implementation, regression tests and visual/measurement evidence are committed as a coherent Phase 4 milestone; the release commit records the final implementation hash and public deployment verification.
+- `c5cf119` — cinematic flows, shared guidance, onboarding, tests and visual/performance evidence.
+- `d8c4f3f` — final completion/cancellation navigation cleanup and four-browser regression verification.
+
+The final build is published at [Awushi’s DevOps World](https://awushi-devops-world.vercel.app). The [deployment record](../assets/vercel-deployment.json) verifies all 18 served file hashes, including 14 models, and an unauthenticated public Chrome journey through Watch Flow, Guide Me, an ineffective restart, recovery and reload persistence. The [live station view](../assets/previews/vercel-phase4-watch-flow.png) and [completion screen](../assets/previews/vercel-phase4-complete.png) were visually inspected; obsolete route guidance is absent after completion.
 
 This is an expert walkthrough, not a participant usability study. The design aims to make the starting action apparent quickly, but no measured first-time-user “30 seconds” success rate is claimed. Phone profiles are desktop-browser emulation, and WebKit automation is not a physical Safari/iOS-device test.
 

@@ -3026,5 +3026,7 @@
     "Building occlusion is approximate; newly authored geometry may require explicit camera framing.",
     "Long evidence still scrolls on phones; resource counts are not GPU bytes or a long-duration soak.",
     "Browser-local saves are origin/profile specific; existing large bundle advisory remains."
-  ]
+  ],
+  "implementationCommit": "d8c4f3f",
+  "deploymentReport": "assets/vercel-deployment.json"
 }

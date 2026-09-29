@@ -55,7 +55,7 @@ npm run verify                                 # lint, types, unit/runtime/pipel
 
 For a static production build, run `npm run build` and review with `npm run preview`. The live Vercel project is `bereketaberas-projects/awushi-devops-world`, configured to serve `dist/` at the origin root. See the [deployment guide](docs/DEPLOYMENT.md) for repeat release commands, asset caching and local-save boundaries. No Git remote or automatic Git deployment is configured; releases currently use the authenticated Vercel CLI. Local use requires no hosting account.
 
-The [deployment verification report](assets/vercel-deployment.json) records 18 publicly accessible files matching the local build hashes, including all 14 GLB models, plus a live browser check that completed Recover a Failed Pod and retained the result after reload.
+The [deployment verification report](assets/vercel-deployment.json) records 18 publicly accessible files matching the local build hashes, including all 14 GLB models, plus a live browser check of Watch Flow, Guide Me, recovery, completion cleanup and reload persistence. Repeat it with `node scripts/verify-deployment.mjs` after publishing the matching local build.
 
 ## Repository map
 

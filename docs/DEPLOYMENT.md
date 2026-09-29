@@ -2,7 +2,7 @@
 
 Awushi's DevOps World is live at [awushi-devops-world.vercel.app](https://awushi-devops-world.vercel.app), deployed to Vercel project `awushi-devops-world` in scope `bereketaberas-projects`. The browser runs the game, deterministic infrastructure model, adventure notebook, replay and synthesized audio. Visitors need no account, API key, application server, database service or live infrastructure connection; Vercel delivers the static files.
 
-The [2026-11-06 deployment report](../assets/vercel-deployment.json) records unauthenticated HTTP access and 18 public files whose SHA-256 hashes matched the local production build, including all 14 GLB models. The live Chrome smoke check loaded the WebGL scene, completed the readiness variation of Recover a Failed Pod after a rejected restart and correct repair, and retained completion after reload. It recorded no page/console errors; a missing asset returned 404. This hosted smoke check supplements the broader [Phase 3 verification](PHASE3-VALIDATION.md), rather than repeating its entire browser matrix.
+The [2026-11-06 Phase 4 deployment report](../assets/vercel-deployment.json) records unauthenticated HTTP access and 18 public files whose SHA-256 hashes matched the verified local build, including all 14 GLB models. Production serves source commit `d8c4f3f`. The live Chrome smoke check loaded WebGL, used Watch Flow and Guide Me, completed the readiness variation of Recover a Failed Pod after an ineffective restart and correct repair, verified cleared completion guidance, and retained completion after reload. No page/console errors were recorded; a missing model returned 404. The actual hosted screenshots were inspected. This public check supplements the [Phase 4 browser matrix and visual review](PHASE4-VALIDATION.md). The [prior Phase 3 deployment report](../assets/vercel-phase3-deployment.json) remains historical evidence.
 
 ## Build and review locally
 
@@ -23,7 +23,7 @@ npx playwright install firefox webkit
 npm run verify
 ```
 
-Initial npm/browser installation needs network access. The installed tools, generated assets and runtime are local. On a new Linux machine, Playwright may also require its documented operating-system browser dependencies. Chrome desktop and mobile emulation run the full browser suite; Firefox and WebKit run adventures, compatibility and resilience. Read the actual test output and current validation report instead of treating a configured browser project as evidence of a passing run.
+Initial npm/browser installation needs network access. The installed tools, generated assets and runtime are local. On a new Linux machine, Playwright may also require its documented operating-system browser dependencies. Chrome desktop and mobile emulation run the full browser suite; Firefox and WebKit run adventures, compatibility, resilience, cinematics, guidance, operational attention and replay isolation. Read the actual test output and current validation report instead of treating a configured browser project as evidence of a passing run.
 
 ## Repeat a Vercel release
 
@@ -43,7 +43,13 @@ vercel deploy --prebuilt --prod --yes --scope bereketaberas-projects
 
 `vercel.json` selects the Vite framework, `npm run build` and `dist/`, and sets GLB content type and revalidation headers. The generated `.vercel/` directory contains local project linkage/settings and build output and is ignored by Git. Do not commit it. The app requires no application environment secrets. There is currently no Git remote or automatic Git deployment configured; committing changes alone does not publish a new release.
 
-After deployment, verify the stable production URL, its actual model responses and a saved adventure through the public interface. Refresh the deployment report with the new release's hashes and observations rather than treating the initial report as proof for later builds.
+After deployment, verify the stable production URL against the exact local `dist/` build:
+
+```sh
+node scripts/verify-deployment.mjs
+```
+
+The script makes unauthenticated requests, compares SHA-256 hashes for HTML, JavaScript, CSS and all 14 GLBs, checks missing-model 404 behavior, then runs a real Chrome journey through Watch Flow, Guide Me, an ineffective correction, verified recovery and reload persistence. It refreshes `assets/vercel-deployment.json` and the hosted Phase 4 screenshots. Review the images as well as the assertions. An optional HTTPS origin argument verifies a different deployment; browser saves belong to that origin.
 
 ## Static host contract
 
