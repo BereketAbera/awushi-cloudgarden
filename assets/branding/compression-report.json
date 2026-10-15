@@ -1,0 +1,287 @@
+{
+  "generator": "scripts/compress-branding.mjs",
+  "encoders": {
+    "cwebp": "1.6.0\nlibsharpyuv: 0.4.2",
+    "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "settings": {
+    "webp_quality": 85,
+    "webp_method": 6,
+    "webp_alpha_quality": 100,
+    "jpeg_qscale": 3,
+    "resize": false,
+    "notes": "Lossy color compression; WebP preserves alpha. PNG masters and originals unchanged."
+  },
+  "outputs": [
+    {
+      "path": "public/assets/branding/awushi-profile-2048.webp",
+      "format": "webp",
+      "size": [
+        2048,
+        2048
+      ],
+      "transparent": false,
+      "source": "assets/branding/awushi-profile-master.png",
+      "source_sha256": "b40d5be761b2e229ce3fecad0b57e810303592cf42ec6f2d25ecaa133140bb96",
+      "source_bytes": 3613649,
+      "bytes": 102216,
+      "reduction_percent": 97.2,
+      "sha256": "db2b8e149039687d94bcf27bbe4be90349c6b7bd296d8f9301133eddcd2d51bf"
+    },
+    {
+      "path": "public/assets/branding/awushi-profile-2048.jpg",
+      "format": "jpg",
+      "size": [
+        2048,
+        2048
+      ],
+      "transparent": false,
+      "source": "assets/branding/awushi-profile-master.png",
+      "source_sha256": "b40d5be761b2e229ce3fecad0b57e810303592cf42ec6f2d25ecaa133140bb96",
+      "source_bytes": 3613649,
+      "bytes": 245498,
+      "reduction_percent": 93.2,
+      "sha256": "93aa81c0d2eba0193003a9735be9d4cc7deac2e452c43d4b89b3f0d01cc076b1"
+    },
+    {
+      "path": "public/assets/branding/awushi-profile-1024.webp",
+      "format": "webp",
+      "size": [
+        1024,
+        1024
+      ],
+      "transparent": false,
+      "source": "public/assets/branding/awushi-profile-1024.png",
+      "source_sha256": "62e8ccf60ad9d372ba4bb66bc34df25143de74da95364cec304bf8aacd52d943",
+      "source_bytes": 1060254,
+      "bytes": 45900,
+      "reduction_percent": 95.7,
+      "sha256": "d1481c677c54f9a130708d0eb91dd510f9e51e5a0125f131ac76b30bcacfeb11"
+    },
+    {
+      "path": "public/assets/branding/awushi-profile-1024.jpg",
+      "format": "jpg",
+      "size": [
+        1024,
+        1024
+      ],
+      "transparent": false,
+      "source": "public/assets/branding/awushi-profile-1024.png",
+      "source_sha256": "62e8ccf60ad9d372ba4bb66bc34df25143de74da95364cec304bf8aacd52d943",
+      "source_bytes": 1060254,
+      "bytes": 103996,
+      "reduction_percent": 90.2,
+      "sha256": "654ac3008c53401bfa8122c0fe91c9ae5ac91f60bd20301da38a5bef0ce65b4c"
+    },
+    {
+      "path": "public/assets/branding/awushi-profile-512.webp",
+      "format": "webp",
+      "size": [
+        512,
+        512
+      ],
+      "transparent": false,
+      "source": "public/assets/branding/awushi-profile-512.png",
+      "source_sha256": "f1db81d9e838c9f29bed9effd278ae420f39dd25416c135b16d62cc936557df5",
+      "source_bytes": 272095,
+      "bytes": 20530,
+      "reduction_percent": 92.5,
+      "sha256": "91b1b4d3768939d0f1bec9ce67cd179bbc8d12013ef26fdd358709d03729466e"
+    },
+    {
+      "path": "public/assets/branding/awushi-profile-512.jpg",
+      "format": "jpg",
+      "size": [
+        512,
+        512
+      ],
+      "transparent": false,
+      "source": "public/assets/branding/awushi-profile-512.png",
+      "source_sha256": "f1db81d9e838c9f29bed9effd278ae420f39dd25416c135b16d62cc936557df5",
+      "source_bytes": 272095,
+      "bytes": 44057,
+      "reduction_percent": 83.8,
+      "sha256": "7857403aa107a5a2d12df5f6afc9631d6d68bf7b411acda113b4e2c9110c5313"
+    },
+    {
+      "path": "public/assets/branding/awushi-profile-256.webp",
+      "format": "webp",
+      "size": [
+        256,
+        256
+      ],
+      "transparent": false,
+      "source": "public/assets/branding/awushi-profile-256.png",
+      "source_sha256": "2053caffc4af20c8265d733c51461423124fdbc32aed4c8a9347b49fa09e1970",
+      "source_bytes": 74465,
+      "bytes": 8754,
+      "reduction_percent": 88.2,
+      "sha256": "7ec69aa34434d87ddea16735f756a73fa6e62cde40df54e507e1e48c54684d38"
+    },
+    {
+      "path": "public/assets/branding/awushi-profile-256.jpg",
+      "format": "jpg",
+      "size": [
+        256,
+        256
+      ],
+      "transparent": false,
+      "source": "public/assets/branding/awushi-profile-256.png",
+      "source_sha256": "2053caffc4af20c8265d733c51461423124fdbc32aed4c8a9347b49fa09e1970",
+      "source_bytes": 74465,
+      "bytes": 18840,
+      "reduction_percent": 74.7,
+      "sha256": "766ac3ac2cfefccb3b94f4cfe1fcd90dcfe096c787ac5b0835a6e3d9de31c019"
+    },
+    {
+      "path": "public/assets/branding/awushi-profile-128.webp",
+      "format": "webp",
+      "size": [
+        128,
+        128
+      ],
+      "transparent": false,
+      "source": "public/assets/branding/awushi-profile-128.png",
+      "source_sha256": "b3e7eaa2476a364f61b1ac9e0767aa5b07f7efeb51cc432d183543a22393ef12",
+      "source_bytes": 22479,
+      "bytes": 3818,
+      "reduction_percent": 83,
+      "sha256": "e9d7757f9d5c6fcf1149b73e8d72bc729fca6388a8e772f9fae1a6b86ec3ad13"
+    },
+    {
+      "path": "public/assets/branding/awushi-profile-128.jpg",
+      "format": "jpg",
+      "size": [
+        128,
+        128
+      ],
+      "transparent": false,
+      "source": "public/assets/branding/awushi-profile-128.png",
+      "source_sha256": "b3e7eaa2476a364f61b1ac9e0767aa5b07f7efeb51cc432d183543a22393ef12",
+      "source_bytes": 22479,
+      "bytes": 7816,
+      "reduction_percent": 65.2,
+      "sha256": "5e167b99fdcd661e8f08b00a21cdf2016c4e3049d210f211a52819db8f213e4a"
+    },
+    {
+      "path": "public/assets/branding/awushi-profile-64.webp",
+      "format": "webp",
+      "size": [
+        64,
+        64
+      ],
+      "transparent": false,
+      "source": "public/assets/branding/awushi-profile-64.png",
+      "source_sha256": "3429d189845bec7e325fb69486d82b1f8aa53db1fae315cfd6bf36b30a6e6155",
+      "source_bytes": 7044,
+      "bytes": 1670,
+      "reduction_percent": 76.3,
+      "sha256": "439ce1490e5ef630a85ffa977de55b10cbab5c4af1aecbbf1d076c72a43d8140"
+    },
+    {
+      "path": "public/assets/branding/awushi-profile-64.jpg",
+      "format": "jpg",
+      "size": [
+        64,
+        64
+      ],
+      "transparent": false,
+      "source": "public/assets/branding/awushi-profile-64.png",
+      "source_sha256": "3429d189845bec7e325fb69486d82b1f8aa53db1fae315cfd6bf36b30a6e6155",
+      "source_bytes": 7044,
+      "bytes": 3117,
+      "reduction_percent": 55.7,
+      "sha256": "7e85905d12cd3f86515cc5f5940d71fced2bfb62fdac28ff8f7595ee93e7036d"
+    },
+    {
+      "path": "public/assets/branding/awushi-transparent-2048.webp",
+      "format": "webp",
+      "size": [
+        2048,
+        2048
+      ],
+      "transparent": true,
+      "source": "assets/branding/awushi-transparent-master.png",
+      "source_sha256": "ba68470af15918e0811c67dca51fb119bfb8a0fa1c11b1036b3b057237fa6c3f",
+      "source_bytes": 2335853,
+      "bytes": 117360,
+      "reduction_percent": 95,
+      "sha256": "9fa80701f6300af3bdce39bd5e687dfc96a7289a0a72e4407bd54548f100b6f9"
+    },
+    {
+      "path": "public/assets/branding/awushi-transparent-1024.webp",
+      "format": "webp",
+      "size": [
+        1024,
+        1024
+      ],
+      "transparent": true,
+      "source": "public/assets/branding/awushi-transparent-1024.png",
+      "source_sha256": "d78aea731e7bfab202b4f21929c8bf1b0b60dac533a3aef57983f85519277926",
+      "source_bytes": 734197,
+      "bytes": 52136,
+      "reduction_percent": 92.9,
+      "sha256": "ef1e9309737c29169bbb337c83fdf76291163a8d03f71734ea22315fd0e68489"
+    },
+    {
+      "path": "public/assets/branding/awushi-transparent-512.webp",
+      "format": "webp",
+      "size": [
+        512,
+        512
+      ],
+      "transparent": true,
+      "source": "public/assets/branding/awushi-transparent-512.png",
+      "source_sha256": "149369f6f84ba5978f8e04b8ddd210e9c84ab28403254a002419e56fa3328d90",
+      "source_bytes": 162082,
+      "bytes": 23588,
+      "reduction_percent": 85.4,
+      "sha256": "bb3a03c2c14a8b37e77d6eb22ae4ce9576631e80ccab159c9ad80e52cc883154"
+    },
+    {
+      "path": "public/assets/branding/awushi-transparent-256.webp",
+      "format": "webp",
+      "size": [
+        256,
+        256
+      ],
+      "transparent": true,
+      "source": "public/assets/branding/awushi-transparent-256.png",
+      "source_sha256": "c8f49aa22d9f343bb5d996131d13197dd42061bcfcee611fd11ffe472650a6d2",
+      "source_bytes": 51216,
+      "bytes": 10162,
+      "reduction_percent": 80.2,
+      "sha256": "d7375228904a72fd74f0c954476196d94b055348b92324df60c56285bc37be6c"
+    },
+    {
+      "path": "public/assets/branding/awushi-transparent-128.webp",
+      "format": "webp",
+      "size": [
+        128,
+        128
+      ],
+      "transparent": true,
+      "source": "public/assets/branding/awushi-transparent-128.png",
+      "source_sha256": "ce8839155996f1293218d7e2fb0662de95d988a0945ca5da47d3920a7b557a26",
+      "source_bytes": 16667,
+      "bytes": 4524,
+      "reduction_percent": 72.9,
+      "sha256": "761e60db81f5e8842b95df8d57d1c82a2d8a141cd1b3f290ff0a8f56ca30ff5c"
+    },
+    {
+      "path": "public/assets/branding/awushi-transparent-64.webp",
+      "format": "webp",
+      "size": [
+        64,
+        64
+      ],
+      "transparent": true,
+      "source": "public/assets/branding/awushi-transparent-64.png",
+      "source_sha256": "a910361adc3664959cadc709e6a4f54cf6e271f98758be5fdc6241f851b12e94",
+      "source_bytes": 5752,
+      "bytes": 2068,
+      "reduction_percent": 64,
+      "sha256": "03642a44bb5f5450e1ba824f7f6d666b7f2bb965c20ae245ead596614ba1bb7c"
+    }
+  ]
+}

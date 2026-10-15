@@ -24,6 +24,31 @@ The profile composition is a slight-angle, chest-up portrait with space around t
 
 The files under `public/` are ready to consume from a local build at `/assets/branding/<filename>`. Adding them to the repository does not change any existing game interface or publish a new deployment. The higher-resolution masters stay outside `public/` so they are not copied into the website build.
 
+## Reduce file size without reducing dimensions
+
+Compressed JPEG and WebP copies keep the same pixel dimensions as their PNG source. The original PNGs and masters remain unchanged. Choose JPEG for profile uploads that expect a conventional photo format; choose WebP for web use and transparent character artwork. JPEG cannot preserve transparency, so only the opaque profile picture has JPEG copies.
+
+| File pattern | Available square sizes | Use |
+| --- | --- | --- |
+| `public/assets/branding/awushi-profile-<size>.jpg` | 2048, 1024, 512, 256, 128, 64 | Smaller profile uploads |
+| `public/assets/branding/awushi-profile-<size>.webp` | 2048, 1024, 512, 256, 128, 64 | Compressed web avatars |
+| `public/assets/branding/awushi-transparent-<size>.webp` | 2048, 1024, 512, 256, 128, 64 | Compressed full-body artwork with alpha |
+| `assets/branding/compression-report.json` | — | Dimensions, source hashes and measured file sizes |
+
+Generate these copies locally from the existing PNGs:
+
+```sh
+npm run assets:compress
+```
+
+This command uses locally installed `cwebp` and `ffmpeg`; it does not render the 3D scene or contact a service. Install those command-line tools separately if they are unavailable. Set `CWEBP_BIN` or `FFMPEG_BIN` to executable paths when they are not on `PATH`:
+
+```sh
+CWEBP_BIN=/path/to/cwebp FFMPEG_BIN=/path/to/ffmpeg npm run assets:compress
+```
+
+`scripts/compress-branding.mjs` encodes WebP at quality 85 with method 6 and alpha quality 100, and profile JPEG at FFmpeg quality scale 3. Color compression is lossy; retain the PNG master for later editing and inspect the compressed result at its intended display size. Actual file sizes and savings are recorded in the compression report rather than guaranteed by the quality setting. Rerun compression after regenerating the PNGs to refresh the copies.
+
 ## Render locally
 
 Use the project's installed Node.js and Blender versions. The committed source scene is sufficient; rendering these images does not require rebuilding the character or the environment.
