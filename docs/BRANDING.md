@@ -51,6 +51,23 @@ CWEBP_BIN=/path/to/cwebp FFMPEG_BIN=/path/to/ffmpeg npm run assets:compress
 
 `scripts/compress-branding.mjs` encodes WebP at quality 85 with method 6 and alpha quality 100, and profile JPEG at FFmpeg quality scale 3. Color compression is lossy; retain the PNG master for later editing and inspect the compressed result at its intended display size. Actual file sizes and savings are recorded in the compression report rather than guaranteed by the quality setting. Rerun compression after regenerating the PNGs to refresh the copies.
 
+## PNG copies with compression disabled
+
+The existing standard PNGs already preserve their pixels losslessly. The following copies disable PNG compression, making the files larger without increasing image quality. They are generated from the original PNG inputs recorded in `manifest.json`, never from the lossy JPEG or WebP copies, and retain the same pixels, dimensions and alpha channel.
+
+| File pattern | Available square sizes |
+| --- | --- |
+| `assets/branding/awushi-profile-<size>-uncompressed.png` | 2048, 1024, 512, 256, 128, 64 |
+| `assets/branding/awushi-transparent-<size>-uncompressed.png` | 2048, 1024, 512, 256, 128, 64 |
+
+Generate all 12 copies locally with:
+
+```sh
+npm run assets:uncompressed
+```
+
+`scripts/uncompressed-branding.mjs` uses local FFmpeg with PNG `compression_level=0`. Set `FFMPEG_BIN=/path/to/ffmpeg` if needed. It keeps existing images, writes metadata to `assets/branding/uncompressed-report.json`, and stores these larger files only in `assets/branding/`; they are not mirrored into the website's `public/` directory.
+
 ## Render locally
 
 Use the project's installed Node.js and Blender versions. The committed source scene is sufficient; rendering these images does not require rebuilding the character or the environment.

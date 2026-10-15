@@ -50,6 +50,7 @@ npm run assets:generate -- --all                # all sources, exports and previ
 npm run assets:build                            # regenerate everything, then validate
 npm run assets:branding                         # render profile pictures and a transparent cutout from the existing character scene
 npm run assets:compress                         # smaller JPEG/WebP files at the same pixel dimensions
+npm run assets:uncompressed                     # PNG copies with compression disabled in assets/branding
 npm run verify                                 # lint, types, unit/runtime/pipeline, GLB, build, browser
 ```
 
