@@ -30,10 +30,12 @@ Compressed JPEG and WebP copies keep the same pixel dimensions as their PNG sour
 
 | File pattern | Available square sizes | Use |
 | --- | --- | --- |
-| `public/assets/branding/awushi-profile-<size>.jpg` | 2048, 1024, 512, 256, 128, 64 | Smaller profile uploads |
-| `public/assets/branding/awushi-profile-<size>.webp` | 2048, 1024, 512, 256, 128, 64 | Compressed web avatars |
-| `public/assets/branding/awushi-transparent-<size>.webp` | 2048, 1024, 512, 256, 128, 64 | Compressed full-body artwork with alpha |
+| `assets/branding/awushi-profile-<size>.jpg` | 2048, 1024, 512, 256, 128, 64 | Smaller profile uploads |
+| `assets/branding/awushi-profile-<size>.webp` | 2048, 1024, 512, 256, 128, 64 | Compressed web avatars |
+| `assets/branding/awushi-transparent-<size>.webp` | 2048, 1024, 512, 256, 128, 64 | Compressed full-body artwork with alpha |
 | `assets/branding/compression-report.json` | — | Dimensions, source hashes and measured file sizes |
+
+All 18 compressed files are kept in `assets/branding/` alongside the PNG masters for easy browsing and reuse. Exact copies are also written to `public/assets/branding/` for the website build. Each compression-report entry records the browsing copy as `branding_path` and the public copy as `path`.
 
 Generate these copies locally from the existing PNGs:
 

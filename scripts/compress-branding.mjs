@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** Smaller files at the same pixel dimensions. All encoding runs locally. */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { basename, join, relative } from 'node:path';
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { ROOT } from './generate.mjs';
@@ -19,6 +19,7 @@ function main() {
   if (process.argv.includes('--help') || process.argv.includes('-h')) {
     console.log(`Usage: npm run assets:compress
 Create WebP images and profile JPEGs at the PNG inputs' original dimensions.
+Save copies in assets/branding and public/assets/branding.
 Requires local cwebp and ffmpeg executables (CWEBP_BIN / FFMPEG_BIN overrides).
 PNG originals are retained. Regenerate PNGs with assets:branding first when needed.`);
     return;
@@ -42,7 +43,9 @@ PNG originals are retained. Regenerate PNGs with assets:branding first when need
     return { ...entry, absolutePath: path, bytes: data.length };
   });
   const destination = join(ROOT, 'public/assets/branding');
+  const branding = join(ROOT, 'assets/branding');
   mkdirSync(destination, { recursive: true });
+  mkdirSync(branding, { recursive: true });
   const outputs = [];
   for (const source of inputs) {
     const name = source.transparent ? 'transparent' : 'profile';
@@ -57,8 +60,10 @@ PNG originals are retained. Regenerate PNGs with assets:branding first when need
           '-q:v', '3', '-update', '1', output]);
       }
       const bytes = readFileSync(output);
+      const brandingCopy = join(branding, basename(output));
+      writeFileSync(brandingCopy, bytes);
       const saving = Math.round((1 - bytes.length / source.bytes) * 1000) / 10;
-      outputs.push({ path: relative(ROOT, output), format, size: source.size,
+      outputs.push({ path: relative(ROOT, output), branding_path: relative(ROOT, brandingCopy), format, size: source.size,
         transparent: source.transparent, source: source.path, source_sha256: source.sha256,
         source_bytes: source.bytes, bytes: bytes.length, reduction_percent: saving, sha256: hash(bytes) });
       console.log(`${relative(ROOT, output)}: ${(bytes.length / 1024).toFixed(1)} KiB (${saving}% smaller)`);

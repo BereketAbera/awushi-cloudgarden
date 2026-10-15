@@ -15,6 +15,7 @@
   "outputs": [
     {
       "path": "public/assets/branding/awushi-profile-2048.webp",
+      "branding_path": "assets/branding/awushi-profile-2048.webp",
       "format": "webp",
       "size": [
         2048,
@@ -30,6 +31,7 @@
     },
     {
       "path": "public/assets/branding/awushi-profile-2048.jpg",
+      "branding_path": "assets/branding/awushi-profile-2048.jpg",
       "format": "jpg",
       "size": [
         2048,
@@ -45,6 +47,7 @@
     },
     {
       "path": "public/assets/branding/awushi-profile-1024.webp",
+      "branding_path": "assets/branding/awushi-profile-1024.webp",
       "format": "webp",
       "size": [
         1024,
@@ -60,6 +63,7 @@
     },
     {
       "path": "public/assets/branding/awushi-profile-1024.jpg",
+      "branding_path": "assets/branding/awushi-profile-1024.jpg",
       "format": "jpg",
       "size": [
         1024,
@@ -75,6 +79,7 @@
     },
     {
       "path": "public/assets/branding/awushi-profile-512.webp",
+      "branding_path": "assets/branding/awushi-profile-512.webp",
       "format": "webp",
       "size": [
         512,
@@ -90,6 +95,7 @@
     },
     {
       "path": "public/assets/branding/awushi-profile-512.jpg",
+      "branding_path": "assets/branding/awushi-profile-512.jpg",
       "format": "jpg",
       "size": [
         512,
@@ -105,6 +111,7 @@
     },
     {
       "path": "public/assets/branding/awushi-profile-256.webp",
+      "branding_path": "assets/branding/awushi-profile-256.webp",
       "format": "webp",
       "size": [
         256,
@@ -120,6 +127,7 @@
     },
     {
       "path": "public/assets/branding/awushi-profile-256.jpg",
+      "branding_path": "assets/branding/awushi-profile-256.jpg",
       "format": "jpg",
       "size": [
         256,
@@ -135,6 +143,7 @@
     },
     {
       "path": "public/assets/branding/awushi-profile-128.webp",
+      "branding_path": "assets/branding/awushi-profile-128.webp",
       "format": "webp",
       "size": [
         128,
@@ -150,6 +159,7 @@
     },
     {
       "path": "public/assets/branding/awushi-profile-128.jpg",
+      "branding_path": "assets/branding/awushi-profile-128.jpg",
       "format": "jpg",
       "size": [
         128,
@@ -165,6 +175,7 @@
     },
     {
       "path": "public/assets/branding/awushi-profile-64.webp",
+      "branding_path": "assets/branding/awushi-profile-64.webp",
       "format": "webp",
       "size": [
         64,
@@ -180,6 +191,7 @@
     },
     {
       "path": "public/assets/branding/awushi-profile-64.jpg",
+      "branding_path": "assets/branding/awushi-profile-64.jpg",
       "format": "jpg",
       "size": [
         64,
@@ -195,6 +207,7 @@
     },
     {
       "path": "public/assets/branding/awushi-transparent-2048.webp",
+      "branding_path": "assets/branding/awushi-transparent-2048.webp",
       "format": "webp",
       "size": [
         2048,
@@ -210,6 +223,7 @@
     },
     {
       "path": "public/assets/branding/awushi-transparent-1024.webp",
+      "branding_path": "assets/branding/awushi-transparent-1024.webp",
       "format": "webp",
       "size": [
         1024,
@@ -225,6 +239,7 @@
     },
     {
       "path": "public/assets/branding/awushi-transparent-512.webp",
+      "branding_path": "assets/branding/awushi-transparent-512.webp",
       "format": "webp",
       "size": [
         512,
@@ -240,6 +255,7 @@
     },
     {
       "path": "public/assets/branding/awushi-transparent-256.webp",
+      "branding_path": "assets/branding/awushi-transparent-256.webp",
       "format": "webp",
       "size": [
         256,
@@ -255,6 +271,7 @@
     },
     {
       "path": "public/assets/branding/awushi-transparent-128.webp",
+      "branding_path": "assets/branding/awushi-transparent-128.webp",
       "format": "webp",
       "size": [
         128,
@@ -270,6 +287,7 @@
     },
     {
       "path": "public/assets/branding/awushi-transparent-64.webp",
+      "branding_path": "assets/branding/awushi-transparent-64.webp",
       "format": "webp",
       "size": [
         64,
