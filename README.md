@@ -48,10 +48,13 @@ npm run assets:generate -- --character          # character export only
 npm run assets:generate -- --environment        # seven district composites + five legacy assets + deployment effects
 npm run assets:generate -- --all                # all sources, exports and previews
 npm run assets:build                            # regenerate everything, then validate
+npm run assets:branding                         # render profile pictures and a transparent cutout from the existing character scene
 npm run verify                                 # lint, types, unit/runtime/pipeline, GLB, build, browser
 ```
 
 `BLENDER_BIN` can point to a local Blender executable. The runner detects the standard macOS application. Headless Blender can require host execution permission in restricted sandboxes because Metal initializes before Python. Browser tests use installed Google Chrome plus Playwright Firefox/WebKit and a production preview on port 5176. Install the additional browser binaries once with `npx playwright install firefox webkit`. The desktop/mobile Chrome projects exercise the full browser suite; Firefox/WebKit cover adventures, compatibility, resilience, cinematics, guidance and replay isolation. Mobile is browser emulation, not a physical-device claim.
+
+For profile pictures and reusable full-body images, see the [Awushi branding images](docs/BRANDING.md). Their masters and ready-to-use PNG sizes are rendered locally from the same Blender character source as the game.
 
 For a static production build, run `npm run build` and review with `npm run preview`. The live Vercel project is `bereketaberas-projects/awushi-devops-world`, configured to serve `dist/` at the origin root. See the [deployment guide](docs/DEPLOYMENT.md) for repeat release commands, asset caching and local-save boundaries. No Git remote or automatic Git deployment is configured; releases currently use the authenticated Vercel CLI. Local use requires no hosting account.
 

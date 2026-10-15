@@ -9,6 +9,7 @@
     "preview": "vite preview --host 127.0.0.1",
     "typecheck": "tsc -b",
     "assets:generate": "node scripts/generate.mjs",
+    "assets:branding": "node scripts/render-branding.mjs",
     "assets:validate": "node scripts/validate-assets.mjs",
     "test:pipeline": "node --test scripts/test-pipeline.mjs",
     "test:runtime": "node --test scripts/test-runtime.mjs",

@@ -1,0 +1,118 @@
+{
+  "generator": "scripts/blender/render_branding.py",
+  "blender": "5.1.1",
+  "source_sha256": {
+    "assets/source/awushi.blend": "2a805f84fede47b8a5860e357e43ee7b0d1fa5c63cd282d89ae807330cfae37d",
+    "public/assets/awushi.glb": "58b66c832421f4ec456333d3f62e3717dda64f127e0ee7eec112799b8892ae70"
+  },
+  "pose": {
+    "action": "Idle",
+    "frame": 0,
+    "expression": "Neutral"
+  },
+  "render": {
+    "engine": "CYCLES",
+    "device": "CPU",
+    "samples": 128,
+    "seed": 24,
+    "resolution": 2048,
+    "denoising": true,
+    "view_transform": "Standard",
+    "exposure": -0.699999988079071
+  },
+  "views": {
+    "profile": {
+      "camera": [
+        0.65,
+        -8,
+        2.85
+      ],
+      "target": [
+        0,
+        0,
+        2.48
+      ],
+      "ortho_scale": 3.48,
+      "transparent": false,
+      "sizes": [
+        1024,
+        512,
+        256
+      ]
+    },
+    "transparent": {
+      "camera": [
+        0.85,
+        -8,
+        2.8
+      ],
+      "target": [
+        0,
+        0,
+        1.97
+      ],
+      "ortho_scale": 4.5,
+      "transparent": true,
+      "sizes": [
+        1024
+      ]
+    }
+  },
+  "outputs": [
+    {
+      "path": "assets/branding/awushi-profile-master.png",
+      "size": [
+        2048,
+        2048
+      ],
+      "transparent": false,
+      "sha256": "b40d5be761b2e229ce3fecad0b57e810303592cf42ec6f2d25ecaa133140bb96"
+    },
+    {
+      "path": "public/assets/branding/awushi-profile-1024.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "transparent": false,
+      "sha256": "62e8ccf60ad9d372ba4bb66bc34df25143de74da95364cec304bf8aacd52d943"
+    },
+    {
+      "path": "public/assets/branding/awushi-profile-512.png",
+      "size": [
+        512,
+        512
+      ],
+      "transparent": false,
+      "sha256": "f1db81d9e838c9f29bed9effd278ae420f39dd25416c135b16d62cc936557df5"
+    },
+    {
+      "path": "public/assets/branding/awushi-profile-256.png",
+      "size": [
+        256,
+        256
+      ],
+      "transparent": false,
+      "sha256": "2053caffc4af20c8265d733c51461423124fdbc32aed4c8a9347b49fa09e1970"
+    },
+    {
+      "path": "assets/branding/awushi-transparent-master.png",
+      "size": [
+        2048,
+        2048
+      ],
+      "transparent": true,
+      "sha256": "ba68470af15918e0811c67dca51fb119bfb8a0fa1c11b1036b3b057237fa6c3f"
+    },
+    {
+      "path": "public/assets/branding/awushi-transparent-1024.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "transparent": true,
+      "sha256": "d78aea731e7bfab202b4f21929c8bf1b0b60dac533a3aef57983f85519277926"
+    }
+  ],
+  "notes": "Same source geometry, rig, expression meshes and materials as the game export. Local Cycles stills; pixels may vary by Blender version and device. Source files unchanged."
+}
