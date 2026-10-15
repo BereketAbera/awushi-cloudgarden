@@ -19,12 +19,37 @@ def sha256(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+EXPORT_SIZES = [1024, 512, 256, 128, 64]
+
+
+def resize_exports(root, name, settings, master, public):
+    outputs = []
+    for size in settings['sizes']:
+        # Every derivative starts from the full master, not another thumbnail.
+        img = bpy.data.images.load(str(master), check_existing=False)
+        if min(img.size) < size:
+            bpy.data.images.remove(img)
+            raise ValueError(f'Master is too small for {size}px export: {master}')
+        img.scale(size, size)
+        destination = public / f'awushi-{name}-{size}.png'
+        img.filepath_raw = str(destination)
+        img.file_format = 'PNG'
+        img.save()
+        bpy.data.images.remove(img)
+        outputs.append({'path': str(destination.relative_to(root)), 'size': [size, size],
+                        'transparent': settings['transparent'], 'sha256': sha256(destination)})
+    return outputs
+
+
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--root', default=str(Path(__file__).resolve().parents[2]))
 parser.add_argument('--draft', action='store_true')
+parser.add_argument('--resize-only', action='store_true')
 parser.add_argument('--resolution', type=int)
 parser.add_argument('--samples', type=int)
 args = parser.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else [])
+if args.resize_only and (args.draft or args.resolution is not None or args.samples is not None):
+    parser.error('--resize-only uses the existing masters; do not combine it with render options.')
 resolution = args.resolution if args.resolution is not None else (512 if args.draft else 2048)
 samples = args.samples if args.samples is not None else (24 if args.draft else 128)
 if not (256 <= resolution <= 4096) or (not args.draft and resolution < 1024):
@@ -33,6 +58,33 @@ if not 1 <= samples <= 1024:
     parser.error('Samples must be 1–1024.')
 
 root = Path(args.root).resolve()
+if args.resize_only:
+    output = root / 'assets/branding'
+    public = root / 'public/assets/branding'
+    manifest_path = output / 'manifest.json'
+    manifest = json.loads(manifest_path.read_text())
+    masters = {}
+    # Validate both inputs before writing any derivative or metadata.
+    for name in ('profile', 'transparent'):
+        master = output / f'awushi-{name}-master.png'
+        entry = next(item for item in manifest['outputs'] if item['path'] == str(master.relative_to(root)))
+        if sha256(master) != entry['sha256']:
+            raise ValueError(f'Master differs from its recorded render: {master}. Render branding again first.')
+        masters[name] = (master, entry)
+    public.mkdir(parents=True, exist_ok=True)
+    outputs = []
+    for name, (master, entry) in masters.items():
+        settings = manifest['views'][name]
+        settings['sizes'] = EXPORT_SIZES.copy()
+        outputs.append(entry)
+        outputs.extend(resize_exports(root, name, settings, master, public))
+        assert sha256(master) == entry['sha256'], 'Master changed while resizing'
+    # Original render settings and source provenance still describe the masters.
+    manifest['outputs'] = outputs
+    manifest_path.write_text(json.dumps(manifest, indent=2) + '\n')
+    print('AWUSHI_BRANDING_RESIZED', json.dumps(outputs))
+    sys.exit(0)
+
 sources = [root / 'assets/source/awushi.blend', root / 'public/assets/awushi.glb']
 source_hashes = {str(path.relative_to(root)): sha256(path) for path in sources}
 output = root / ('.cache/branding' if args.draft else 'assets/branding')
@@ -75,11 +127,11 @@ camera.data.type = 'ORTHO'
 views = {
     'profile': {
         'camera': (0.65, -8, 2.85), 'target': (0, 0, 2.48), 'ortho_scale': 3.48,
-        'transparent': False, 'sizes': [1024, 512, 256],
+        'transparent': False, 'sizes': EXPORT_SIZES.copy(),
     },
     'transparent': {
         'camera': (0.85, -8, 2.8), 'target': (0, 0, 1.97), 'ortho_scale': 4.50,
-        'transparent': True, 'sizes': [1024],
+        'transparent': True, 'sizes': EXPORT_SIZES.copy(),
     },
 }
 outputs = []
@@ -98,17 +150,7 @@ for name, settings in views.items():
     outputs.append({'path': str(master.relative_to(root)), 'size': [resolution, resolution],
                     'transparent': settings['transparent'], 'sha256': sha256(master)})
     if not args.draft:
-        for size in settings['sizes']:
-            # Reload the master for each size; never resize an already reduced copy.
-            img = bpy.data.images.load(str(master), check_existing=False)
-            img.scale(size, size)
-            destination = public / f'awushi-{name}-{size}.png'
-            img.filepath_raw = str(destination)
-            img.file_format = 'PNG'
-            img.save()
-            bpy.data.images.remove(img)
-            outputs.append({'path': str(destination.relative_to(root)), 'size': [size, size],
-                            'transparent': settings['transparent'], 'sha256': sha256(destination)})
+        outputs.extend(resize_exports(root, name, settings, master, public))
 
 assert source_hashes == {str(path.relative_to(root)): sha256(path) for path in sources}, 'Source asset changed'
 manifest = {

@@ -37,7 +37,9 @@
       "sizes": [
         1024,
         512,
-        256
+        256,
+        128,
+        64
       ]
     },
     "transparent": {
@@ -54,7 +56,11 @@
       "ortho_scale": 4.5,
       "transparent": true,
       "sizes": [
-        1024
+        1024,
+        512,
+        256,
+        128,
+        64
       ]
     }
   },
@@ -96,6 +102,24 @@
       "sha256": "2053caffc4af20c8265d733c51461423124fdbc32aed4c8a9347b49fa09e1970"
     },
     {
+      "path": "public/assets/branding/awushi-profile-128.png",
+      "size": [
+        128,
+        128
+      ],
+      "transparent": false,
+      "sha256": "b3e7eaa2476a364f61b1ac9e0767aa5b07f7efeb51cc432d183543a22393ef12"
+    },
+    {
+      "path": "public/assets/branding/awushi-profile-64.png",
+      "size": [
+        64,
+        64
+      ],
+      "transparent": false,
+      "sha256": "3429d189845bec7e325fb69486d82b1f8aa53db1fae315cfd6bf36b30a6e6155"
+    },
+    {
       "path": "assets/branding/awushi-transparent-master.png",
       "size": [
         2048,
@@ -112,6 +136,42 @@
       ],
       "transparent": true,
       "sha256": "d78aea731e7bfab202b4f21929c8bf1b0b60dac533a3aef57983f85519277926"
+    },
+    {
+      "path": "public/assets/branding/awushi-transparent-512.png",
+      "size": [
+        512,
+        512
+      ],
+      "transparent": true,
+      "sha256": "149369f6f84ba5978f8e04b8ddd210e9c84ab28403254a002419e56fa3328d90"
+    },
+    {
+      "path": "public/assets/branding/awushi-transparent-256.png",
+      "size": [
+        256,
+        256
+      ],
+      "transparent": true,
+      "sha256": "c8f49aa22d9f343bb5d996131d13197dd42061bcfcee611fd11ffe472650a6d2"
+    },
+    {
+      "path": "public/assets/branding/awushi-transparent-128.png",
+      "size": [
+        128,
+        128
+      ],
+      "transparent": true,
+      "sha256": "ce8839155996f1293218d7e2fb0662de95d988a0945ca5da47d3920a7b557a26"
+    },
+    {
+      "path": "public/assets/branding/awushi-transparent-64.png",
+      "size": [
+        64,
+        64
+      ],
+      "transparent": true,
+      "sha256": "a910361adc3664959cadc709e6a4f54cf6e271f98758be5fdc6241f851b12e94"
     }
   ],
   "notes": "Same source geometry, rig, expression meshes and materials as the game export. Local Cycles stills; pixels may vary by Blender version and device. Source files unchanged."

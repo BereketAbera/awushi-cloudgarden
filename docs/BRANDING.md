@@ -10,8 +10,14 @@ These images are local Blender renders of `assets/source/awushi.blend`, the same
 | `public/assets/branding/awushi-profile-1024.png` | High-resolution square avatar for social profiles and presentations |
 | `public/assets/branding/awushi-profile-512.png` | Standard profile and interface use |
 | `public/assets/branding/awushi-profile-256.png` | Small profile and interface use |
+| `public/assets/branding/awushi-profile-128.png` | Compact avatars and account menus |
+| `public/assets/branding/awushi-profile-64.png` | Small avatar badges |
 | `assets/branding/awushi-transparent-master.png` | 2048 × 2048 full-body source render with an alpha channel |
 | `public/assets/branding/awushi-transparent-1024.png` | Full-body cutout for slides, documents and other backgrounds |
+| `public/assets/branding/awushi-transparent-512.png` | Medium full-body cutout |
+| `public/assets/branding/awushi-transparent-256.png` | Small full-body cutout |
+| `public/assets/branding/awushi-transparent-128.png` | Compact character illustrations |
+| `public/assets/branding/awushi-transparent-64.png` | Small character badges |
 | `assets/branding/manifest.json` | Render settings, source provenance and output metadata |
 
 The profile composition is a slight-angle, chest-up portrait with space around the crown for circular avatar crops. Use a centered circular crop; check the silhouette at the final display size before adding a border. The transparent version includes the whole character and is useful when an existing layout supplies its own background. Preserve its PNG alpha channel when exporting or placing it in another tool.
@@ -26,6 +32,14 @@ Use the project's installed Node.js and Blender versions. The committed source s
 npm run assets:branding
 ```
 
+To regenerate only the smaller PNGs from the existing masters, skip rendering:
+
+```sh
+npm run assets:branding -- --resize-only
+```
+
+This fast mode checks the recorded hashes, resizes each export directly from its original master, and updates export metadata while preserving the original source and render provenance. The master PNGs remain unchanged. Both image styles are exported at 1024, 512, 256, 128 and 64 pixels; transparent exports retain their alpha channel.
+
 The default production render uses 2048-pixel masters and 128 Cycles samples. For a quick framing review, render 512-pixel, 24-sample drafts into the ignored `.cache/branding/` directory. Draft mode does not update the committed masters or public exports:
 
 ```sh
@@ -39,7 +53,7 @@ npm run assets:branding -- --resolution 2048 --samples 256
 npm run assets:branding -- --help
 ```
 
-Production master resolution must be between 1024 and 4096 pixels; draft resolution accepts 256–4096. Sample count accepts 1–1024. Larger masters and more samples cost rendering time; the public export sizes remain 1024/512/256 pixels for profiles and 1024 pixels for the transparent cutout.
+Production master resolution must be between 1024 and 4096 pixels; draft resolution accepts 256–4096. Sample count accepts 1–1024. Larger masters and more samples cost rendering time; public export sizes remain 1024/512/256/128/64 pixels for both profiles and transparent cutouts.
 
 `scripts/render-branding.mjs` discovers Blender using the existing local discovery rules and invokes `scripts/blender/render_branding.py` in headless mode. Set `BLENDER_BIN` to an executable path if Blender is installed elsewhere:
 
