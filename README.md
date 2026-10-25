@@ -1,4 +1,8 @@
-# Awushi’s DevOps World
+# Awushi Cloudgarden
+
+The home of **Awushi’s DevOps World**—a little cloud garden where engineering systems grow.
+
+Private source repository: [BereketAbera/awushi-cloudgarden](https://github.com/BereketAbera/awushi-cloudgarden). The local project folder is `awushi-cloudgarden`.
 
 A local, procedural Blender → glTF → React Three Fiber adventure. Explore six connected floating districts with a cyan jelly companion, ten blendable expressions, five skeletal animations, and 17 technology facilities. Six hands-on DevOps adventures share evidence, recoverable decisions, saved progress and deterministic replay. Phase 4 adds Watch Flow station cinematics, a short optional introduction, three guidance levels, investigation checklists and explicit Guide Me actions. The deterministic infrastructure model and procedural Blender assets remain local.
 
@@ -58,7 +62,7 @@ npm run verify                                 # lint, types, unit/runtime/pipel
 
 For profile pictures and reusable full-body images, see the [Awushi branding images](docs/BRANDING.md). Their masters and ready-to-use PNG sizes are rendered locally from the same Blender character source as the game.
 
-For a static production build, run `npm run build` and review with `npm run preview`. The live Vercel project is `bereketaberas-projects/awushi-devops-world`, configured to serve `dist/` at the origin root. See the [deployment guide](docs/DEPLOYMENT.md) for repeat release commands, asset caching and local-save boundaries. No Git remote or automatic Git deployment is configured; releases currently use the authenticated Vercel CLI. Local use requires no hosting account.
+For a static production build, run `npm run build` and review with `npm run preview`. The live Vercel project is `bereketaberas-projects/awushi-devops-world`, configured to serve `dist/` at the origin root. See the [deployment guide](docs/DEPLOYMENT.md) for repeat release commands, asset caching and local-save boundaries. The Git remote is the private `BereketAbera/awushi-cloudgarden` repository. Automatic Git deployment is not configured; releases use the authenticated Vercel CLI. Renaming the source repository does not change the existing Vercel project or live URL. Local use requires no hosting account.
 
 The [deployment verification report](assets/vercel-deployment.json) records 18 publicly accessible files matching the local build hashes, including all 14 GLB models, plus a live browser check of Watch Flow, Guide Me, recovery, completion cleanup and reload persistence. Repeat it with `node scripts/verify-deployment.mjs` after publishing the matching local build.
 

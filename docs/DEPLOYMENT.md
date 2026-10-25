@@ -41,7 +41,7 @@ vercel build --prod
 vercel deploy --prebuilt --prod --yes --scope bereketaberas-projects
 ```
 
-`vercel.json` selects the Vite framework, `npm run build` and `dist/`, and sets GLB content type and revalidation headers. The generated `.vercel/` directory contains local project linkage/settings and build output and is ignored by Git. Do not commit it. The app requires no application environment secrets. There is currently no Git remote or automatic Git deployment configured; committing changes alone does not publish a new release.
+`vercel.json` selects the Vite framework, `npm run build` and `dist/`, and sets GLB content type and revalidation headers. The generated `.vercel/` directory contains local project linkage/settings and build output and is ignored by Git. Do not commit it. The app requires no application environment secrets. Source is hosted privately at [BereketAbera/awushi-cloudgarden](https://github.com/BereketAbera/awushi-cloudgarden), with the local folder named `awushi-cloudgarden`. Automatic Git deployment is not configured; committing or pushing changes alone does not publish a new Vercel release. The existing Vercel project name and live URL remain `awushi-devops-world`.
 
 After deployment, verify the stable production URL against the exact local `dist/` build:
 
