@@ -61,6 +61,41 @@ Serve JavaScript, CSS, HTML and GLB bytes with appropriate content types; `model
 
 Vite fingerprints bundled JavaScript/CSS, while files copied from `public/assets/` retain stable names. Long immutable caching is appropriate for fingerprinted bundles, but HTML and stable-name GLBs must revalidate or receive an explicit release cache policy. Publish the release atomically so new HTML cannot point at missing bundles, and retain prior hashed bundles while cached pages may still reference them. Replacing a GLB alone under an aggressively cached name can leave visitors viewing an earlier model.
 
+## Container image (devops.bereket.dev)
+
+The same `dist/` is also packaged as a static image for `https://devops.bereket.dev`, where an internal nginx container serves it behind Traefik and Traefik terminates TLS. The `Dockerfile` runs `npm ci` and `npm run build` on the builder's own platform, writes a `gzip -9` copy beside every JavaScript, CSS, HTML, SVG, JSON and GLB file, and copies the result onto `nginxinc/nginx-unprivileged` without any `RUN` step, so one Dockerfile produces `linux/amd64` and `linux/arm64` without emulation. Both base images are pinned by digest. `.dockerignore` keeps the source art in `assets/`, the documentation, tests, test output, `node_modules/`, `dist/` and `.vercel/` out of the build context, while `public/assets/` with the GLBs goes in.
+
+Build, run and check it with Docker alone; the host needs no Node:
+
+```sh
+docker build -t awushi-web:local .
+docker run --rm --read-only --tmpfs /tmp -p 127.0.0.1:8080:8080 awushi-web:local
+scripts/smoke-image.sh awushi-web:local
+```
+
+Open `http://127.0.0.1:8080/` while the second command runs. The container runs as uid 101, listens on 8080 and needs only a writable `/tmp`, so a read-only root filesystem works. `/healthz` answers `ok` for probes and writes no access log. `scripts/smoke-image.sh` starts its own read-only container on a random loopback port. It checks status codes, `Content-Type`, `Cache-Control`, gzip, the security headers and a versionless `Server` header, and compares every served model with the bytes in `public/assets/`, so run it from the commit the image was built from. It removes its container whatever the result.
+
+`deploy/nginx/default.conf` meets the static host contract this way:
+
+| Contract | Image |
+| --- | --- |
+| Complete `dist/` at an origin root | nginx serves `dist/` at `/`, and the site is `https://devops.bereket.dev/` |
+| No HTML fallback | Every location ends in `try_files $uri =404`. A missing `.glb`, bundle or other path is a 404, and so is a directory |
+| Content types | nginx's `mime.types`, plus `model/gltf-binary` for `.glb` |
+| Cache policy | Hashed bundles such as `/assets/index-bmle6U-W.js` are `public, max-age=31536000, immutable`. GLBs are `public, max-age=0, must-revalidate`. `index.html`, `/assets/branding/*` and everything else are `no-cache`. A 404 for a bundle carries no long-lived cache header |
+| Same origin over HTTPS | Every file comes from this server, and Traefik provides HTTPS |
+| Transfer size | `gzip_static` sends the prebuilt `.gz` files, so the 14 GLBs move as 3.8 MB instead of 12.5 MB and the bundles as 0.5 MB instead of 1.7 MB |
+
+`deploy/nginx/security-headers.conf` adds `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `X-Frame-Options: SAMEORIGIN`, a `Permissions-Policy` that turns off camera, microphone, geolocation and payment, and a `Content-Security-Policy` of `frame-ancestors`, `base-uri`, `object-src` and `form-action` only. Scripts, styles, images and connections stay unrestricted, so WebGL, the inline `data:` favicon, `blob:` textures from the GLBs, the save download and same-origin model requests keep working. Fullscreen stays allowed for this origin. Another origin cannot frame the game.
+
+Each image holds exactly one release and does not keep the previous release's hashed bundles. While two releases serve side by side during a rollout, a page whose `index.html` came from one can request its bundles from the other and receive 404s until it reloads. Atomic publication is therefore the deployment's job: never let one page reach two releases, for example by running one replica that is replaced with the `Recreate` strategy, or by sticky sessions. `devops.bereket.dev` is a new origin, so notebooks saved on the Vercel URL do not appear there; see [browser-local state](#browser-local-state).
+
+`.github/workflows/ci.yml` runs lint, type checks, unit, pipeline and runtime tests, GLB validation and the build for every pull request and every push to `main`. The Playwright suite has only run on a Mac with a GPU, so its job in `ci.yml` runs only when started by hand from the Actions tab. `.github/workflows/images.yml` builds the `linux/amd64` image for a pull request and smoke-tests it without pushing. On a push to `main` it pushes `linux/amd64` and `linux/arm64` to `ghcr.io/bereketabera/awushi-cloudgarden/web`, tagged with the first 12 characters of the commit SHA. It then pulls the `linux/amd64` image back by digest, smoke-tests it, and scans it with trivy, failing on any CRITICAL vulnerability that has a fix. Only after that does it write the index and `linux/amd64` digests to the job summary and the `image-digests` artifact, so a digest without that record has not passed. Deploy by digest, not by tag. The package is created private, like the repository, so the cluster needs a pull credential unless the owner makes it public.
+
+Deployment configuration, including the Kubernetes objects, the Traefik route and its TLS, and the digest that runs, lives in the Wayline platform repository. Nothing in this repository deploys. The Vercel deployment described above stays in place until the owner retires it.
+
+On 2026-11-07 the image was built and smoke-tested on an arm64 Mac, both natively and as a `linux/amd64` build run under emulation. Neither workflow has run on GitHub yet.
+
 ## Browser-local state
 
 Adventure notebooks use validated versioned localStorage journals. They retain one unfinished attempt per lesson and the best completed recording per lesson, with the currently selected attempt kept separately. Exploration, camera, quality, lighting, reduced motion and audio preferences have their own validated storage. No credentials or real infrastructure data are stored.
