@@ -2,7 +2,7 @@
 
 Awushi's world teaches a generic application delivery architecture across the existing six districts and 17 stations. All infrastructure is simulated locally in the browser. Inspecting an explanation or source link does not provision or connect a service.
 
-The reference was read from the local Wayline platform's `docs/architecture.md` and `docs/platform-contract.md` under `/Users/bek/dev/pr/plane-platform`. We adopted reusable boundaries: hosted CI cannot access the local cluster; promotion copies a selected image before publishing desired state; a local Git mirror is Argo CD's reachable source; development and production-like namespaces share a cluster; application manifests are rendered before reconciliation. No Plane domain, deployment manifests, credentials, application implementation or live infrastructure was copied into the game.
+The reference was read from `docs/architecture.md` and `docs/platform-contract.md` in the Wayline platform repository. We adopted reusable boundaries: hosted CI cannot access the local cluster; promotion copies a selected image before publishing desired state; a local Git mirror is Argo CD's reachable source; development and production-like namespaces share a cluster; application manifests are rendered before reconciliation. No Plane domain, deployment manifests, credentials, application implementation or live infrastructure was copied into the game.
 
 ## One graph, shared facilities
 
