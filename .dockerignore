@@ -1,0 +1,23 @@
+# Only what npm ci and npm run build read goes into the build context: package.json and package-lock.json, index.html,
+# the tsconfig and vite config, src/, public/ (whose assets/ holds the GLBs and branding images the site serves) and
+# deploy/nginx/. Patterns are anchored at the repository root, so "assets" below is the top-level source art (Blender
+# scenes, previews, reference and reports, over 200 MB) and leaves public/assets in.
+.git
+.github
+.vercel
+.cache
+node_modules
+dist
+assets
+docs
+tests
+test-results
+playwright-report
+scripts
+*.tsbuildinfo
+**/__pycache__
+**/*.blend
+**/*.blend1
+**/*.log
+**/.DS_Store
+.env*
