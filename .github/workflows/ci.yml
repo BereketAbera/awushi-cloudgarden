@@ -19,9 +19,12 @@ on:
 permissions: {}
 
 # A newer push to a pull request replaces the older run. On main each pushed commit keeps its own run, because a
-# cancelled run says nothing about its commit.
+# cancelled run says nothing about its commit. Each run started by hand has a group of its own. GitHub keeps one
+# waiting run per group and cancels it when another arrives, whatever cancel-in-progress says, so sharing the commit's
+# group would make manual runs and the push run of that commit wait up to two hours behind a browser job, or cancel
+# each other.
 concurrency:
-  group: ci-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  group: ci-${{ github.event_name == 'pull_request' && github.ref || github.event_name == 'workflow_dispatch' && format('dispatch-{0}', github.run_id) || github.sha }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
