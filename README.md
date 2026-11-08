@@ -99,6 +99,6 @@ Open `assets/source/awushi.blend` in Blender to inspect the character and its ac
 
 Every infrastructure value is simulated. There are no real GitHub, Kubernetes, Infisical or cloud actions. The free-form lab starts fresh on reload; adventure infrastructure reconstructs from the versioned local command journal. Development and production have independent namespace/configuration/secret/deployment state within one modeled kind cluster; namespaces are not separate physical infrastructure. Completing a lesson requires its own inspected evidence and decisions, so free-form lab controls cannot bypass an adventure's approval gates.
 
-## Local AI authoring
+## Procedural authoring
 
-An AI coding agent authored and refined the procedural Python against actual renders. Generation does not call an AI modeling service or require an installed neural model. A local coding model can edit the same functions and parameters, then run the documented generation and review loop. The 3D reconstruction preserves the supplied character; unseen surfaces and motion are authored from the single available reference.
+The procedural Python was authored and refined against actual renders. Generation does not call an AI modeling service or require an installed neural model. A local coding model can edit the same functions and parameters, then run the documented generation and review loop. The 3D reconstruction preserves the supplied character; unseen surfaces and motion are authored from the single available reference.

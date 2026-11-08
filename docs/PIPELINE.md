@@ -1,6 +1,6 @@
 # Local asset pipeline
 
-The repository is the source of truth. Blender Python creates the meshes, materials, rig, animation keyframes, procedural eye texture, lighting, and exports. The attached character reference is preserved at `assets/reference/awushi.png`. No external modeling API, asset pack, HDRI, cloud renderer, or downloaded model is used. AI assistance is the authoring and refinement of the Python and game code; asset generation itself is deterministic local code, not an installed local neural model.
+The repository is the source of truth. Blender Python creates the meshes, materials, rig, animation keyframes, procedural eye texture, lighting, and exports. The supplied character reference is preserved at `assets/reference/awushi.png`. No external modeling API, asset pack, HDRI, cloud renderer, or downloaded model is used. Authoring and refinement happen in the Python and game code; asset generation itself is deterministic local code, not an installed local neural model.
 
 ## Requirements and first run
 
@@ -49,7 +49,7 @@ On macOS in the Codex execution sandbox, Blender 5.1.1 can crash during Metal de
 | `scripts/blender/common.py` | Shared mesh, curve, material, light, and GLB export helpers |
 | `scripts/blender/generate_awushi.py` | Character sculpt, face, bubbles, weighted armature, clips, studio, and previews |
 | `scripts/blender/generate_world.py` | Environment generator; only run once the character milestone has passed review |
-| `assets/reference/awushi.png` | User-provided visual source of truth |
+| `assets/reference/awushi.png` | Supplied visual source of truth |
 | `assets/source/awushi.blend` | Regenerated editable character and local preview studio |
 | `assets/source/awushi-manifest.json` | Generator version, seed, dimensions, mesh budget, clip frame counts, and export size |
 | `assets/previews/awushi-front.png` | Front-facing facial and silhouette review |
