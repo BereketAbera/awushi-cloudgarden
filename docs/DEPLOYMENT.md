@@ -82,7 +82,7 @@ Open `http://127.0.0.1:8080/` while the second command runs. The container runs 
 | Complete `dist/` at an origin root | nginx serves `dist/` at `/`, and the site is `https://devops.bereket.dev/` |
 | No HTML fallback | Every location ends in `try_files $uri =404`. A missing `.glb`, bundle or other path is a 404, and so is a directory |
 | Content types | nginx's `mime.types`, plus `model/gltf-binary` for `.glb` |
-| Cache policy | Hashed bundles such as `/assets/index-bmle6U-W.js` are `public, max-age=31536000, immutable`. GLBs are `public, max-age=0, must-revalidate`. `index.html`, `/assets/branding/*` and everything else are `no-cache`. A 404 for a bundle carries no long-lived cache header |
+| Cache policy | Hashed bundles such as `/assets/index-bmle6U-W.js` are `public, max-age=31536000, immutable` when they are there, sent whole, as a range or as a 304. A 404 for a bundle is `no-cache`, so a CDN in front cannot keep an old pod's 404 for a new release's bundle. GLBs are `public, max-age=0, must-revalidate`. `index.html`, `/assets/branding/*` and everything else are `no-cache` |
 | Same origin over HTTPS | Every file comes from this server, and Traefik provides HTTPS |
 | Transfer size | `gzip_static` sends the prebuilt `.gz` files, so the 14 GLBs move as 3.8 MB instead of 12.5 MB and the bundles as 0.5 MB instead of 1.7 MB |
 

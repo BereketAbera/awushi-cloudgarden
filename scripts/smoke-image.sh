@@ -68,18 +68,14 @@ fetch() { # fetch <path> [curl args...]: GET the path, keep its response headers
 header() { printf '%s\n' "$headers" | grep -i "^$1:" | head -n 1 | sed 's/^[^:]*: *//' || true; }
 
 # expect <path> <status> <content type> <cache-control> [curl args...]
-# The content type is compared without its "; charset=" part. A cache-control of "none" means the header must be absent.
+# The content type is compared without its "; charset=" part.
 expect() {
   local path="$1" want_status="$2" want_type="$3" want_cache="$4" server
   shift 4
   fetch "$path" ${1+"$@"}
   check "$path status" "$status" "$want_status"
   check "$path Content-Type" "$(header Content-Type | sed 's/;.*//')" "$want_type"
-  if [[ "$want_cache" == none ]]; then
-    check "$path Cache-Control" "$(header Cache-Control)" ""
-  else
-    check "$path Cache-Control" "$(header Cache-Control)" "$want_cache"
-  fi
+  check "$path Cache-Control" "$(header Cache-Control)" "$want_cache"
   check "$path X-Content-Type-Options" "$(header X-Content-Type-Options)" nosniff
   server="$(header Server)"
   if [[ "$server" =~ [0-9] ]]; then fail "$path Server names a version: $server"; fi
@@ -119,7 +115,15 @@ if [[ -z "$entry" || -z "$style" ]]; then
   fail "index.html names no hashed entry script or stylesheet (script '$entry', stylesheet '$style')"
 else
   expect "$entry" 200 application/javascript "$immutable"
+  etag="$(header ETag)"
   expect_gzip "$entry" "$(curl --silent --max-time 30 "$base$entry" | sha256)"
+  # A revalidation and a range of a bundle that is there keep the year as well.
+  fetch "$entry" --header "If-None-Match: $etag"
+  check "$entry revalidation status" "$status" 304
+  check "$entry revalidation Cache-Control" "$(header Cache-Control)" "$immutable"
+  fetch "$entry" --header 'Range: bytes=0-99'
+  check "$entry range status" "$status" 206
+  check "$entry range Cache-Control" "$(header Cache-Control)" "$immutable"
   expect "$style" 200 text/css "$immutable"
   chunks="$(curl --silent --max-time 30 "$base$entry" | grep -oE '"\./[A-Za-z0-9._-]+-[A-Za-z0-9_-]{8,}\.js"' | sort -u || true)"
   if [[ -z "$chunks" ]]; then fail "$entry imports no hashed chunk, so the lazy scene bundle was not found"; fi
@@ -128,7 +132,8 @@ else
     expect "/assets/${chunk#./}" 200 application/javascript "$immutable"
   done
 fi
-expect /assets/index-00000000.js 404 text/html none
+# A bundle this release does not have: a 404 that no cache may keep, not one with no Cache-Control at all.
+expect /assets/index-00000000.js 404 text/html "$no_cache"
 
 # Every model the source names and every one public/assets ships, each byte for byte as this checkout has it.
 models="$({
