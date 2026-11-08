@@ -63,7 +63,7 @@ Vite fingerprints bundled JavaScript/CSS, while files copied from `public/assets
 
 ## Container image (devops.bereket.dev)
 
-The same `dist/` is also packaged as a static image for `https://devops.bereket.dev`, where an internal nginx container serves it behind Traefik and Traefik terminates TLS. The `Dockerfile` runs `npm ci` and `npm run build` on the builder's own platform, writes a `gzip -9` copy beside every JavaScript, CSS, HTML, SVG, JSON and GLB file, and copies the result onto `nginxinc/nginx-unprivileged` without any `RUN` step, so one Dockerfile produces `linux/amd64` and `linux/arm64` without emulation. Both base images are pinned by digest. `.dockerignore` keeps the source art in `assets/`, the documentation, tests, test output, `node_modules/`, `dist/` and `.vercel/` out of the build context, while `public/assets/` with the GLBs goes in.
+The same `dist/` is also packaged as a static image for `https://devops.bereket.dev`, where an internal nginx container serves it behind Traefik and Traefik terminates TLS. The `Dockerfile` runs `npm ci` and `npm run build` on the builder's own platform, writes a `gzip -9` copy beside every JavaScript, CSS, HTML, SVG, JSON and GLB file, and copies the result onto `nginxinc/nginx-unprivileged`, so one Dockerfile produces `linux/amd64` and `linux/arm64`. Both base images are pinned by digest. Before copying, the runtime stage runs `apk upgrade --no-cache`, because the base's Alpine packages are only as new as its last rebuild, and Alpine can fix one before the base is rebuilt; brotli-libs CVE-2026-111497 was the first. It is the only step that runs the target platform's binaries, so the `linux/arm64` half of the build on `main` runs it under QEMU. `.dockerignore` keeps the source art in `assets/`, the documentation, tests, test output, `node_modules/`, `dist/` and `.vercel/` out of the build context, while `public/assets/` with the GLBs goes in.
 
 Build, run and check it with Docker alone; the host needs no Node:
 
@@ -94,7 +94,7 @@ Each image holds exactly one release and does not keep the previous release's ha
 
 Deployment configuration, including the Kubernetes objects, the Traefik route and its TLS, and the digest that runs, lives in the Wayline platform repository. Nothing in this repository deploys. The Vercel deployment described above stays in place until the owner retires it.
 
-On 2026-11-07 the image was built and smoke-tested on an arm64 Mac, both natively and as a `linux/amd64` build run under emulation. Neither workflow has run on GitHub yet.
+On 2026-11-07 the image was built and smoke-tested on an arm64 Mac, both natively and as a `linux/amd64` build run under emulation, first without and then with `apk upgrade`. On GitHub, `ci.yml` has passed on `main`; the first `images.yml` run there stopped at the trivy scan on brotli-libs CVE-2026-111497, before `apk upgrade` was added.
 
 ## Browser-local state
 

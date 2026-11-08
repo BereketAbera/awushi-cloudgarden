@@ -1,9 +1,12 @@
 # Awushi's DevOps World, as a static image for devops.bereket.dev.
 #
 # The build stage runs on the builder's own platform, because its output (dist/) is plain files that run anywhere. The
-# runtime stage only copies files onto nginx-unprivileged and has no RUN, so one Dockerfile gives linux/amd64 for the
-# VPS and linux/arm64 for a laptop, and neither needs emulation on the other's builder. Both base images are pinned by
-# digest; bump the tag and the digest together.
+# runtime stage runs one command, apk upgrade, and copies those files onto nginx-unprivileged. The upgrade is there
+# because the base's Alpine packages are only as new as its last rebuild; brotli-libs CVE-2026-111497 was the first fix
+# the base lacked. It executes on the target platform, so while one Dockerfile still gives linux/amd64 for the VPS and
+# linux/arm64 for a laptop, the arm64 half of main's build runs under QEMU on the x86-64 runner. Both base images are
+# pinned by digest; bump the tag and the digest together. The nginx digest is where the runtime stage starts, and apk
+# upgrade adds the fixes Alpine has shipped since.
 #
 # There is no "# syntax=" line. BuildKit's built-in Dockerfile frontend reads everything here, so the two bases are the
 # only images a build pulls. A syntax line would make every build fetch a frontend image by a tag that can move. That
@@ -29,12 +32,22 @@ RUN find dist -type f \( -name '*.js' -o -name '*.css' -o -name '*.html' -o -nam
  && test -f dist/assets/awushi.glb.gz
 
 FROM ${NGINX_IMAGE} AS runtime
+# Alpine can fix a package before the base is rebuilt: the 1.30.6-alpine base has brotli-libs 1.2.0-r1, and
+# CVE-2026-111497 is fixed in 1.2.1-r0. apk upgrade takes such fixes at build time. It stays on the base's Alpine
+# branch, v3.24, and leaves nginx and its modules at the versions the base's /etc/apk/world pins. It needs root, and it
+# runs on the target platform, which is why the arm64 half of main's build runs under QEMU. It comes before the COPYs,
+# so it can run while the build stage does.
+# DL3066 wants a numeric USER so that runAsNonRoot can check it; that check reads the final USER, 101, not this one.
+# hadolint ignore=DL3066
+USER root
+RUN apk upgrade --no-cache
 COPY deploy/nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY deploy/nginx/security-headers.conf /etc/nginx/snippets/security-headers.conf
 # dist/ and nothing else is served. COPY merges into a directory that exists, so copying into /usr/share/nginx/html
 # would keep the base image's 50x.html beside the release, and nginx would serve it. The base has no /srv/www.
 COPY --from=build /src/dist /srv/www
-# nginx-unprivileged runs as uid 101 and listens on 8080. Its pid and temp files live in /tmp, which Kubernetes mounts as
-# an emptyDir so the root filesystem can stay read-only. The copied files are root's, so nginx can read but not change them.
+# nginx-unprivileged runs as uid 101 and listens on 8080, so USER 101 undoes the USER root above. Its pid and temp files
+# live in /tmp, which Kubernetes mounts as an emptyDir so the root filesystem can stay read-only. The copied files are
+# root's, so nginx can read but not change them.
 EXPOSE 8080
 USER 101
