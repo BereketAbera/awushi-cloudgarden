@@ -31,7 +31,9 @@ RUN find dist -type f \( -name '*.js' -o -name '*.css' -o -name '*.html' -o -nam
 FROM ${NGINX_IMAGE} AS runtime
 COPY deploy/nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY deploy/nginx/security-headers.conf /etc/nginx/snippets/security-headers.conf
-COPY --from=build /src/dist /usr/share/nginx/html
+# dist/ and nothing else is served. COPY merges into a directory that exists, so copying into /usr/share/nginx/html
+# would keep the base image's 50x.html beside the release, and nginx would serve it. The base has no /srv/www.
+COPY --from=build /src/dist /srv/www
 # nginx-unprivileged runs as uid 101 and listens on 8080. Its pid and temp files live in /tmp, which Kubernetes mounts as
 # an emptyDir so the root filesystem can stay read-only. The copied files are root's, so nginx can read but not change them.
 EXPOSE 8080

@@ -79,7 +79,7 @@ Open `http://127.0.0.1:8080/` while the second command runs. The container runs 
 
 | Contract | Image |
 | --- | --- |
-| Complete `dist/` at an origin root | nginx serves `dist/` at `/`, and the site is `https://devops.bereket.dev/` |
+| Complete `dist/` at an origin root | nginx serves `dist/` at `/`, and the site is `https://devops.bereket.dev/`. The image copies `dist/` into `/srv/www`, which holds nothing else, so the base image's own pages in `/usr/share/nginx/html`, such as `50x.html`, are not served |
 | No HTML fallback | Every location ends in `try_files $uri =404`. A missing `.glb`, bundle or other path is a 404, and so is a directory |
 | Content types | nginx's `mime.types`, plus `model/gltf-binary` for `.glb` |
 | Cache policy | Hashed bundles such as `/assets/index-bmle6U-W.js` are `public, max-age=31536000, immutable` when they are there, sent whole, as a range or as a 304. A 404 for a bundle is `no-cache`, so a CDN in front cannot keep an old pod's 404 for a new release's bundle. GLBs are `public, max-age=0, must-revalidate`. `index.html`, `/assets/branding/*` and everything else are `no-cache` |

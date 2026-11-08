@@ -162,11 +162,12 @@ expect_gzip /assets/awushi.glb "$(sha256 <"$root/public/assets/awushi.glb")"
 branding="$(cd "$root/public" && find assets/branding -type f -name '*.png' | sort | head -n 1)"
 if [[ -n "$branding" ]]; then expect "/$branding" 200 image/png "$no_cache"; fi
 
-# No fallback to index.html anywhere, and no directory listings.
+# No fallback to index.html anywhere, no directory listings, and none of the base image's own pages.
 expect /assets/missing.glb 404 text/html "$revalidate"
 expect /does-not-exist 404 text/html "$no_cache"
 expect /assets/ 404 text/html "$no_cache"
 expect /assets 404 text/html "$no_cache"
+expect /50x.html 404 text/html "$no_cache"
 
 if [[ "$(docker inspect --format '{{.State.Running}}' "$container")" == true ]]; then
   pass "container still running on a read-only root filesystem"
